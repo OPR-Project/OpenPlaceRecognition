@@ -135,7 +135,7 @@ def test(
             recalls_at_n[i, j],
             recalls_at_one_percent[i, j],
             top1_distance,
-        ) = get_recalls(query_embs, database_embs, distances, at_n=n)
+        ) = get_recalls(query_embs, database_embs, distances, at_n=n, dist_thresh=dist_thresh)
 
         if top1_distance:
             count_r_at_1 += 1
