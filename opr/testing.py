@@ -75,6 +75,7 @@ def test(
     model: ComposedModel,
     descriptor_key: Literal["image", "cloud", "fusion"],
     dataloader: DataLoader,
+    dist_thresh: float = 25.0,
     device: str = "cuda",
 ) -> Tuple[np.ndarray, float, float]:
     """Test Place Recognition Average Recall@N metric performance.
@@ -83,6 +84,7 @@ def test(
         model (ComposedModel): The model to test.
         descriptor_key (Literal["image", "cloud", "fusion"]): The embedding key which should be tested.
         dataloader (DataLoader): Test dataloader object.
+        dist_thresh (float): Distance threshold for positive match. Defaults to 25.0.
         device (str): Device ("cpu" or "cuda"). Defaults to "cuda".
 
     Returns:
