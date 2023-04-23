@@ -19,7 +19,7 @@ from opr.datasets.augmentations import (
 class BaseDataset(Dataset):
     """Base class for track-based Place Recognition dataset."""
 
-    valid_subsets = ("train", "val", "test")
+    valid_subsets: Tuple[str, ...] = ("train", "val", "test")
     valid_modalities: Tuple[str, ...] = ("image", "cloud")
     dataset_root: Path
     subset: Literal["train", "val", "test"]
