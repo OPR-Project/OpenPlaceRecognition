@@ -1,4 +1,8 @@
+albumentations
+hydra-core
 numpy
 opencv-python
 pandas
+pytorch_metric_learning
+scipy
 tqdm
