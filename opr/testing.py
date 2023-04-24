@@ -113,7 +113,7 @@ def test(
         selected_queries = group[group["in_query"]]
         queries.append(selected_queries.index.to_list())
 
-    utms = torch.tensor(test_df[["tx", "ty"]].to_numpy())
+    utms = torch.tensor(test_df[["northing", "easting"]].to_numpy())
     dist_fn = LpDistance(normalize_embeddings=False)
     dist_utms = dist_fn(utms).numpy()
 

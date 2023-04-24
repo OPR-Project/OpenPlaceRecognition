@@ -62,8 +62,8 @@ class PhystechCampus(BaseDataset):
         self.mink_quantization_size = mink_quantization_size
 
         # TODO workaround to make it compatible with test function code
-        if self.subset == "test":
-            self.dataset_df["in_query"] = True
+        # if self.subset == "test":
+        self.dataset_df["in_query"] = True
 
         self.image_transform = DefaultImageTransform(train=(subset == "train"), resize=(320, 192))
         self.cloud_transform = DefaultCloudTransform(train=(subset == "train"))
@@ -74,7 +74,7 @@ class PhystechCampus(BaseDataset):
     def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
         data: Dict[str, Union[int, Tensor]] = {"idx": idx}
         row = self.dataset_df.iloc[idx]
-        data["utm"] = torch.tensor(row[["tx", "ty"]].to_numpy(dtype=np.float32))
+        data["utm"] = torch.tensor(row[["northing", "easting"]].to_numpy(dtype=np.float32))
         track_dir = self.dataset_root / str(row["track"])
         if "image" in self.modalities and self.images_subdir is not None:
             im_filepath = track_dir / self.images_subdir / f"{row[f'{self.images_subdir}_ts']}.png"
