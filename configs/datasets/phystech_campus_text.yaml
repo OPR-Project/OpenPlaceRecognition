@@ -1,8 +1,8 @@
 dataset:
-  _target_: opr.datasets.custom.PhystechCampus
+  _target_: opr.datasets.custom_text.PhystechCampus
 
   dataset_root: /home/docker_opr/Datasets/splitted/train
-  modalities: [image, cloud,]
+  modalities: [text,]
   images_subdir: front_cam
   mink_quantization_size: 0.01
 
@@ -15,4 +15,4 @@ sampler:
   positives_per_group: 2
   seed: 3121999
 
-num_workers: 4
+num_workers: 2

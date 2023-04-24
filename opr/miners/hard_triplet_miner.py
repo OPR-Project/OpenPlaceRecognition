@@ -15,7 +15,7 @@ class HardTripletMiner:
     Code adopted from repository: https://github.com/jac99/MinkLocMultimodal, MIT License
     """
 
-    valid_modalities = ("image", "cloud", "fusion")
+    valid_modalities = ("image", "cloud", "fusion", "text")
 
     def __init__(
         self,
