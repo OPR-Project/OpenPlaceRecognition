@@ -33,3 +33,19 @@
     ```bash
     pip install .
     ```
+
+## Usage
+
+Currently only MinkLoc++ pretrained on Oxford RobotCar available. You can download it using [google drive link](https://drive.google.com/file/d/1zlfdX217Nh3_QL5r0XAHUjDFjIPxUmMg/view?usp=share_link) (the link is subject to change).
+
+If everything is installed correctly, you can use the library like below:
+
+```python
+from opr.models import minkloc_multimodal
+
+baseline_model = minkloc_multimodal(weights="path_to_checkpoint")
+```
+
+## License
+
+[MIT License](./LICENSE) (**_the license is subject to change in future versions_**)
