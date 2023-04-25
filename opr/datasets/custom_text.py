@@ -15,8 +15,19 @@ from opr.datasets.augmentations import (
 from opr.datasets.base import BaseDataset
 
 from sklearn.decomposition import PCA
+from transformers import DistilBertTokenizer, DistilBertModel
+
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+class TxtVectorizer(torch.nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
+        self.model = DistilBertModel.from_pretrained("distilbert-base-uncased")
+    
+    def vectorize(self, string):
+        return(self.model(self.tokenizer(string, return_tensors="pt")))
 
 class PhystechCampus(BaseDataset):
     """Phystech Campus dataset implementation."""
@@ -105,16 +116,15 @@ class PhystechCampus(BaseDataset):
     
     def _get_tfidf_pca(self, n_components=100):
         corpus = np.hstack((self.dataset_df["back_description"], self.dataset_df["front_description"]))
-        vectorizer = TfidfVectorizer()
-        vectorizer.fit(corpus)
-        vectorized_corpus = vectorizer.transform(corpus).toarray()
+        vectorizer = TxtVectorizer()
+        vectorized_corpus = vectorizer.vectorize(corpus).toarray()
         
-        pca =PCA(n_components=n_components)
+        pca = PCA(n_components=n_components)
         pca.fit(vectorized_corpus)
         return vectorizer, pca
     
     def text_transform(self, text):
-        vect_data = self.vectorizer.transform([text]).toarray()
+        vect_data = self.vectorizer.vectorize([text]).toarray()
         pca_data = self.pca.transform(vect_data)
         pca_data = torch.tensor(pca_data, dtype=torch.float32)
         return pca_data
