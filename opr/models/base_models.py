@@ -4,6 +4,29 @@ from typing import Dict, Optional, Union
 import MinkowskiEngine as ME  # noqa: N817
 from torch import Tensor, nn
 
+# ----new ----
+from transformers import BertModel
+
+class TextModel(nn.Module):
+    def __init__(self):
+        """Interface class for image feature extractor module."""
+        super().__init__()
+        self.model_bert = BertModel.from_pretrained('bert-base-uncased')
+        self.fc1 = nn.Linear(250, 128)
+        self.bn = nn.BatchNorm1d(128)
+    
+    def forward(self, token):
+        x = token
+        if len(x.shape) == 1:
+            x = x.unsqueeze(0)
+        x = self.model_bert(x)[0][:,0,:]
+        x = self.fc1(x)
+        x = self.bn(x)
+
+        return x
+
+# ----new ----
+
 
 class ImageFeatureExtractor(nn.Module):
     """Interface class for image feature extractor module."""

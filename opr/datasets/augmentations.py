@@ -14,6 +14,67 @@ from scipy.linalg import expm, norm
 from torch import Tensor
 from torchvision import transforms
 
+#------- new ------
+# pip install nltk
+# pip intall transformers
+from transformers import BertTokenizer
+import re
+import string
+from nltk.corpus import stopwords
+
+class DefaultTextTransform:
+    def __init__(self) -> None:
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        
+
+    def __call__(self, txt) -> Tensor:
+        """Applies transformations to the given image.
+
+        Args:
+            img (np.ndarray): The image in the cv2 format.
+
+        Returns:
+            Tensor: Augmented PyTorch tensor in the channel-first format.
+        """
+        tokenized = self.tokenizer.encode_plus(self.del_stopword(self.clear_text(txt)),
+                                                                    add_special_tokens=True,
+                                                                    pad_to_max_length=True,
+                                                                    max_length = 250,  # maximum length of a sentence
+                                                                    truncation=True)
+#         padded = np.array([i['input_ids'] for i in tokenized.values])
+        # attention_mask = np.array([i['attention_mask'] for i in tokenized.values])
+        input_ids = torch.tensor(tokenized['input_ids'])  
+        return input_ids
+    
+    def clear_text(self, txt_one_str):
+        txt = str(txt_one_str).lower()
+        txt = re.sub('[a-zA-Z0-9 ]+\\?', '', txt_one_str)
+        txt = re.sub('description?:?', '', txt_one_str)
+        txt = re.sub('[^A-Za-z0-9.]+', ' ', txt_one_str)
+        txt = re.sub(' q ', '', txt_one_str)
+        txt = re.sub(' a ', '', txt_one_str)
+        txt = re.sub('describe the scene', '', txt_one_str)
+        txt = re.sub('the answer is', '', txt_one_str)
+        txt = re.sub('the next question is', '', txt_one_str)
+        txt = re.sub('\d', '', txt_one_str)
+        txt = txt.translate(str.maketrans('', '', string.punctuation)) #пунктуация
+      
+        return txt
+    
+    def del_stopword(self, txt):
+        #import english stopwords list from nltk
+        stopwords_eng = stopwords.words('english')
+
+        txt_tokens=txt.split()
+        txt_list=[]
+        #remove stopwords
+        for word in txt_tokens:
+            if word not in stopwords_eng:
+                txt_list.append(word)
+        txt = ' '.join(txt_list)
+        return txt
+    
+# -----new-----
 
 class DefaultImageTransform:
     """Default image augmentation pipeline."""
