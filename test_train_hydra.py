@@ -1,9 +1,10 @@
 """Sample training script: trains MinkLoc++ model on Oxford RobotCar dataset."""
 from pathlib import Path
 
-import torch
 import hydra
+import torch
 from hydra.utils import instantiate
+from omegaconf import DictConfig
 from torch.optim import Adam
 from torch.optim.lr_scheduler import MultiStepLR
 
@@ -11,11 +12,14 @@ from opr.datasets.dataloader_factory import make_dataloaders
 from opr.testing import test
 from opr.training import epoch_loop
 
-from omegaconf import DictConfig
-
 
 @hydra.main(config_path="configs", config_name="config")
 def train(cfg: DictConfig):
+    """Summary of training script.
+
+    Args:
+        cfg (DictConfig): config to train with
+    """
     model = instantiate(cfg.model)
 
     loss_fn = instantiate(cfg.loss)
