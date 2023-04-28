@@ -4,12 +4,14 @@ from typing import Optional, Union
 
 import torch
 from hydra.utils import instantiate
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import OmegaConf
 
 from .base_models import ComposedModel
 
 
-def minkloc_multimodal(model_config: DictConfig, weights: Optional[Union[str, Path]] = None) -> ComposedModel:
+def minkloc_multimodal(
+    model_config: Union[str, Path], weights: Optional[Union[str, Path]] = None
+) -> ComposedModel:
     """Default MinkLoc++ model configuration.
 
     Paper: https://arxiv.org/abs/2104.05327
@@ -19,6 +21,7 @@ def minkloc_multimodal(model_config: DictConfig, weights: Optional[Union[str, Pa
     Conference on Neural Networks (IJCNN). IEEE, 2021.
 
     Args:
+        model_config (Union[str, Path]): The path to hydra config file to initialize model.
         weights (Union[str, Path], optional): The path to the weights 'pth' file. Defaults to None.
 
     Raises:
@@ -57,7 +60,7 @@ def minkloc_multimodal(model_config: DictConfig, weights: Optional[Union[str, Pa
     #         "fusion_module": {"_target_": "opr.models.fusion.Concat"},
     #     }
     # )
-    
+
     model_config = OmegaConf.load(model_config)
     model = instantiate(model_config)
     if weights is not None:
