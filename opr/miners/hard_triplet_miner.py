@@ -2,7 +2,8 @@
 
 Code adopted from repository: https://github.com/jac99/MinkLocMultimodal, MIT License
 """
-from typing import Dict, Tuple, Union
+
+from typing import Dict, List, Sequence, Tuple, Union
 
 import torch
 from pytorch_metric_learning.distances import CosineSimilarity, LpDistance
@@ -15,18 +16,21 @@ class HardTripletMiner:
     Code adopted from repository: https://github.com/jac99/MinkLocMultimodal, MIT License
     """
 
-    valid_modalities = ("image", "cloud", "fusion")
+    # valid_modalities = ("image", "cloud", "fusion")
 
     def __init__(
         self,
         distance: Union[LpDistance, CosineSimilarity],
+        modalities: Union[List[str], Sequence[str]] = ("image",),
     ) -> None:
         """Batch hard triplet miner.
 
         Args:
+            modalities: Union[List[str], Sequence[str]]: Modalities to use
             distance (Union[LpDistance, CosineSimilarity]): Distance function to use.
         """
         self.distance = distance
+        self.modalities = modalities
 
     def __call__(
         self, embeddings: Dict[str, Tensor], positives_mask: Tensor, negatives_mask: Tensor
@@ -45,7 +49,7 @@ class HardTripletMiner:
         hard_triplets = {}
         stats = {}
         for key, values in embeddings.items():
-            if key in self.valid_modalities and values is not None:
+            if key in self.modalities and values is not None:
                 assert values.dim() == 2
                 d_embeddings = values.detach()
                 with torch.no_grad():
