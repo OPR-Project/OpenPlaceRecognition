@@ -48,7 +48,7 @@ docker run -it -d --rm \
     --privileged \
     --name ${USER}_opr \
     --net host \
-    -v $PROJECT_ROOT_DIR:/home/docker_opr/open_place_recogntion:rw \
+    -v $PROJECT_ROOT_DIR:/home/docker_opr/OpenPlaceRecognition:rw \
     -v $DATASETS_DIR:/home/docker_opr/Datasets:rw \
     open-place-recognition:${DEVICE}
 

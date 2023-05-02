@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/cuda:11.6.2-cudnn8-devel-ubuntu20.04
+FROM nvcr.io/nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -36,7 +36,7 @@ RUN useradd -m ${USER} --uid=${UID} && echo "${USER}:${PW}" | chpasswd && adduse
 WORKDIR /home/${USER}
 
 # create some directories for mounting volumes
-RUN mkdir open_place_recogntion && chown -R ${UID}:${GID} /home/${USER}
+RUN mkdir OpenPlaceRecognition && chown -R ${UID}:${GID} /home/${USER}
 RUN mkdir Datasets && chown -R ${UID}:${GID} /home/${USER}
 
 USER ${UID}:${GID}
@@ -46,18 +46,18 @@ ENV PATH="/home/${USER}/.local/bin:$PATH"
 # upgrade pip
 RUN pip install --upgrade pip setuptools
 
-# install pytorch 1.13.1 and torchvision
+# install pytorch 1.12.1 and torchvision
 # it may take a long time, so it is better be done in separate 'layer'
 RUN pip install \
-    torch==1.13.1+cu116 \
-    torchvision==0.14.1+cu116 \
-    --extra-index-url https://download.pytorch.org/whl/cu116
+    torch==1.12.1+cu113 \
+    torchvision==0.13.1+cu113 \
+    --extra-index-url https://download.pytorch.org/whl/cu113
 
 # install MinkowskiEngine
 RUN pip install ninja
 ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0 7.5 8.0 8.6"
 ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
-ENV CUDA_HOME=/usr/local/cuda-11.6
+ENV CUDA_HOME=/usr/local/cuda-11.3
 ENV MAX_JOBS=4
 RUN pip install git+https://github.com/NVIDIA/MinkowskiEngine -v --no-deps \
                           --global-option="--force_cuda" \
