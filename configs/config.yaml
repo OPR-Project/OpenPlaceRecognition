@@ -1,14 +1,22 @@
 defaults:
   - _self_
   - model: minkloc_multimodal
-  - dataset: phystech_campus
+  - dataset: nclt
   - loss: triplet_margin
   - optimizer: adam
   - scheduler: multi_step
 
 general:
-  checkopoints_dir: checkpoints/
+  debug: False
+  seed: 31299
+  checkpoints_dir: checkpoints/
   device: cuda
+  num_workers: 4
   batch_expansion_th: 0.7
   modalities: [image, cloud,]
-  epochs: 60
+  epochs: 2
+
+wandb:
+  disabled: False
+  project: OpenPlaceRecognition
+  run_name: null

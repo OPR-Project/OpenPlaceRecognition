@@ -6,3 +6,4 @@ pandas
 pytorch_metric_learning
 scipy
 tqdm
+wandb

@@ -11,9 +11,9 @@ miner:
   distance:
     _target_: pytorch_metric_learning.distances.LpDistance
     normalize_embeddings: False
-    modalities: ${general.modalities}
+  modalities: ${loss.modalities}
 reducer:
   _target_: pytorch_metric_learning.reducers.AvgNonZeroReducer
   collect_stats: True
-modalities: ${general.modalities}
+modalities: [image, cloud, fusion]
 weights: [0.5, 0.5, 0.]

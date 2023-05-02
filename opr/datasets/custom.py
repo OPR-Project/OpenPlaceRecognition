@@ -15,8 +15,8 @@ from opr.datasets.augmentations import (
 from opr.datasets.base import BaseDataset
 
 
-class PhystechCampus(BaseDataset):
-    """Phystech Campus dataset implementation."""
+class ITLPCampus(BaseDataset):
+    """ITLP Campus dataset implementation."""
 
     valid_subsets = ("train", "val", "test")
     valid_modalities = ("image", "cloud")
@@ -29,7 +29,7 @@ class PhystechCampus(BaseDataset):
         images_subdir: Optional[Union[str, Path]] = "front_cam",
         mink_quantization_size: Optional[float] = 0.5,
     ) -> None:
-        """Phystech Campus dataset implementation.
+        """ITLP Campus dataset implementation.
 
         Args:
             dataset_root (Union[str, Path]): Path to the dataset root directory.
