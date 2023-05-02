@@ -1,0 +1,4 @@
+_target_: torch.optim.lr_scheduler.MultiStepLR
+params:
+  gama: 0.1
+  steps: [40]

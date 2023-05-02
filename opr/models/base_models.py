@@ -154,7 +154,7 @@ class ComposedModel(nn.Module):
         out_dict: Dict[str, Optional[Tensor]] = {
             "image": None,
             "cloud": None,
-            "fusion": None,
+            # "fusion": None,
         }
 
         if self.image_module is not None:
