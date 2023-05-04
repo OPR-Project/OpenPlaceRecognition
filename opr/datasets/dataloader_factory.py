@@ -53,6 +53,13 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
             ]
         if "image" in data_list[0]:
             images = [e["image"] for e in data_list]
+
+        # TODO: implement multi-camera setup better?
+        images_cam = {}
+        for n in range(6):
+            if f"image_cam{n}" in data_list[0]:
+                images_cam[n] = [e[f"image_cam{n}"] for e in data_list]
+
         if "range_image" in data_list[0]:
             range_images = [e["range_image"] for e in data_list]
 
@@ -67,6 +74,12 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
                 result["features"] = torch.ones((result["coordinates"].shape[0], 1), dtype=torch.float32)
             if "image" in data_list[0]:
                 result["images"] = torch.stack(images, dim=0)
+
+            # TODO: implement multi-camera setup better?
+            for n in range(6):
+                if f"image_cam{n}" in data_list[0]:
+                    result[f"images_cam{n}"] = torch.stack(images_cam[n], dim=0)
+
             if "range_image" in data_list[0]:
                 result["range_images"] = torch.stack(range_images, dim=0)
             result["utms"] = utms
