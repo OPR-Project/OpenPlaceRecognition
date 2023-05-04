@@ -131,7 +131,7 @@ def train(cfg: DictConfig):
 
         recall_at_n, recall_at_one_percent, mean_top1_distance = test(
             model=model,
-            descriptor_key="fusion",
+            descriptor_key=cfg.general.test_modality,
             dataloader=dataloaders["test"],
             device=cfg.general.device,
         )
