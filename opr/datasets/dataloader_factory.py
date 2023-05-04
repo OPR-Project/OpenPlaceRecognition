@@ -56,9 +56,11 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
 
         # TODO: implement multi-camera setup better?
         images_cam = {}
-        for n in range(6):
-            if f"image_cam{n}" in data_list[0]:
-                images_cam[n] = [e[f"image_cam{n}"] for e in data_list]
+        for cam_name in ["stereo_centre", "mono_rear", "mono_left", "mono_right"] + [
+            f"cam{n}" for n in range(6)
+        ]:
+            if f"image_{cam_name}" in data_list[0]:
+                images_cam[cam_name] = [e[f"image_{cam_name}"] for e in data_list]
 
         if "range_image" in data_list[0]:
             range_images = [e["range_image"] for e in data_list]
@@ -76,9 +78,11 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
                 result["images"] = torch.stack(images, dim=0)
 
             # TODO: implement multi-camera setup better?
-            for n in range(6):
-                if f"image_cam{n}" in data_list[0]:
-                    result[f"images_cam{n}"] = torch.stack(images_cam[n], dim=0)
+            for cam_name in ["stereo_centre", "mono_rear", "mono_left", "mono_right"] + [
+                f"cam{n}" for n in range(6)
+            ]:
+                if f"image_{cam_name}" in data_list[0]:
+                    result[f"images_{cam_name}"] = torch.stack(images_cam[cam_name], dim=0)
 
             if "range_image" in data_list[0]:
                 result["range_images"] = torch.stack(range_images, dim=0)

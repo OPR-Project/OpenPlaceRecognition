@@ -103,6 +103,17 @@ class OxfordDataset(BaseDataset):
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             im = self.image_transform(im)
             data["image"] = im
+
+        # TODO: implement multi-camera setup better?
+        for cam_name in ("stereo_centre", "mono_rear", "mono_left", "mono_right"):
+            if f"image_{cam_name}" in self.modalities:
+                image_ts = int(row[cam_name])
+                im_filepath = track_dir / f"{cam_name}_small" / f"{image_ts}.png"
+                im = cv2.imread(str(im_filepath))
+                im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                im = self.image_transform(im)
+                data[f"image_{cam_name}"] = im
+
         if "cloud" in self.modalities and self.clouds_subdir is not None:
             pc_filepath = track_dir / self.clouds_subdir / f"{row['pointcloud']}.bin"
             pc = self._load_pc(pc_filepath)
