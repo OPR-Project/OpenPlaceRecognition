@@ -57,9 +57,6 @@ class NCLTDataset(BaseDataset):
 
         self.mink_quantization_size = mink_quantization_size
 
-        if self.subset == "test":
-            self.dataset_df["in_query"] = True  # tmp workaround to make it compatible with text_oxford code
-
         self.image_transform = DefaultImageTransform(train=(self.subset == "train"))
         self.cloud_transform = DefaultCloudTransform(train=(self.subset == "train"))
         self.cloud_set_transform = DefaultCloudSetTransform(train=(self.subset == "train"))
