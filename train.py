@@ -11,9 +11,10 @@ from omegaconf import DictConfig, OmegaConf
 from opr.datasets.dataloader_factory import make_dataloaders
 from opr.testing import test
 from opr.training import epoch_loop
+from opr.utils import flatten_dict, set_seed
 
 
-@hydra.main(config_path="configs", config_name="config")
+@hydra.main(config_path="configs", config_name="config", version_base=None)
 def train(cfg: DictConfig):
     """Summary of training script.
 
@@ -38,6 +39,9 @@ def train(cfg: DictConfig):
     )
     if not checkpoints_dir.exists():
         checkpoints_dir.mkdir(parents=True)
+
+    set_seed(seed=cfg.general.seed, make_deterministic=False)  # we cannot use determenistic operators here :(
+    print(f"=> Seed: {cfg.general.seed}")
 
     print("=> Instantiating model...")
     model = instantiate(cfg.model)
@@ -75,6 +79,7 @@ def train(cfg: DictConfig):
         print(f"\n\n=====> Epoch {epoch+1}:")
         # TODO: resolve mypy typing here
         train_batch_size = dataloaders["train"].batch_sampler.batch_size  # type: ignore
+        val_batch_size = dataloaders["val"].batch_sampler.batch_size  # type: ignore
 
         print("\n=> Training:\n")
 
@@ -143,6 +148,7 @@ def train(cfg: DictConfig):
         stats_dict["train"] = train_stats
         stats_dict["train"]["batch_size"] = train_batch_size
         stats_dict["val"] = val_stats
+        stats_dict["val"]["batch_size"] = val_batch_size
 
         # saving checkpoints
         checkpoint_dict = {
@@ -152,10 +158,16 @@ def train(cfg: DictConfig):
             "optimizer_state_dict": optimizer.state_dict(),
         }
         torch.save(checkpoint_dict, checkpoints_dir / f"epoch_{epoch+1}.pth")
+        # wandb logging
+        if not cfg.general.debug and not cfg.wandb.disabled:
+            wandb.log(flatten_dict(stats_dict))
+            wandb.save(str((checkpoints_dir / f"epoch_{epoch+1}.pth").relative_to(".")))
         if recall_at_n[0] > best_recall_at_1:
             print("Recall@1 improved!")
             torch.save(checkpoint_dict, checkpoints_dir / "best.pth")
             best_recall_at_1 = recall_at_n[0]
+            if not cfg.general.debug and not cfg.wandb.disabled:
+                wandb.save(str((checkpoints_dir / "best.pth").relative_to(".")))
 
 
 if __name__ == "__main__":
