@@ -15,6 +15,7 @@ general:
   num_workers: 4
   batch_expansion_th: 0.7
   modalities: [image] # default: [image, cloud]
+  test_modality: image
   epochs: 20 # default: 2
 
 wandb:

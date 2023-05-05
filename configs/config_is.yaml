@@ -3,7 +3,7 @@ defaults:
   - _self_
   - model: minkloc_multimodal_is # default: minkloc_multimodal
   - dataset: nclt_semantic # default: nclt
-  - loss: triplet_margin
+  - loss: triplet_margin_is
   - optimizer: adam
   - scheduler: multi_step
 
@@ -15,6 +15,7 @@ general:
   num_workers: 4
   batch_expansion_th: 0.7
   modalities: [image, semantic] # default: [image, cloud]
+  test_modality: fusion
   epochs: 30 # default: 2
 
 wandb:

@@ -184,6 +184,9 @@ class ComposedModel(nn.Module):
         elif self.image_module is not None and isinstance(self.image_module, MultiImageModule):
             out_dict["image"] = self.image_module(batch)
 
+        if self.image_module is not None and isinstance(self.image_module, ImageModule):
+            out_dict["semantic"] = self.semantic_module(batch["semantics"])
+
         if self.cloud_module is not None:
             if self.sparse_cloud:
                 cloud = ME.SparseTensor(features=batch["features"], coordinates=batch["coordinates"])

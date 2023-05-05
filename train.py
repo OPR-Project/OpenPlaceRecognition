@@ -14,7 +14,7 @@ from opr.training import epoch_loop
 from opr.utils import flatten_dict, set_seed
 
 
-@hydra.main(config_path="configs", config_name="config", version_base=None)
+@hydra.main(config_path="configs", config_name="config_is", version_base=None)
 def train(cfg: DictConfig):
     """Summary of training script.
 
