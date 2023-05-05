@@ -1,5 +1,5 @@
 albumentations
-hydra-core
+hydra-core>=1.2
 numpy
 opencv-python
 pandas

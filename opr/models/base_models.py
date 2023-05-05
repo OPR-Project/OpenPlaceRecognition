@@ -124,6 +124,29 @@ class FusionModule(nn.Module):
         raise NotImplementedError()
 
 
+class MultiImageModule(nn.Module):
+    """Module to work with multiple images with late fusion."""
+
+    def __init__(self, image_module: ImageModule, fusion_module: FusionModule) -> None:
+        """Module to work with multiple images with late fusion.
+
+        Args:
+            image_module (ImageModule): Module to process each image.
+            fusion_module (FusionModule): Module to fuse descriptors of each image.
+        """
+        super().__init__()
+        self.image_module = image_module
+        self.fusion_module = fusion_module
+
+    def forward(self, data: Dict[str, Tensor]) -> Tensor:  # noqa: D102
+        x_dict = {}
+        for key in data:
+            if key.startswith("images_"):
+                x_dict[key] = self.image_module(data[key])
+        x = self.fusion_module(x_dict)
+        return x
+
+
 class ComposedModel(nn.Module):
     """Composition model for multimodal architectures."""
 
@@ -131,7 +154,7 @@ class ComposedModel(nn.Module):
 
     def __init__(
         self,
-        image_module: Optional[ImageModule] = None,
+        image_module: Optional[Union[ImageModule, MultiImageModule]] = None,
         semantic_module: Optional[ImageModule] = None,
         cloud_module: Optional[CloudModule] = None,
         fusion_module: Optional[FusionModule] = None,
@@ -153,19 +176,13 @@ class ComposedModel(nn.Module):
         if self.cloud_module:
             self.sparse_cloud = self.cloud_module.sparse
 
-    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Optional[Tensor]]:  # noqa: D102
-        out_dict: Dict[str, Optional[Tensor]] = {
-            # "image": None,
-            # "semantic": None,
-            # "cloud": None,
-            # "fusion": None,
-        }
+    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
+        out_dict: Dict[str, Tensor] = {}
 
-        if self.image_module is not None:
+        if self.image_module is not None and isinstance(self.image_module, ImageModule):
             out_dict["image"] = self.image_module(batch["images"])
-        
-        if self.semantic_module is not None:
-            out_dict["semantic"] = self.semantic_module(batch["semantics"])
+        elif self.image_module is not None and isinstance(self.image_module, MultiImageModule):
+            out_dict["image"] = self.image_module(batch)
 
         if self.cloud_module is not None:
             if self.sparse_cloud:

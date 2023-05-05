@@ -19,8 +19,6 @@ from opr.datasets.base import BaseDataset
 class OxfordDataset(BaseDataset):
     """PointNetVLAD Oxford RobotCar dataset implementation."""
 
-    valid_subsets = ("train", "val", "test")
-    valid_modalities = ("image", "cloud")
     images_subdir: Optional[Path] = None
     clouds_subdir: Optional[Path] = None
 
@@ -57,15 +55,15 @@ class OxfordDataset(BaseDataset):
         """
         super().__init__(dataset_root, subset, modalities)
 
-        lidar2image_index_pickle = self.dataset_root / f"{subset}_lidar2image_index.pickle"
-        if not lidar2image_index_pickle.exists():
-            raise FileNotFoundError(
-                f"There is no {subset}_lidar2image_index.pickle file in given dataset_root={self.dataset_root}."
-                "Consider checking documentation on how to preprocess the dataset."
-            )
-        with open(lidar2image_index_pickle, "rb") as f:
-            self.lidar2image_index = pickle.load(f)
-        self.random_select_nearest_images = random_select_nearest_images
+        # lidar2image_index_pickle = self.dataset_root / f"{subset}_lidar2image_index.pickle"
+        # if not lidar2image_index_pickle.exists():
+        #     raise FileNotFoundError(
+        #         f"There is no {subset}_lidar2image_index.pickle file in given dataset_root={self.dataset_root}."
+        #         "Consider checking documentation on how to preprocess the dataset."
+        #     )
+        # with open(lidar2image_index_pickle, "rb") as f:
+        #     self.lidar2image_index = pickle.load(f)
+        # self.random_select_nearest_images = random_select_nearest_images
 
         if "image" in self.modalities:
             if images_subdir:
@@ -93,16 +91,29 @@ class OxfordDataset(BaseDataset):
         data["utm"] = torch.tensor(row[["northing", "easting"]].to_numpy(dtype=np.float64))
         track_dir = self.dataset_root / str(row["track"])
         if "image" in self.modalities and self.images_subdir is not None:
-            if self.subset == "test" or not self.random_select_nearest_images:
-                image_ts = self.lidar2image_index[idx][0]
-                im_filepath = track_dir / self.images_subdir / f"{image_ts}.png"
-            else:
-                image_ts = np.random.choice(self.lidar2image_index[idx])
-                im_filepath = track_dir / self.images_subdir / f"{image_ts}.png"
+            # if self.subset == "test" or not self.random_select_nearest_images:
+            #     image_ts = self.lidar2image_index[idx][0]
+            #     im_filepath = track_dir / self.images_subdir / f"{image_ts}.png"
+            # else:
+            #     image_ts = np.random.choice(self.lidar2image_index[idx])
+            #     im_filepath = track_dir / self.images_subdir / f"{image_ts}.png"
+            image_ts = int(row["stereo_centre"])
+            im_filepath = track_dir / self.images_subdir / f"{image_ts}.png"
             im = cv2.imread(str(im_filepath))
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             im = self.image_transform(im)
             data["image"] = im
+
+        # TODO: implement multi-camera setup better?
+        for cam_name in ("stereo_centre", "mono_rear", "mono_left", "mono_right"):
+            if f"image_{cam_name}" in self.modalities:
+                image_ts = int(row[cam_name])
+                im_filepath = track_dir / f"{cam_name}_small" / f"{image_ts}.png"
+                im = cv2.imread(str(im_filepath))
+                im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                im = self.image_transform(im)
+                data[f"image_{cam_name}"] = im
+
         if "cloud" in self.modalities and self.clouds_subdir is not None:
             pc_filepath = track_dir / self.clouds_subdir / f"{row['pointcloud']}.bin"
             pc = self._load_pc(pc_filepath)

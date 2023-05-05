@@ -19,8 +19,6 @@ from opr.datasets.base import BaseDataset
 class NCLTDataset(BaseDataset):
     """NCLT dataset implementation."""
 
-    valid_modalities = ("image", "cloud", "semantic")
-
     def __init__(
         self,
         dataset_root: Union[str, Path],
@@ -83,6 +81,16 @@ class NCLTDataset(BaseDataset):
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             im = self.image_transform(im)
             data["image"] = im
+
+        # TODO: implement multi-camera setup better?
+        for n in range(6):
+            if f"image_cam{n}" in self.modalities:
+                im_filepath = track_dir / f"lb3_small/Cam{n}" / f"{row['image']}.png"
+                im = cv2.imread(str(im_filepath))
+                im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                im = self.image_transform(im)
+                data[f"image_cam{n}"] = im
+
         if "semantic" in self.modalities and self.semantic_subdir is not None:
             im_filepath = track_dir / self.semantic_subdir / f"{row['image']}.png" # image id is equal to semantic mask id~
             im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
