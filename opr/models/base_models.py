@@ -132,6 +132,7 @@ class ComposedModel(nn.Module):
     def __init__(
         self,
         image_module: Optional[ImageModule] = None,
+        semantic_module: Optional[ImageModule] = None,
         cloud_module: Optional[CloudModule] = None,
         fusion_module: Optional[FusionModule] = None,
     ) -> None:
@@ -139,12 +140,14 @@ class ComposedModel(nn.Module):
 
         Args:
             image_module (ImageModule, optional): Image modality branch. Defaults to None.
+            semantic_module (ImageModule, optional): Semantic modality branch. Defaults to None.
             cloud_module (CloudModule, optional): Cloud modality branch. Defaults to None.
             fusion_module (FusionModule, optional): Module to fuse different modalities. Defaults to None.
         """
         super().__init__()
 
         self.image_module = image_module
+        self.semantic_module = semantic_module
         self.cloud_module = cloud_module
         self.fusion_module = fusion_module
         if self.cloud_module:
@@ -152,13 +155,17 @@ class ComposedModel(nn.Module):
 
     def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Optional[Tensor]]:  # noqa: D102
         out_dict: Dict[str, Optional[Tensor]] = {
-            "image": None,
-            "cloud": None,
+            # "image": None,
+            # "semantic": None,
+            # "cloud": None,
             # "fusion": None,
         }
 
         if self.image_module is not None:
             out_dict["image"] = self.image_module(batch["images"])
+        
+        if self.semantic_module is not None:
+            out_dict["semantic"] = self.semantic_module(batch["semantics"])
 
         if self.cloud_module is not None:
             if self.sparse_cloud:

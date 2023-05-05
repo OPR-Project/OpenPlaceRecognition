@@ -50,7 +50,7 @@ docker run -it -d --rm \
     --net host \
     -v $PROJECT_ROOT_DIR:/home/docker_opr/OpenPlaceRecognition:rw \
     -v $DATASETS_DIR:/home/docker_opr/Datasets:rw \
-    open-place-recognition:${DEVICE}
+    open-place-recognition:$DEVICE-$USER
 
 docker exec --user root \
     ${USER}_opr bash -c "/etc/init.d/ssh start"

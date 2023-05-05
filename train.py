@@ -13,7 +13,7 @@ from opr.testing import test
 from opr.training import epoch_loop
 
 
-@hydra.main(config_path="configs", config_name="config")
+@hydra.main(config_path="configs", config_name="config_is")
 def train(cfg: DictConfig):
     """Summary of training script.
 
@@ -55,6 +55,7 @@ def train(cfg: DictConfig):
     print("=> Instantiating optimizer...")
     params_list = []
     for modality in cfg.general.modalities:
+        print(f"Modality: {modality}")
         params_list.append(
             {
                 "params": getattr(model, f"{modality}_module").parameters(),
@@ -126,7 +127,8 @@ def train(cfg: DictConfig):
 
         recall_at_n, recall_at_one_percent, mean_top1_distance = test(
             model=model,
-            descriptor_key="fusion",
+            #? Trying to make it config-aware
+            descriptor_key="fusion" if len(cfg.general.modalities) > 1 else cfg.general.modalities[0],
             dataloader=dataloaders["test"],
             device=cfg.general.device,
         )
@@ -143,6 +145,13 @@ def train(cfg: DictConfig):
         stats_dict["train"] = train_stats
         stats_dict["train"]["batch_size"] = train_batch_size
         stats_dict["val"] = val_stats
+
+        wandb.log({'Test recall_at_1': recall_at_n[0],
+                   'Test Mean Recall@1%': recall_at_one_percent,
+                   'Test Mean top-1 distance': mean_top1_distance,
+                   'batch_size': train_stats['batch_size'],
+                   'train_total_loss': train_stats['total_loss'],
+                   'val_total_loss': val_stats['total_loss']})
 
         # saving checkpoints
         checkpoint_dict = {

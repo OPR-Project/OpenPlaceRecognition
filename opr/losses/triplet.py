@@ -20,7 +20,7 @@ class MultimodalTripletMarginLoss(nn.Module):
     Code adopted from repository: https://github.com/jac99/MinkLocMultimodal, MIT License
     """
 
-    valid_modalities = ("image", "cloud", "fusion")
+    valid_modalities = ("image", "cloud", "semantic", "fusion")
 
     def __init__(
         self,
@@ -30,7 +30,7 @@ class MultimodalTripletMarginLoss(nn.Module):
         reducer: Union[AvgNonZeroReducer, MeanReducer, SumReducer],
         swap: bool = False,
         modalities: Union[
-            Literal["image", "cloud", "fusion"], Sequence[Literal["image", "cloud", "fusion"]]
+            Literal["image", "cloud", "semantic", "fusion"], Sequence[Literal["image", "cloud", "semantic", "fusion"]]
         ] = ("image",),
         weights: Union[float, Sequence[float]] = 1.0,
     ) -> None:
@@ -44,8 +44,8 @@ class MultimodalTripletMarginLoss(nn.Module):
                 to reduce loss values to scalar.
             swap (bool): Use the positive-negative distance instead of anchor-negative distance,
                 if it violates the margin more. Defaults to False.
-            modalities (Union[Literal["image", "cloud", "fusion"],
-                Sequence[Literal["image", "cloud", "fusion"]]]): For which modalities loss will be calculated.
+            modalities (Union[Literal["image", "cloud", "semantic", "fusion"],
+                Sequence[Literal["image", "cloud", "semantic", "fusion"]]]): For which modalities loss will be calculated.
                 Defaults to ("image",).
             weights (Union[float, Sequence[float]]): Weight for each given modality. Defaults to 1.0.
 

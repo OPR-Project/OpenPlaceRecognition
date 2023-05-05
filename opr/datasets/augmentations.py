@@ -80,6 +80,73 @@ class DefaultImageTransform:
         return self.transform(image=img)["image"]
 
 
+class DefaultSemanticTransform:
+    """Default semantic mask augmentation pipeline."""
+
+    def __init__(self, train: bool = False, resize: Optional[Tuple[int, int]] = None) -> None:
+        """Default semantic mask augmentation pipeline.
+
+        Args:
+            train (bool): If not train, only normalization will be applied. Defaults to False.
+            resize (Tuple[int, int], optional): Target size in (W, H) format. Defaults to None.
+        """
+        if train:
+            transform_list = [
+                A.OneOf(
+                    [
+                        A.OpticalDistortion(p=0.3),
+                        A.GridDistortion(p=0.1),
+                        A.PiecewiseAffine(p=0.3),
+                    ],
+                    p=0.2,
+                ),
+
+                A.OneOf(
+                    [
+                        A.CoarseDropout(max_width=96,
+                                        max_height=66,
+                                        min_width=32,
+                                        min_height=22,
+                                        max_holes=1, p=0.5),
+                        A.CoarseDropout(max_width=30,
+                                        max_height=30,
+                                        min_width=10,
+                                        min_height=10,
+                                        max_holes=10, p=0.5),
+                        A.GridDropout (ratio=0.05,
+                                     unit_size_min=4,
+                                     unit_size_max=30,
+                                     p=0.5)
+                    ],
+                    p=0.2,
+                ),
+                
+                A.Normalize(mean=(0.,), std=(1.,)),
+                ToTensorV2(),
+            ]
+        else:
+            transform_list = [
+                A.Normalize(mean=(0.,), std=(1.,)),
+                ToTensorV2(),
+            ]
+
+        if resize is not None:
+            transform_list = [A.Resize(height=resize[1], width=resize[0])] + transform_list
+
+        self.transform = A.Compose(transform_list)
+
+    def __call__(self, img: np.ndarray) -> Tensor:
+        """Applies transformations to the given semantic mask.
+
+        Args:
+            img (np.ndarray): The semantic mask (single channel image) in the cv2 format.
+
+        Returns:
+            Tensor: Augmented PyTorch tensor in the channel-first format.
+        """
+        return self.transform(image=img)["image"]
+
+
 class DefaultCloudTransform:
     """Default point cloud augmentation pipeline."""
 

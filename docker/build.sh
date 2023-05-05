@@ -26,4 +26,4 @@ docker build $PROJECT_ROOT_DIR \
     -f $PROJECT_ROOT_DIR/docker/$DOCKERFILE \
     --build-arg UID=$(id -u) \
     --build-arg GID=$(id -g) \
-    -t open-place-recognition:$DEVICE
+    -t open-place-recognition:$DEVICE-$USER
