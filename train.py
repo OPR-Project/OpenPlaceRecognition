@@ -154,6 +154,7 @@ def train(cfg: DictConfig):
         # saving checkpoints
         checkpoint_dict = {
             "epoch": epoch + 1,
+            "config": cfg,
             "stats_dict": stats_dict,
             "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
