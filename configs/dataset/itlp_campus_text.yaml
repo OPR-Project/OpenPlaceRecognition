@@ -1,5 +1,5 @@
 dataset:
-  _target_: opr.datasets.custom.ITLPCampus
+  _target_: opr.datasets.custom_text.ITLPCampus
 
   dataset_root: /home/docker_opr/Datasets/splitted/train
   modalities: ${general.modalities}

@@ -117,7 +117,7 @@ def epoch_loop(
 
     non_zero_rates = []
     for modality, modality_value in final_stats.items():
-        if modality in ("image", "cloud", "fusion"):
+        if modality in ("image", "cloud", "text", "fusion"):
             if "non_zero_rate" in modality_value.keys():  # TODO: works only with HardTripletMarginLoss
                 non_zero_rates.append(final_stats[modality]["non_zero_rate"])
     if len(non_zero_rates) > 0:
