@@ -1,4 +1,4 @@
-"""Sample training script: trains MinkLoc++ model on Oxford RobotCar dataset."""
+"""Training script."""
 from datetime import datetime
 from pathlib import Path
 
