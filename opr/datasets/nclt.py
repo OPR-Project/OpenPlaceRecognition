@@ -18,8 +18,6 @@ from opr.datasets.base import BaseDataset
 class NCLTDataset(BaseDataset):
     """NCLT dataset implementation."""
 
-    valid_modalities = ("image", "cloud")
-
     def __init__(
         self,
         dataset_root: Union[str, Path],
@@ -27,6 +25,7 @@ class NCLTDataset(BaseDataset):
         modalities: Union[str, Tuple[str, ...]] = ("image", "cloud"),
         images_subdir: Optional[Union[str, Path]] = "lb3_small/Cam5",
         mink_quantization_size: Optional[float] = 0.5,
+        coords_limit: Tuple[int, int] = (-100, 100),
     ) -> None:
         """NCLT dataset implementation.
 
@@ -35,9 +34,12 @@ class NCLTDataset(BaseDataset):
             subset (Literal["train", "val", "test"]): Current subset to load. Defaults to "train".
             modalities (Union[str, Tuple[str, ...]]): List of modalities for which the data should be loaded.
                 Defaults to ( "image", "cloud").
-            images_subdir (Union[str, Path], optional): Images subdirectory path. Defaults to "lb3_small/Cam5".
+            images_subdir (Union[str, Path], optional): Images subdirectory path.
+                Defaults to "lb3_small/Cam5".
             mink_quantization_size (float, optional): The quantization size for point clouds.
                 Defaults to 0.5.
+            coords_limit (Tuple[int, int]): Lower and upper limits for pointcloud's coordinates.
+                Defaults to (-100, 100).
 
         Raises:
             ValueError: If images_subdir is undefined.
@@ -56,9 +58,7 @@ class NCLTDataset(BaseDataset):
             self.clouds_subdir = Path("velodyne_data")
 
         self.mink_quantization_size = mink_quantization_size
-
-        if self.subset == "test":
-            self.dataset_df["in_query"] = True  # tmp workaround to make it compatible with text_oxford code
+        self.coords_limit = coords_limit
 
         self.image_transform = DefaultImageTransform(train=(self.subset == "train"))
         self.cloud_transform = DefaultCloudTransform(train=(self.subset == "train"))
@@ -75,6 +75,16 @@ class NCLTDataset(BaseDataset):
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             im = self.image_transform(im)
             data["image"] = im
+
+        # TODO: implement multi-camera setup better?
+        for n in range(6):
+            if f"image_cam{n}" in self.modalities:
+                im_filepath = track_dir / f"lb3_small/Cam{n}" / f"{row['image']}.png"
+                im = cv2.imread(str(im_filepath))
+                im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                im = self.image_transform(im)
+                data[f"image_cam{n}"] = im
+
         if "cloud" in self.modalities and self.clouds_subdir is not None:
             pc_filepath = track_dir / self.clouds_subdir / f"{row['pointcloud']}.bin"
             pc = self._load_pc(pc_filepath)
@@ -86,7 +96,7 @@ class NCLTDataset(BaseDataset):
         pc = np.fromfile(filepath, dtype=np.float32)
         pc = np.reshape(pc, (pc.shape[0] // 3, 3))
         in_range_idx = np.all(
-            np.logical_and(-100 <= pc, pc <= 100),  # select points in range [-100, 100] meters
+            np.logical_and(self.coords_limit[0] <= pc, pc <= self.coords_limit[1]),  # select points in range
             axis=1,
         )
         pc = pc[in_range_idx]

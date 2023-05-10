@@ -20,7 +20,7 @@ class BaseDataset(Dataset):
     """Base class for track-based Place Recognition dataset."""
 
     valid_subsets: Tuple[str, ...] = ("train", "val", "test")
-    valid_modalities: Tuple[str, ...] = ("image", "cloud")
+    # valid_modalities: Tuple[str, ...] = ("image", "cloud")
     dataset_root: Path
     subset: Literal["train", "val", "test"]
     dataset_df: DataFrame
@@ -73,8 +73,8 @@ class BaseDataset(Dataset):
 
         if isinstance(modalities, str):
             modalities = tuple([modalities])
-        if not set(modalities).issubset(self.valid_modalities):
-            raise ValueError(f"Invalid modalities argument: '{modalities}' not in {self.valid_modalities}")
+        # if not set(modalities).issubset(self.valid_modalities):
+        #     raise ValueError(f"Invalid modalities argument: '{modalities}' not in {self.valid_modalities}")
         self.modalities = modalities
 
         positives_index_pkl = self.dataset_root / f"{subset}_positives_index.pkl"

@@ -153,6 +153,29 @@ class FusionModule(nn.Module):
         raise NotImplementedError()
 
 
+class MultiImageModule(nn.Module):
+    """Module to work with multiple images with late fusion."""
+
+    def __init__(self, image_module: ImageModule, fusion_module: FusionModule) -> None:
+        """Module to work with multiple images with late fusion.
+
+        Args:
+            image_module (ImageModule): Module to process each image.
+            fusion_module (FusionModule): Module to fuse descriptors of each image.
+        """
+        super().__init__()
+        self.image_module = image_module
+        self.fusion_module = fusion_module
+
+    def forward(self, data: Dict[str, Tensor]) -> Tensor:  # noqa: D102
+        x_dict = {}
+        for key in data:
+            if key.startswith("images_"):
+                x_dict[key] = self.image_module(data[key])
+        x = self.fusion_module(x_dict)
+        return x
+
+
 class ComposedModel(nn.Module):
     """Composition model for multimodal architectures."""
 
@@ -160,7 +183,7 @@ class ComposedModel(nn.Module):
 
     def __init__(
         self,
-        image_module: Optional[ImageModule] = None,
+        image_module: Optional[Union[ImageModule, MultiImageModule]] = None,
         cloud_module: Optional[CloudModule] = None,
         text_module: Optional[FusionTextModel] = None,
         fusion_module: Optional[FusionModule] = None,
@@ -189,8 +212,10 @@ class ComposedModel(nn.Module):
             # "fusion": None,
         }
 
-        if self.image_module is not None:
+        if self.image_module is not None and isinstance(self.image_module, ImageModule):
             out_dict["image"] = self.image_module(batch["images"])
+        elif self.image_module is not None and isinstance(self.image_module, MultiImageModule):
+            out_dict["image"] = self.image_module(batch)
 
         if self.cloud_module is not None:
             if self.sparse_cloud:
