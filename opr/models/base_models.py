@@ -54,28 +54,22 @@ class ImageModule(nn.Module):
 class CloudFeatureExtractor(nn.Module):
     """Interface class for cloud feature extractor module."""
 
-    sparse: bool
-
     def __init__(self):
         """Interface class for cloud feature extractor module."""
         super().__init__()
-        assert self.sparse is not None
 
-    def forward(self, cloud: Union[Tensor, ME.SparseTensor]) -> Union[Tensor, ME.SparseTensor]:  # noqa: D102
+    def forward(self, cloud: ME.SparseTensor) -> ME.SparseTensor:  # noqa: D102
         raise NotImplementedError()
 
 
 class CloudHead(nn.Module):
     """Interface class for cloud head module."""
 
-    sparse: bool
-
     def __init__(self):
         """Interface class for cloud head module."""
         super().__init__()
-        assert self.sparse is not None
 
-    def forward(self, feature_map: Union[Tensor, ME.SparseTensor]) -> Tensor:  # noqa: D102
+    def forward(self, feature_map: ME.SparseTensor) -> Tensor:  # noqa: D102
         raise NotImplementedError()
 
 
@@ -99,15 +93,8 @@ class CloudModule(nn.Module):
         super().__init__()
         self.backbone = backbone
         self.head = head
-        self.sparse = self.backbone.sparse
-        if self.backbone.sparse != self.head.sparse:
-            raise ValueError("Incompatible cloud backbone and head")
 
-    def forward(self, x: Union[Tensor, ME.SparseTensor]) -> Tensor:  # noqa: D102
-        if self.sparse:
-            assert isinstance(x, ME.SparseTensor)
-        else:
-            assert isinstance(x, Tensor)
+    def forward(self, x: ME.SparseTensor) -> Tensor:  # noqa: D102
         x = self.backbone(x)
         x = self.head(x)
         return x
@@ -150,8 +137,6 @@ class MultiImageModule(nn.Module):
 class ComposedModel(nn.Module):
     """Composition model for multimodal architectures."""
 
-    sparse_cloud: Optional[bool] = None
-
     def __init__(
         self,
         image_module: Optional[Union[ImageModule, MultiImageModule]] = None,
@@ -170,8 +155,6 @@ class ComposedModel(nn.Module):
         self.image_module = image_module
         self.cloud_module = cloud_module
         self.fusion_module = fusion_module
-        if self.cloud_module:
-            self.sparse_cloud = self.cloud_module.sparse
 
     def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         out_dict: Dict[str, Tensor] = {}
@@ -182,10 +165,7 @@ class ComposedModel(nn.Module):
             out_dict["image"] = self.image_module(batch)
 
         if self.cloud_module is not None:
-            if self.sparse_cloud:
-                cloud = ME.SparseTensor(features=batch["features"], coordinates=batch["coordinates"])
-            else:
-                raise NotImplementedError("Currently we support only sparse cloud modules.")
+            cloud = ME.SparseTensor(features=batch["features"], coordinates=batch["coordinates"])
             out_dict["cloud"] = self.cloud_module(cloud)
 
         if self.fusion_module is not None:
