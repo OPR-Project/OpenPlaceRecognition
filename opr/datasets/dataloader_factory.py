@@ -68,7 +68,13 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
             back_embs = [e["text_emb_back"] for e in data_list]
         if "text_emb_front" in data_list[0]:
             front_embs = [e["text_emb_front"] for e in data_list]
-
+        
+        text_embs_cam = {}
+        for n in range(1, 6):
+            cam_name = f"cam{n}"
+            if f"text_emb_{cam_name}" in data_list[0]:
+                text_embs_cam[cam_name]  = [e[f"text_emb_{cam_name}"] for e in data_list]
+                
         utms = torch.stack([e["utm"] for e in data_list], dim=0)
 
         result: Union[List[Dict[str, Tensor]], Dict[str, Tensor]]
@@ -94,6 +100,11 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
                 result["back_embs"] = torch.stack(back_embs, dim=0).squeeze(1)
             if "text_emb_front" in data_list[0]:
                 result["front_embs"] = torch.stack(front_embs, dim=0).squeeze(1)
+            for n in range(1, 6):
+                cam_name = f"cam{n}"
+                if f"text_emb_{cam_name}" in data_list[0]:
+                    result[f"text_emb_{cam_name}"] = torch.stack(text_embs_cam[cam_name], dim=0).squeeze(1)
+                
             result["utms"] = utms
         else:  # split the batch into chunks
             raise NotImplementedError("Multistaged batch training not yet implemented")

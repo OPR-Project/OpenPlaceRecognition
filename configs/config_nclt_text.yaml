@@ -1,10 +1,7 @@
 defaults:
   - _self_
-  # - model: minkloc_multimodal
-  - model: text_model
-  # - dataset: nclt
-  - dataset: itlp_campus_text
-  # - loss: triplet_margin
+  # - model: nclt_multitext_model
+  - dataset: nclt_text
   - optimizer: adam
   - scheduler: multi_step
 
@@ -15,13 +12,27 @@ general:
   device: cuda
   num_workers: 4
   batch_expansion_th: 0.7
-  # modalities: [image, cloud,]
-  modalities: [text,]
-  epochs: 40
+  modalities: [text_cam5, text_cam2, text_cam1, text_cam3, text_cam4]
+  test_modality: text
+  epochs: 60
+
+model:
+  _target_: opr.models.base_models.ComposedModel
+  image_module: null
+  cloud_module: null
+  fusion_module: null
+  text_module:
+    _target_: opr.models.base_models.MultiTextModule
+    text_module: 
+      _target_: opr.models.base_models.TextModule
+      text_emb_size: 100
+      hidden_size: 100
+    fusion_module:
+      _target_: opr.models.fusion.Concat
+
 
 loss: 
   _target_: opr.losses.MultimodalTripletMarginLoss
-
   margin: 0.2
   swap: True
   distance:
@@ -44,4 +55,4 @@ loss:
 wandb:
   disabled: False
   project: OpenPlaceRecognition
-  run_name: only_text
+  run_name: only_text_PCA_all_cam_Concat

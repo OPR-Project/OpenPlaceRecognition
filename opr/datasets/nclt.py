@@ -3,6 +3,8 @@ from pathlib import Path
 from typing import Dict, Literal, Optional, Tuple, Union
 
 import cv2
+import os
+import pandas as pd
 import numpy as np
 import torch
 from torch import Tensor
@@ -63,7 +65,18 @@ class NCLTDataset(BaseDataset):
         self.image_transform = DefaultImageTransform(train=(self.subset == "train"))
         self.cloud_transform = DefaultCloudTransform(train=(self.subset == "train"))
         self.cloud_set_transform = DefaultCloudSetTransform(train=(self.subset == "train"))
-
+        
+        # load text descriptions df
+        tracks = [i for i in os.listdir(dataset_root) if os.path.isdir(os.path.join(dataset_root, i))]
+        df_dict = {}
+        for track in tracks:
+            track_path = os.path.join(dataset_root, track)
+            df_dict[track] = {f"cam{n}" : pd.read_csv(os.path.join(track_path, f"descriptions_Cam{n}.csv")) for n in range(1, 6)}
+        self.descriptoins_dict = df_dict
+        
+        # load tfidf and pca
+        self.vectorizer, self.pca = self._load_tfidf_pca()
+                
     def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
         data: Dict[str, Union[int, Tensor]] = {"idx": idx}
         row = self.dataset_df.iloc[idx]
@@ -77,14 +90,25 @@ class NCLTDataset(BaseDataset):
             data["image"] = im
 
         # TODO: implement multi-camera setup better?
-        for n in range(6):
+        for n in range(1, 6):
             if f"image_cam{n}" in self.modalities:
                 im_filepath = track_dir / f"lb3_small/Cam{n}" / f"{row['image']}.png"
                 im = cv2.imread(str(im_filepath))
                 im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
                 im = self.image_transform(im)
                 data[f"image_cam{n}"] = im
-
+                
+        for n in range(6):
+            if f"text_cam{n}" in self.modalities:
+                cam = f"cam{n}"
+                track = str(row["track"])
+                imagename = row['image']
+                cam_df = self.descriptoins_dict[track][cam]
+                # text = cam_df[cam_df["path"] == f"{imagename}.png"]["description"][0]
+                text = cam_df[cam_df["path"] == f"{imagename}.png"]["description"].values[0]
+                # data[f"text_cam{n}"] = text
+                data[f"text_emb_{cam}"] = self.text_transform(text)
+                
         if "cloud" in self.modalities and self.clouds_subdir is not None:
             pc_filepath = track_dir / self.clouds_subdir / f"{row['pointcloud']}.bin"
             pc = self._load_pc(pc_filepath)
@@ -102,3 +126,19 @@ class NCLTDataset(BaseDataset):
         pc = pc[in_range_idx]
         pc_tensor = torch.tensor(pc, dtype=torch.float32)
         return pc_tensor
+    
+    def _load_tfidf_pca(self, base_savepath="./opr/datasets/"):
+        from joblib import load
+        vectorizer_savepath = os.path.join(base_savepath, 'vectorizer.joblib')
+        pca_savepath = os.path.join(base_savepath, 'pca.joblib')
+
+        vectorizer = load(vectorizer_savepath)
+        pca = load(pca_savepath)
+        return vectorizer, pca
+    
+    def text_transform(self, text):
+        vect_data = self.vectorizer.transform([text]).toarray()
+        pca_data = self.pca.transform(vect_data)
+        pca_data = torch.tensor(pca_data, dtype=torch.float32)
+        return pca_data
+        

@@ -15,7 +15,7 @@ general:
   batch_expansion_th: 0.7
   modalities: [image, cloud,]
   test_modality: fusion
-  epochs: 2
+  epochs: 60
 
 wandb:
   disabled: False

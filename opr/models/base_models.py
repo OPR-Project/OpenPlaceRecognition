@@ -6,34 +6,6 @@ from torch import Tensor, nn
 import torch
 
 
-class BasicTextNN(nn.Module):
-    def __init__(self, pca_size=100, hidden_size=100):
-        super().__init__()
-        self.fc1 = nn.Linear(pca_size, hidden_size)
-        self.relu = nn.ReLU() 
-        self.fc2 = nn.Linear(hidden_size, hidden_size)
-        
-    def forward(self, pca_vector):
-        x = self.fc1(pca_vector)
-        x = self.relu(x)
-        x = self.fc2(x)
-        return x
-
-
-class FusionTextModel(nn.Module):
-    def __init__(self, pca_size=100, hidden_size=100):
-        super().__init__()
-        self.back_nn = BasicTextNN(pca_size=pca_size, hidden_size=hidden_size)
-        self.front_nn = BasicTextNN(pca_size=pca_size, hidden_size=hidden_size)
-        self.fuse_fc1 = nn.Linear(hidden_size*2, hidden_size)
-        
-    def forward(self, back_vector, front_vector):
-        back_feat = self.back_nn(back_vector)
-        front_feat = self.front_nn(front_vector)
-        fusion_feat = torch.cat((back_feat, front_feat), dim=1)
-        embed = self.fuse_fc1(fusion_feat)
-        return embed
-
 class ImageFeatureExtractor(nn.Module):
     """Interface class for image feature extractor module."""
 
@@ -174,6 +146,77 @@ class MultiImageModule(nn.Module):
                 x_dict[key] = self.image_module(data[key])
         x = self.fusion_module(x_dict)
         return x
+    
+    
+#####################################
+#### Stupid Text Model for ITLP #####
+#####################################
+class BasicTextNN(nn.Module):
+    def __init__(self, pca_size=100, hidden_size=100):
+        super().__init__()
+        self.fc1 = nn.Linear(pca_size, hidden_size)
+        self.relu = nn.ReLU() 
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        
+    def forward(self, pca_vector):
+        x = self.fc1(pca_vector)
+        x = self.relu(x)
+        x = self.fc2(x)
+        return x
+
+
+class FusionTextModel(nn.Module):
+    def __init__(self, pca_size=100, hidden_size=100):
+        super().__init__()
+        self.back_nn = BasicTextNN(pca_size=pca_size, hidden_size=hidden_size)
+        self.front_nn = BasicTextNN(pca_size=pca_size, hidden_size=hidden_size)
+        self.fuse_fc1 = nn.Linear(hidden_size*2, hidden_size)
+        
+    def forward(self, back_vector, front_vector):
+        back_feat = self.back_nn(back_vector)
+        front_feat = self.front_nn(front_vector)
+        fusion_feat = torch.cat((back_feat, front_feat), dim=1)
+        embed = self.fuse_fc1(fusion_feat)
+        return embed
+    
+#####################################
+#### One text model for all cam #####
+#####################################
+class TextModule(nn.Module):
+    def __init__(self, text_emb_size=100, hidden_size=100):
+        super().__init__()
+        self.fc1 = nn.Linear(text_emb_size, hidden_size)
+        self.relu = nn.ReLU() 
+        self.fc2 = nn.Linear(hidden_size, hidden_size)
+        
+    def forward(self, pca_vector):
+        x = self.fc1(pca_vector)
+        x = self.relu(x)
+        x = self.fc2(x)
+        return x
+
+
+class MultiTextModule(nn.Module):
+    """Module to work with multiple text embeddings with late fusion."""
+
+    def __init__(self, text_module: TextModule, fusion_module: FusionModule) -> None:
+        """Module to work with multiple text embeddings with late fusion.
+
+        Args:
+            text_module (TextModule): Module to process each text embedding.
+            fusion_module (FusionModule): Module to fuse descriptors of each text embedding.
+        """
+        super().__init__()
+        self.text_module = text_module
+        self.fusion_module = fusion_module
+
+    def forward(self, data: Dict[str, Tensor]) -> Tensor:  # noqa: D102
+        x_dict = {}
+        for key in data:
+            if key.startswith("text_emb_"):
+                x_dict[key] = self.text_module(data[key])
+        x = self.fusion_module(x_dict)
+        return x    
 
 
 class ComposedModel(nn.Module):
@@ -185,7 +228,7 @@ class ComposedModel(nn.Module):
         self,
         image_module: Optional[Union[ImageModule, MultiImageModule]] = None,
         cloud_module: Optional[CloudModule] = None,
-        text_module: Optional[FusionTextModel] = None,
+        text_module: Optional[Union[FusionTextModel, MultiTextModule]] = None,
         fusion_module: Optional[FusionModule] = None,
     ) -> None:
         """Composition model for multimodal architectures.
@@ -208,7 +251,6 @@ class ComposedModel(nn.Module):
         out_dict: Dict[str, Optional[Tensor]] = {
             "image": None,
             "cloud": None,
-            # "text": None,
             # "fusion": None,
         }
 
@@ -224,8 +266,10 @@ class ComposedModel(nn.Module):
                 raise NotImplementedError("Currently we support only sparse cloud modules.")
             out_dict["cloud"] = self.cloud_module(cloud)
             
-        if self.text_module is not None:
+        if self.text_module is not None and isinstance(self.text_module, FusionTextModel):
             out_dict["text"] = self.text_module(batch["back_embs"], batch["front_embs"])
+        elif self.text_module is not None and isinstance(self.text_module, MultiTextModule):
+            out_dict["text"] = self.text_module(batch)
 
         if self.fusion_module is not None:
             out_dict["fusion"] = self.fusion_module(out_dict)

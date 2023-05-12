@@ -1,4 +1,5 @@
 checkpoints/
+outputs/
 wandb/
 *.joblib
 
