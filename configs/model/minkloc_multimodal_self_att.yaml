@@ -1,0 +1,46 @@
+_target_: opr.models.base_models.ComposedModel
+
+image_module:
+  _target_: opr.models.base_models.ImageModule
+
+  backbone:
+    _target_: torch.nn.Sequential
+    _args_:
+      - _target_: opr.models.resnet.ResNet18FPNExtractor
+        lateral_dim: 128
+        fh_num_bottom_up: 4
+        fh_num_top_down: 0
+        pretrained: True
+      - _target_: opr.models.layers.self_attention.SelfAttention
+        in_dim: 128
+        reduction: 8
+
+  head:
+    _target_: opr.models.layers.gem.GeM
+    p: 3
+    eps: 0.000001
+
+cloud_module:
+  _target_: opr.models.base_models.CloudModule
+
+  backbone:
+    _target_: torch.nn.Sequential
+    _args_:
+      - _target_: opr.models.minkloc.MinkResNetFPNExtractor
+        out_channels: 128
+        num_top_down: 1
+        conv0_kernel_size: 5
+        block: ECABasicBlock
+        layers: [1, 1, 1]
+        planes: [32, 64, 64]
+      - _target_: opr.models.layers.svt.ASVT
+        in_dim: 128
+        reduction: 8
+
+  head:
+    _target_: opr.models.layers.gem.MinkGeM
+    p: 3
+    eps: 0.000001
+
+fusion_module:
+  _target_: opr.models.fusion.Concat

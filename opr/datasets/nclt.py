@@ -27,6 +27,7 @@ class NCLTDataset(BaseDataset):
         images_subdir: Optional[Union[str, Path]] = "lb3_small/Cam5",
         semantic_subdir: Optional[Union[str, Path]] = "lb3_segmentation_small/Cam5",
         mink_quantization_size: Optional[float] = 0.5,
+        coords_limit: Tuple[int, int] = (-100, 100),
     ) -> None:
         """NCLT dataset implementation.
 
@@ -35,9 +36,12 @@ class NCLTDataset(BaseDataset):
             subset (Literal["train", "val", "test"]): Current subset to load. Defaults to "train".
             modalities (Union[str, Tuple[str, ...]]): List of modalities for which the data should be loaded.
                 Defaults to ( "image", "cloud").
-            images_subdir (Union[str, Path], optional): Images subdirectory path. Defaults to "lb3_small/Cam5".
+            images_subdir (Union[str, Path], optional): Images subdirectory path.
+                Defaults to "lb3_small/Cam5".
             mink_quantization_size (float, optional): The quantization size for point clouds.
                 Defaults to 0.5.
+            coords_limit (Tuple[int, int]): Lower and upper limits for pointcloud's coordinates.
+                Defaults to (-100, 100).
 
         Raises:
             ValueError: If images_subdir is undefined.
@@ -64,6 +68,7 @@ class NCLTDataset(BaseDataset):
             self.clouds_subdir = Path("velodyne_data")
 
         self.mink_quantization_size = mink_quantization_size
+        self.coords_limit = coords_limit
 
         self.image_transform = DefaultImageTransform(train=(self.subset == "train"))
         self.semantic_transform = DefaultSemanticTransform(train=(self.subset == "train"))
@@ -108,7 +113,7 @@ class NCLTDataset(BaseDataset):
         pc = np.fromfile(filepath, dtype=np.float32)
         pc = np.reshape(pc, (pc.shape[0] // 3, 3))
         in_range_idx = np.all(
-            np.logical_and(-100 <= pc, pc <= 100),  # select points in range [-100, 100] meters
+            np.logical_and(self.coords_limit[0] <= pc, pc <= self.coords_limit[1]),  # select points in range
             axis=1,
         )
         pc = pc[in_range_idx]
