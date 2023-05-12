@@ -28,7 +28,7 @@ model:
       text_emb_size: 100
       hidden_size: 100
     fusion_module:
-      _target_: opr.models.fusion.Concat
+      _target_: opr.models.fusion.Add
 
 
 loss: 
@@ -55,4 +55,4 @@ loss:
 wandb:
   disabled: False
   project: OpenPlaceRecognition
-  run_name: only_text_PCA_all_cam_Concat
+  run_name: only_text_PCA_all_cam_Add
