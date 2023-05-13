@@ -14,7 +14,7 @@ from opr.training import epoch_loop
 from opr.utils import flatten_dict, set_seed
 
 
-@hydra.main(config_path="configs", config_name="config_is", version_base=None)
+@hydra.main(config_path="configs", config_name="config", version_base=None)
 def train(cfg: DictConfig):
     """Summary of training script.
 
@@ -151,12 +151,12 @@ def train(cfg: DictConfig):
         stats_dict["val"] = val_stats
         stats_dict["val"]["batch_size"] = val_batch_size
 
-        wandb.log({'Test recall_at_1': recall_at_n[0],
-                   'Test Mean Recall@1%': recall_at_one_percent,
-                   'Test Mean top-1 distance': mean_top1_distance,
-                   'batch_size': train_stats['batch_size'],
-                   'train_total_loss': train_stats['total_loss'],
-                   'val_total_loss': val_stats['total_loss']})
+        # wandb.log({'Test recall_at_1': recall_at_n[0],
+        #            'Test Mean Recall@1%': recall_at_one_percent,
+        #            'Test Mean top-1 distance': mean_top1_distance,
+        #            'batch_size': train_stats['batch_size'],
+        #            'train_total_loss': train_stats['total_loss'],
+        #            'val_total_loss': val_stats['total_loss']})
 
         # saving checkpoints
         checkpoint_dict = {
