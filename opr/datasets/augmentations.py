@@ -9,11 +9,19 @@ from typing import Optional, Tuple
 import albumentations as A  # noqa: N812
 import numpy as np
 import torch
+import torch.nn.functional as F
 from albumentations.pytorch import ToTensorV2
 from scipy.linalg import expm, norm
 from torch import Tensor
 from torchvision import transforms
 
+
+class OheHotTransform:
+    """Rotate by one of the given angles."""
+    def __call__(self, image):
+        onehot = torch.squeeze(F.one_hot(torch.from_numpy(image).long(), 65)) #! Magic number
+        onehot = onehot.permute(2, 0, 1).float()
+        return {'image':onehot} 
 
 class DefaultImageTransform:
     """Default image augmentation pipeline."""
@@ -134,6 +142,88 @@ class DefaultSemanticTransform:
             transform_list = [A.Resize(height=resize[1], width=resize[0])] + transform_list
 
         self.transform = A.Compose(transform_list)
+
+    def __call__(self, img: np.ndarray) -> Tensor:
+        """Applies transformations to the given semantic mask.
+
+        Args:
+            img (np.ndarray): The semantic mask (single channel image) in the cv2 format.
+
+        Returns:
+            Tensor: Augmented PyTorch tensor in the channel-first format.
+        """
+        return self.transform(image=img)["image"]
+
+
+class OneHotSemanticTransform:
+    """One-Hot semantic mask augmentation pipeline."""
+
+    def __init__(self, train: bool = False, resize: Optional[Tuple[int, int]] = None) -> None:
+        """One-Hot semantic mask augmentation pipeline.
+
+        Args:
+            train (bool): If not train, only normalization will be applied. Defaults to False.
+            resize (Tuple[int, int], optional): Target size in (W, H) format. Defaults to None.
+        """
+        if train:
+            transform_list = [
+                A.OneOf(
+                    [
+                        A.OpticalDistortion(p=0.3),
+                        A.GridDistortion(p=0.1),
+                        A.PiecewiseAffine(p=0.3),
+                    ],
+                    p=0.2,
+                ),
+
+                A.OneOf(
+                    [
+                        A.CoarseDropout(max_width=96,
+                                        max_height=66,
+                                        min_width=32,
+                                        min_height=22,
+                                        max_holes=1, p=0.5),
+                        A.CoarseDropout(max_width=30,
+                                        max_height=30,
+                                        min_width=10,
+                                        min_height=10,
+                                        max_holes=10, p=0.5),
+                        A.GridDropout (ratio=0.05,
+                                     unit_size_min=4,
+                                     unit_size_max=30,
+                                     p=0.5)
+                    ],
+                    p=0.2,
+                ),
+                
+                OheHotTransform(),
+                # ToTensorV2(),
+            ]
+        else:
+            transform_list = [
+                OheHotTransform(),
+                # ToTensorV2(),
+            ]
+
+        if resize is not None:
+            transform_list = [A.Resize(height=resize[1], width=resize[0])] + transform_list
+
+        self.transform = A.Compose(transform_list)
+
+    # def _channel(self, image):
+    #     num_tags = len(stuff_classes)
+    #     image_shape = image.shape
+
+    #     height, width = image_shape[0], image_shape[1]
+    #     new_image = np.zeros([height, width, num_tags])
+
+    #     for i in range(height):
+    #         for j in range(width - 1):
+
+    #             if not (stuff_classes[image[i, j]] in blacklist):
+    #                 new_image[i, j, image[i, j]] = 1
+
+    #     return new_image
 
     def __call__(self, img: np.ndarray) -> Tensor:
         """Applies transformations to the given semantic mask.

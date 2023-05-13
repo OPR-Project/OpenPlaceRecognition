@@ -67,9 +67,7 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
 
         if "semantic" in data_list[0]:
             semantics = [e["semantic"] for e in data_list]
-        
-        
-               
+                  
         if "range_image" in data_list[0]:
             range_images = [e["range_image"] for e in data_list]
 
