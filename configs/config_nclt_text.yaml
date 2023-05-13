@@ -1,7 +1,5 @@
 defaults:
   - _self_
-  # - model: nclt_multitext_model
-  - dataset: nclt_text
   - optimizer: adam
   - scheduler: multi_step
 
@@ -25,11 +23,33 @@ model:
     _target_: opr.models.base_models.MultiTextModule
     text_module: 
       _target_: opr.models.base_models.TextModule
-      text_emb_size: 100
-      hidden_size: 100
+      # _target_: opr.models.base_models.EmptyTextModule
+      text_emb_size: 512
+      hidden_size: 512
     fusion_module:
-      _target_: opr.models.fusion.Add
+      _target_: opr.models.fusion.Concat
 
+dataset:
+  dataset:
+    _target_: opr.datasets.nclt.NCLTDataset
+    dataset_root: /home/docker_opr/Datasets/NCLT_preprocessed
+    modalities: ${general.modalities}
+    images_subdir: lb3_small/Cam5
+    # text_embs_dir: tfidf_pca
+    text_embs_dir: clip-vit-base-patch32
+    # text_embs_dir: clip-vit-large-patch14
+    mink_quantization_size: 0.5
+    coords_limit: [-100, 100]
+
+  sampler:
+    _target_: opr.datasets.samplers.batch_sampler.BatchSampler
+    batch_size: 8
+    batch_size_limit: 160
+    batch_expansion_rate: 1.4
+    positives_per_group: 2
+    seed: ${general.seed}
+
+  num_workers: ${general.num_workers}
 
 loss: 
   _target_: opr.losses.MultimodalTripletMarginLoss
@@ -55,4 +75,4 @@ loss:
 wandb:
   disabled: False
   project: OpenPlaceRecognition
-  run_name: only_text_PCA_all_cam_Add
+  run_name: only text, clip-vit-base-patch32 + 1-layer NN, all cam, Concat

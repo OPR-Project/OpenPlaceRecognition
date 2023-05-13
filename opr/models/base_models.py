@@ -189,11 +189,19 @@ class TextModule(nn.Module):
         self.relu = nn.ReLU() 
         self.fc2 = nn.Linear(hidden_size, hidden_size)
         
-    def forward(self, pca_vector):
-        x = self.fc1(pca_vector)
+    def forward(self, embedding):
+        x = self.fc1(embedding)
         x = self.relu(x)
         x = self.fc2(x)
         return x
+    
+class EmptyTextModule(nn.Module):
+    def __init__(self, text_emb_size=None, hidden_size=None):
+        super().__init__()
+
+    def forward(self, embedding):
+        embedding.requires_grad = True
+        return embedding
 
 
 class MultiTextModule(nn.Module):
