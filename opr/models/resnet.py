@@ -1,10 +1,10 @@
 """ResNet-based image feature extractors."""
-from typing import Tuple
+from typing import Tuple, Union
 
-from torch import Tensor, nn
+from torch import Tensor, nn, concat
 from torchvision.models import ResNet18_Weights, resnet18
 
-from opr.models.base_models import ImageFeatureExtractor
+from opr.models.base_models import ImageFeatureExtractor, DoubleImageFeatureExtractor
 
 
 class ResNet18FPNExtractor(ImageFeatureExtractor):
@@ -100,6 +100,7 @@ class ResNet18FPNExtractorMono(ImageFeatureExtractor):
         fh_num_bottom_up: int = 4,
         fh_num_top_down: int = 0,
         pretrained: bool = False,
+        chonky: bool = False
     ) -> None:
         """ResNet18 feature extractor with FPN block.
 
@@ -278,3 +279,91 @@ class ResNet18FPNExtractorOneHot(ImageFeatureExtractor):
             xf = xf + self.fh_conv1x1[str(i - 1)](feature_maps[str(i - 1)])
 
         return xf
+    
+
+class ChonkyNet(DoubleImageFeatureExtractor):
+    """ResNet18 feature extractor with FPN block.
+
+    The code is adopted from the repository: https://github.com/jac99/MinkLocMultimodal, MIT License
+    """
+
+    layers: Tuple[int, ...] = (64, 64, 128, 256, 512)
+
+    def __init__(
+        self,
+        lateral_dim: int = 256,
+        fh_num_bottom_up: int = 4,
+        fh_num_top_down: int = 0,
+        pretrained: bool = True
+    ) -> None:
+        """ChonkyNet feature extractor based on double ResNet18 with FPN block.
+
+        Args:
+            lateral_dim (int): Output dimension for lateral connections. Defaults to 256.
+            fh_num_bottom_up (int): Number of bottom-up steps. Defaults to 4.
+            fh_num_top_down (int): Number of top-down steps. Defaults to 0.
+            pretrained (bool): Whether to load ImageNet-pretrained model. Defaults to True.
+        """
+        super().__init__()
+
+        self.fh_num_bottom_up = fh_num_bottom_up
+        self.fh_num_top_down = fh_num_top_down
+
+        self.image_fe = ResNet18FPNExtractor(lateral_dim=lateral_dim,
+                                             fh_num_bottom_up=fh_num_bottom_up, 
+                                             fh_num_top_down=fh_num_top_down,
+                                             pretrained=pretrained)
+        
+        self.semantic_fe = ResNet18FPNExtractorMono(lateral_dim=lateral_dim,
+                                                    fh_num_bottom_up=fh_num_bottom_up,
+                                                    fh_num_top_down=fh_num_top_down,
+                                                    pretrained=False,  #* Necessary
+                                                    chonky=True)
+
+
+    def forward(self, image: Tensor, semantic_mask: Tensor) -> Tuple[Tensor, Tensor]:  # noqa: D102
+        x = image
+        xs = semantic_mask
+        feature_maps = {}
+        feature_maps_sem = {}
+
+        #? Image
+        # 0, 1, 2, 3 = first layers: Conv2d, BatchNorm, ReLu, MaxPool2d
+        x = self.image_fe.resnet_fe[0](x)
+        x = self.image_fe.resnet_fe[1](x)
+        x = self.image_fe.resnet_fe[2](x)
+        x = self.image_fe.resnet_fe[3](x)
+        feature_maps["1"] = x
+
+        #? Semantics
+        # 0, 1, 2, 3 = first layers: Conv2d, BatchNorm, ReLu, MaxPool2d
+        xs = self.semantic_fe.resnet_fe[0](xs)
+        xs = self.semantic_fe.resnet_fe[1](xs)
+        xs = self.semantic_fe.resnet_fe[2](xs)
+        xs = self.semantic_fe.resnet_fe[3](xs)
+        feature_maps_sem["1"] = xs
+
+        # sequential blocks, build from BasicBlock or Bottleneck blocks
+        for i in range(4, self.fh_num_bottom_up + 3):
+            xs = concat((xs, x), axis=1) #? semantic + image
+
+            x = self.image_fe.resnet_fe[i](x)
+            feature_maps[str(i - 2)] = x
+
+            xs = self.semantic_fe.resnet_fe[i](xs)
+            feature_maps_sem[str(i - 2)] = xs
+
+        assert len(feature_maps) == self.fh_num_bottom_up
+        assert len(feature_maps_sem) == self.fh_num_bottom_up
+        # x is (batch_size, 512, H=20, W=15) for 640x480 input image
+
+        # FEATURE HEAD TOP-DOWN PASS
+        xf = self.image_fe.fh_conv1x1[str(self.fh_num_bottom_up)](feature_maps[str(self.fh_num_bottom_up)])
+        xf_s = self.semantic_fe.fh_conv1x1[str(self.fh_num_bottom_up)](feature_maps_sem[str(self.fh_num_bottom_up)])
+
+        # TODO Add semantics top-down branch
+        for i in range(self.fh_num_bottom_up, self.fh_num_bottom_up - self.fh_num_top_down, -1):
+            xf = self.fh_tconvs[str(i)](xf)  # Upsample using transposed convolution
+            xf = xf + self.fh_conv1x1[str(i - 1)](feature_maps[str(i - 1)])
+
+        return xf, xs

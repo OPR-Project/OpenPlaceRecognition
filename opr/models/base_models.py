@@ -1,5 +1,5 @@
 """Interfaces and meta-models definitions."""
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, Tuple
 
 import MinkowskiEngine as ME  # noqa: N817
 from torch import Tensor, nn
@@ -14,6 +14,16 @@ class ImageFeatureExtractor(nn.Module):
 
     def forward(self, image: Tensor) -> Tensor:  # noqa: D102
         raise NotImplementedError()
+    
+class DoubleImageFeatureExtractor(nn.Module):
+    """Interface class for image feature extractor module."""
+
+    def __init__(self):
+        """Interface class for image feature extractor module."""
+        super().__init__()
+
+    def forward(self, image_left: Tensor, image_right: Tensor) -> Tuple[Tensor, Tensor]:  # noqa: D102
+        raise NotImplementedError()
 
 
 class ImageHead(nn.Module):
@@ -24,6 +34,16 @@ class ImageHead(nn.Module):
         super().__init__()
 
     def forward(self, feature_map: Tensor) -> Tensor:  # noqa: D102
+        raise NotImplementedError()
+
+class DoubleImageHead(nn.Module):
+    """Interface class for double images head module."""
+
+    def __init__(self):
+        """Interface class for image head module."""
+        super().__init__()
+
+    def forward(self, feature_map_left: Tensor, feature_map_right: Tensor) -> Tuple[Tensor, Tensor]:  # noqa: D102
         raise NotImplementedError()
 
 
@@ -50,6 +70,29 @@ class ImageModule(nn.Module):
         x = self.head(x)
         return x
 
+
+class DoubleImageModule(nn.Module):
+    """Meta-module for double images branch. Combines feature extraction backbone and head modules."""
+
+    def __init__(
+        self,
+        backbone: DoubleImageFeatureExtractor,
+        head: DoubleImageHead,
+    ):
+        """Meta-module for image branch.
+
+        Args:
+            backbone (ImageFeatureExtractor): Image feature extraction backbone.
+            head (ImageHead): Image head module.
+        """
+        super().__init__()
+        self.backbone = backbone
+        self.head = head
+
+    def forward(self, x_left: Tensor, x_right: Tensor) -> Tuple[Tensor, Tensor]:  # noqa: D102
+        x_left, x_right = self.backbone(x_left, x_right)
+        x_left, x_right = self.head(x_left, x_right)
+        return x_left, x_right
 
 class CloudFeatureExtractor(nn.Module):
     """Interface class for cloud feature extractor module."""
@@ -141,6 +184,7 @@ class ComposedModel(nn.Module):
         self,
         image_module: Optional[Union[ImageModule, MultiImageModule]] = None,
         semantic_module: Optional[ImageModule] = None,
+        chonky_module: Optional[DoubleImageModule]= None,
         cloud_module: Optional[CloudModule] = None,
         fusion_module: Optional[FusionModule] = None,
     ) -> None:
@@ -149,6 +193,7 @@ class ComposedModel(nn.Module):
         Args:
             image_module (ImageModule, optional): Image modality branch. Defaults to None.
             semantic_module (ImageModule, optional): Semantic modality branch. Defaults to None.
+            chonky_module (DoubleImageModule, optional): Image+Semantic modalities branch. Defaults to None.
             cloud_module (CloudModule, optional): Cloud modality branch. Defaults to None.
             fusion_module (FusionModule, optional): Module to fuse different modalities. Defaults to None.
         """
@@ -156,19 +201,24 @@ class ComposedModel(nn.Module):
 
         self.image_module = image_module
         self.semantic_module = semantic_module
+        self.chonky_module = chonky_module
         self.cloud_module = cloud_module
         self.fusion_module = fusion_module
 
     def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         out_dict: Dict[str, Tensor] = {}
 
-        if self.image_module is not None and isinstance(self.image_module, ImageModule):
-            out_dict["image"] = self.image_module(batch["images"])
-        elif self.image_module is not None and isinstance(self.image_module, MultiImageModule):
-            out_dict["image"] = self.image_module(batch)
+        if self.chonky_module is None: #! It's a bit tricky but idk how to do it better now
+            if self.image_module is not None and isinstance(self.image_module, ImageModule):
+                out_dict["image"] = self.image_module(batch["images"])
+            elif self.image_module is not None and isinstance(self.image_module, MultiImageModule):
+                out_dict["image"] = self.image_module(batch)
 
-        if self.semantic_module is not None and isinstance(self.semantic_module, ImageModule):
-            out_dict["semantic"] = self.semantic_module(batch["semantics"])
+            if self.semantic_module is not None and isinstance(self.semantic_module, ImageModule):
+                out_dict["semantic"] = self.semantic_module(batch["semantics"])
+        
+        if self.chonky_module is not None and isinstance(self.chonky_module, DoubleImageModule):
+            out_dict["image"], out_dict["semantic"] = self.chonky_module(batch['images'], batch['semantics'])
 
         if self.cloud_module is not None:
             cloud = ME.SparseTensor(features=batch["features"], coordinates=batch["coordinates"])

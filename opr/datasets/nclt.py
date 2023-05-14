@@ -153,6 +153,10 @@ class NCLTDataset_OneHotSemantic(BaseDataset):
         """
         super().__init__(dataset_root, subset, modalities)
 
+        if "chonky" in self.modalities:  #! It's a bit tricky but idk how to do it better now
+            self.modalities.append('image')
+            self.modalities.append('semantic')
+
         if "image" in self.modalities:
             if images_subdir:
                 self.images_subdir = Path(images_subdir)
@@ -185,6 +189,7 @@ class NCLTDataset_OneHotSemantic(BaseDataset):
         row = self.dataset_df.iloc[idx]
         data["utm"] = torch.tensor(row[["northing", "easting"]].to_numpy(dtype=np.float32))
         track_dir = self.dataset_root / str(row["track"])
+
         if "image" in self.modalities and self.images_subdir is not None:
             im_filepath = track_dir / self.images_subdir / f"{row['image']}.png"
             im = cv2.imread(str(im_filepath))
