@@ -49,6 +49,10 @@ class NCLTDataset(BaseDataset):
         """
         super().__init__(dataset_root, subset, modalities)
 
+        if "chonky" in self.modalities:  #! It's a bit tricky but idk how to do it better now
+            self.modalities.append('image')
+            self.modalities.append('semantic')
+
         if "image" in self.modalities:
             if images_subdir:
                 self.images_subdir = Path(images_subdir)
@@ -152,10 +156,6 @@ class NCLTDataset_OneHotSemantic(BaseDataset):
             ValueError: If images_subdir is undefined.
         """
         super().__init__(dataset_root, subset, modalities)
-
-        if "chonky" in self.modalities:  #! It's a bit tricky but idk how to do it better now
-            self.modalities.append('image')
-            self.modalities.append('semantic')
 
         if "image" in self.modalities:
             if images_subdir:
