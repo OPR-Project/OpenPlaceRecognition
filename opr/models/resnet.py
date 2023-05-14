@@ -126,13 +126,21 @@ class ResNet18FPNExtractorMono(ImageFeatureExtractor):
         model = resnet18()
         # Last 2 blocks are AdaptiveAvgPool2d and Linear (get rid of them)
         self.resnet_fe = nn.ModuleList(list(model.children())[: 3 + self.fh_num_bottom_up])
+        self.resnet_fe_fusion = nn.ModuleList() #? Fuse doubled features to standart ResNet18 channels num
+        for j, i in enumerate(range(4, self.fh_num_bottom_up + 3)):
+            if chonky:
+                self.resnet_fe_fusion.append(nn.Conv2d(in_channels=self.layers[j]*2, 
+                                                       out_channels=self.layers[j], 
+                                                       kernel_size=1))
+            else:
+                self.resnet_fe_fusion.append(nn.Identity())
 
         #* Fix: semantuc masks has only single channel
         self.resnet_fe[0] = nn.Conv2d(
             in_channels=1,
             out_channels=self.resnet_fe[0].out_channels,
             kernel_size=self.resnet_fe[0].kernel_size,
-            stride=self.resnet_fe[0].kernel_size,
+            stride=self.resnet_fe[0].stride,
             padding=self.resnet_fe[0].padding,
             dilation=self.resnet_fe[0].dilation,
             bias=self.resnet_fe[0].bias,
@@ -229,7 +237,7 @@ class ResNet18FPNExtractorOneHot(ImageFeatureExtractor):
             in_channels=65, #! magic number len(stuff_classes) in augmentations.py
             out_channels=self.resnet_fe[0].out_channels,
             kernel_size=self.resnet_fe[0].kernel_size,
-            stride=self.resnet_fe[0].kernel_size,
+            stride=self.resnet_fe[0].stride,
             padding=self.resnet_fe[0].padding,
             dilation=self.resnet_fe[0].dilation,
             bias=self.resnet_fe[0].bias,
@@ -319,11 +327,22 @@ class ChonkyNet(DoubleImageFeatureExtractor):
                                                     fh_num_top_down=fh_num_top_down,
                                                     pretrained=False,  #* Necessary
                                                     chonky=True)
+        
+        # print("Im:")
+        # for i in range(4):
+        #     print(f"\t{i}) {self.image_fe.resnet_fe[i]}")
+        
+        # print("Sem:")
+        # for i in range(4):
+        #     print(f"\t{i}) {self.semantic_fe.resnet_fe[i]}")
 
+        # exit(0)
 
     def forward(self, image: Tensor, semantic_mask: Tensor) -> Tuple[Tensor, Tensor]:  # noqa: D102
         x = image
+        # print(f"Img: {x.shape}")
         xs = semantic_mask
+        # print(f"Sem: {xs.shape}")
         feature_maps = {}
         feature_maps_sem = {}
 
@@ -334,6 +353,7 @@ class ChonkyNet(DoubleImageFeatureExtractor):
         x = self.image_fe.resnet_fe[2](x)
         x = self.image_fe.resnet_fe[3](x)
         feature_maps["1"] = x
+        # print(f"Img feat: {x.shape}")
 
         #? Semantics
         # 0, 1, 2, 3 = first layers: Conv2d, BatchNorm, ReLu, MaxPool2d
@@ -343,9 +363,13 @@ class ChonkyNet(DoubleImageFeatureExtractor):
         xs = self.semantic_fe.resnet_fe[3](xs)
         feature_maps_sem["1"] = xs
 
+        # print(f"Sem feat: {xs.shape}")
+        # exit(0)
+
         # sequential blocks, build from BasicBlock or Bottleneck blocks
-        for i in range(4, self.fh_num_bottom_up + 3):
+        for j, i in enumerate(range(4, self.fh_num_bottom_up + 3)):
             xs = concat((xs, x), axis=1) #? semantic + image
+            xs = self.semantic_fe.resnet_fe_fusion[j](xs) #? Fuse features to standart ResNet18 channels num
 
             x = self.image_fe.resnet_fe[i](x)
             feature_maps[str(i - 2)] = x
