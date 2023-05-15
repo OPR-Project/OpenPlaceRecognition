@@ -21,7 +21,6 @@ def train(cfg: DictConfig):
     Args:
         cfg (DictConfig): config to train with
     """
-    print(f"Modalities is {cfg.general.modalities}")
     
     if not cfg.general.debug and not cfg.wandb.disabled:
         config_dict = OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True)

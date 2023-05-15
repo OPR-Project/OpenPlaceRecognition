@@ -1,19 +1,25 @@
 _target_: opr.models.base_models.ComposedModel
 
 image_module:
-  _target_: opr.models.base_models.ImageModule
+  _target_: opr.models.base_models.MultiImageModule
 
-  backbone:
-    _target_: opr.models.resnet.ResNet18FPNExtractor
-    lateral_dim: 128
-    fh_num_bottom_up: 4
-    fh_num_top_down: 0
-    pretrained: True
+  image_module:
+    _target_: opr.models.base_models.ImageModule
 
-  head:
-    _target_: opr.models.layers.gem.GeM
-    p: 3
-    eps: 0.000001
+    backbone:
+      _target_: opr.models.resnet.ResNet18FPNExtractor
+      lateral_dim: 128
+      fh_num_bottom_up: 4
+      fh_num_top_down: 0
+      pretrained: True
+
+    head:
+      _target_: opr.models.layers.gem.GeM
+      p: 3
+      eps: 0.000001
+
+  fusion_module:
+    _target_: opr.models.fusion.Concat
 
 cloud_module:
   _target_: opr.models.base_models.CloudModule
@@ -33,9 +39,16 @@ cloud_module:
     eps: 0.000001
 
 text_module:
-  _target_: opr.models.base_models.FusionTextModel
-  pca_size: 100
-  hidden_size: 100
+    _target_: opr.models.base_models.MultiTextModule
+
+    text_module: 
+      _target_: opr.models.base_models.TextModule
+      # _target_: opr.models.base_models.EmptyTextModule
+      text_emb_size: 128
+      hidden_size: 128
+
+    fusion_module:
+      _target_: opr.models.fusion.Concat
 
 semantic_module:
   _target_: opr.models.base_models.ImageModule

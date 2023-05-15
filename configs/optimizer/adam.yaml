@@ -4,7 +4,7 @@ learning_rates:
   chonky_lr: 0.0001
   cloud_lr: 0.001
   fusion_lr: 0.001
-  text_lr: 0.001
+  text_lr: 0.0001
 
 fn:
   _target_: torch.optim.Adam

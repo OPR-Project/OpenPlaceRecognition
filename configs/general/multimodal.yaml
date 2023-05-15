@@ -4,6 +4,6 @@ checkpoints_dir: checkpoints/
 device: cuda
 num_workers: 4
 batch_expansion_th: 0.7
-modalities: [image, cloud, text, semantic]
+modalities: [image_cam5, text_cam5, cloud, semantic]
 test_modality: fusion
 epochs: 60
