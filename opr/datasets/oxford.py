@@ -31,7 +31,7 @@ class OxfordDataset(BaseDataset):
         subset: Literal["train", "val", "test"] = "train",
         modalities: Union[str, Tuple[str, ...]] = ("image", "cloud"),
         images_subdir: Optional[Union[str, Path]] = "stereo_centre",
-        semantic_subdir: Optional[Union[str, Path]] = 'None',
+        semantic_subdir: Optional[Union[str, Path]] = 'stereo_centre_segmentation',
         random_select_nearest_images: bool = False,
         mink_quantization_size: Optional[float] = 0.01,
     ) -> None:
@@ -160,6 +160,7 @@ class OxfordDataset_OneHotSemantic(BaseDataset):
         subset: Literal["train", "val", "test"] = "train",
         modalities: Union[str, Tuple[str, ...]] = ("image", "cloud"),
         images_subdir: Optional[Union[str, Path]] = "stereo_centre",
+         semantic_subdir: Optional[Union[str, Path]] = 'stereo_centre_segmentation',
         random_select_nearest_images: bool = False,
         mink_quantization_size: Optional[float] = 0.01,
     ) -> None:
