@@ -17,6 +17,7 @@ class Concat(FusionModule):
     def forward(self, data: Dict[str, Tensor]) -> Tensor:  # noqa: D102
         # assert "image" in data
         # assert "cloud" in data
+        data = {key:value for key, value in data.items() if value is not None} 
         fusion_global_descriptor = torch.concat(list(data.values()), dim=1)
         return fusion_global_descriptor
 

@@ -166,3 +166,15 @@ cython_debug/
 #.idea/
 .gitignore
 
+configs/general/multimodal.yaml
+configs/nclt_lidar_cam5.yaml
+configs/config_nclt_text_PCA_concat.yaml
+configs/config_nclt_text_PCA_concat_lr_0.0001.yaml
+.gitignore
+configs/config_nclt_text_PCA_add_lr_0.0001.yaml
+configs/config_itlp_default.yaml
+configs/config_nclt_text_PCA_add.yaml
+configs/nclt_lidar_cam5_texts.yaml
+configs/config_nclt_text.yaml
+.gitignore
+configs/config_nclt_text.yaml

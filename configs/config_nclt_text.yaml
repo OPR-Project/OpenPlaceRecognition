@@ -48,7 +48,6 @@ dataset:
     batch_expansion_rate: 1.4
     positives_per_group: 2
     seed: ${general.seed}
-
   num_workers: ${general.num_workers}
 
 loss: 
