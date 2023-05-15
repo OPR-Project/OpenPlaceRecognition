@@ -3,6 +3,8 @@ from pathlib import Path
 from typing import Dict, Literal, Optional, Tuple, Union
 
 import cv2
+import os
+import pandas as pd
 import numpy as np
 import torch
 from torch import Tensor
@@ -26,6 +28,7 @@ class NCLTDataset(BaseDataset):
         subset: Literal["train", "val", "test"] = "train",
         modalities: Union[str, Tuple[str, ...]] = ("image", "cloud"),
         images_subdir: Optional[Union[str, Path]] = "lb3_small/Cam5",
+        text_embs_dir: Optional[Union[str, Path]] = "tfidf_pca",
         semantic_subdir: Optional[Union[str, Path]] = "lb3_segmentation_small/Cam5",
         mink_quantization_size: Optional[float] = 0.5,
         coords_limit: Tuple[int, int] = (-100, 100),
@@ -79,7 +82,21 @@ class NCLTDataset(BaseDataset):
         self.semantic_transform = DefaultSemanticTransform(train=(self.subset == "train"))
         self.cloud_transform = DefaultCloudTransform(train=(self.subset == "train"))
         self.cloud_set_transform = DefaultCloudSetTransform(train=(self.subset == "train"))
-
+        
+        # load text descriptions df
+        self.text_embs_dir = text_embs_dir
+        
+        if text_embs_dir == "tfidf_pca":
+            tracks = [i for i in os.listdir(dataset_root) if os.path.isdir(os.path.join(dataset_root, i))]
+            df_dict = {}
+            for track in tracks:
+                track_path = os.path.join(dataset_root, track)
+                df_dict[track] = {f"cam{n}" : pd.read_csv(os.path.join(track_path, f"descriptions_Cam{n}.csv")) for n in range(1, 6)}
+            self.descriptoins_dict = df_dict
+            
+            # load tfidf and pca
+            self.vectorizer, self.pca = self._load_tfidf_pca()
+                
     def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
         data: Dict[str, Union[int, Tensor]] = {"idx": idx}
         row = self.dataset_df.iloc[idx]
@@ -93,7 +110,7 @@ class NCLTDataset(BaseDataset):
             data["image"] = im
 
         # TODO: implement multi-camera setup better?
-        for n in range(6):
+        for n in range(1, 6):
             if f"image_cam{n}" in self.modalities:
                 im_filepath = track_dir / f"lb3_small/Cam{n}" / f"{row['image']}.png"
                 im = cv2.imread(str(im_filepath))
@@ -124,6 +141,11 @@ class NCLTDataset(BaseDataset):
         pc = pc[in_range_idx]
         pc_tensor = torch.tensor(pc, dtype=torch.float32)
         return pc_tensor
+    
+    def _load_tfidf_pca(self, base_savepath="./opr/datasets/"):
+        from joblib import load
+        vectorizer_savepath = os.path.join(base_savepath, 'vectorizer.joblib')
+        pca_savepath = os.path.join(base_savepath, 'pca.joblib')
 
 class NCLTDataset_OneHotSemantic(BaseDataset):
     """NCLT dataset implementation."""

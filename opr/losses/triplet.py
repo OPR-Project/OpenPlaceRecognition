@@ -20,7 +20,7 @@ class MultimodalTripletMarginLoss(nn.Module):
     Code adopted from repository: https://github.com/jac99/MinkLocMultimodal, MIT License
     """
 
-    valid_modalities = ("image", "cloud", "semantic", "fusion")
+    valid_modalities = ("image", "cloud", "semantic", "text", "fusion")
 
     def __init__(
         self,

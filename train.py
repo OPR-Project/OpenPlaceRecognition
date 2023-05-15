@@ -21,6 +21,8 @@ def train(cfg: DictConfig):
     Args:
         cfg (DictConfig): config to train with
     """
+    print(f"Modalities is {cfg.general.modalities}")
+    
     if not cfg.general.debug and not cfg.wandb.disabled:
         config_dict = OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True)
         wandb.init(
@@ -45,6 +47,7 @@ def train(cfg: DictConfig):
 
     print("=> Instantiating model...")
     model = instantiate(cfg.model)
+    print(model)
 
     print("=> Instantiating loss...")
     loss_fn = instantiate(cfg.loss)
@@ -60,6 +63,7 @@ def train(cfg: DictConfig):
     params_list = []
     modalities = list(set([m.split("_")[0] for m in cfg.general.modalities]))
     for modality in modalities:
+        print(modality)
         params_list.append(
             {
                 "params": getattr(model, f"{modality}_module").parameters(),

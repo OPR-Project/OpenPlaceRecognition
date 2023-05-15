@@ -1,0 +1,77 @@
+defaults:
+  - _self_
+  - optimizer: adam
+  - scheduler: multi_step
+
+general:
+  debug: False
+  seed: 31299
+  checkpoints_dir: checkpoints/
+  device: cuda
+  num_workers: 4
+  batch_expansion_th: 0.7
+  modalities: [text_cam5, text_cam2, text_cam1, text_cam3, text_cam4]
+  test_modality: text
+  epochs: 60
+
+model:
+  _target_: opr.models.base_models.ComposedModel
+  image_module: null
+  cloud_module: null
+  fusion_module: null
+  text_module:
+    _target_: opr.models.base_models.MultiTextModule
+    text_module: 
+      _target_: opr.models.base_models.TextModule
+      # _target_: opr.models.base_models.EmptyTextModule
+      text_emb_size: 512
+      hidden_size: 512
+    fusion_module:
+      _target_: opr.models.fusion.Concat
+
+dataset:
+  dataset:
+    _target_: opr.datasets.nclt.NCLTDataset
+    dataset_root: /home/docker_opr/Datasets/NCLT_preprocessed
+    modalities: ${general.modalities}
+    images_subdir: lb3_small/Cam5
+    # text_embs_dir: tfidf_pca
+    text_embs_dir: clip-vit-base-patch32
+    # text_embs_dir: clip-vit-large-patch14
+    mink_quantization_size: 0.5
+    coords_limit: [-100, 100]
+
+  sampler:
+    _target_: opr.datasets.samplers.batch_sampler.BatchSampler
+    batch_size: 8
+    batch_size_limit: 160
+    batch_expansion_rate: 1.4
+    positives_per_group: 2
+    seed: ${general.seed}
+  num_workers: ${general.num_workers}
+
+loss: 
+  _target_: opr.losses.MultimodalTripletMarginLoss
+  margin: 0.2
+  swap: True
+  distance:
+    _target_: pytorch_metric_learning.distances.LpDistance
+    normalize_embeddings: False
+    collect_stats: True
+  miner:
+    _target_: opr.miners.HardTripletMiner
+    distance:
+      _target_: pytorch_metric_learning.distances.LpDistance
+      normalize_embeddings: False
+    modalities: ${loss.modalities}
+  reducer:
+    _target_: pytorch_metric_learning.reducers.AvgNonZeroReducer
+    collect_stats: True
+  modalities: [text]
+  weights: [1]
+
+
+wandb:
+  disabled: False
+  project: OpenPlaceRecognition
+  run_name: only text, clip-vit-base-patch32 + 1-layer NN, all cam, Concat
