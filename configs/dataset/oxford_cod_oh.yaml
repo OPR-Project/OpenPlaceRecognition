@@ -1,0 +1,20 @@
+dataset:
+  _target_: opr.datasets.oxford.OxfordDataset_OneHotSemantic
+
+  dataset_root: /datasets/pnvlad_oxford_robotcar
+  modalities: ${general.modalities}
+  images_subdir: stereo_centre_small
+  semantic_subdir: stereo_centre_segmentation_small
+  random_select_nearest_images: False
+  mink_quantization_size: 0.01
+
+sampler:
+  _target_: opr.datasets.samplers.batch_sampler.BatchSampler
+
+  batch_size: 8
+  batch_size_limit: 160
+  batch_expansion_rate: 1.4
+  positives_per_group: 2
+  seed: ${general.seed}
+
+num_workers: ${general.num_workers}

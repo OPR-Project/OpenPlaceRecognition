@@ -73,7 +73,7 @@ def get_recalls(
 
 def test(
     model: ComposedModel,
-    descriptor_key: Literal["image", "cloud", "fusion"],
+    descriptor_key: Literal["image", "cloud", "semantic", "fusion"],
     dataloader: DataLoader,
     dist_thresh: float = 25.0,
     device: str = "cuda",
@@ -82,7 +82,7 @@ def test(
 
     Args:
         model (ComposedModel): The model to test.
-        descriptor_key (Literal["image", "cloud", "fusion"]): The embedding key which should be tested.
+        descriptor_key (Literal["image", "cloud", "semantic", "fusion"]): The embedding key which should be tested.
         dataloader (DataLoader): Test dataloader object.
         dist_thresh (float): Distance threshold for positive match. Defaults to 25.0.
         device (str): Device ("cpu" or "cuda"). Defaults to "cuda".

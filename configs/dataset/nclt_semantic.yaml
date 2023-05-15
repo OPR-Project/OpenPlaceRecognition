@@ -1,0 +1,19 @@
+dataset:
+  _target_: opr.datasets.nclt.NCLTDataset
+
+  dataset_root:  /home/docker_opr/Datasets/NCLT_preprocessed
+  modalities: ${general.modalities}
+  images_subdir: lb3_segmentation_small/Cam5
+  semantic_subdir: lb3_segmentation_small/Cam5
+  mink_quantization_size: 0.5
+
+sampler:
+  _target_: opr.datasets.samplers.batch_sampler.BatchSampler
+
+  batch_size: 8
+  batch_size_limit: 160
+  batch_expansion_rate: 1.4
+  positives_per_group: 2
+  seed: ${general.seed}
+
+num_workers: ${general.num_workers}
