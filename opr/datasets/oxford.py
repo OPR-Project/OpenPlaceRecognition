@@ -257,7 +257,8 @@ class OxfordDataset_OneHotSemantic(BaseDataset):
                 data[f"image_{cam_name}"] = im
         
         if "semantic" in self.modalities and self.semantic_subdir is not None:
-            im_filepath = track_dir / self.semantic_subdir / f"{row['image']}.png" # image id is equal to semantic mask id~
+            image_ts = int(row["stereo_centre"])
+            im_filepath = track_dir / self.semantic_subdir / f"{image_ts}.png" # image id is equal to semantic mask id~
             im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
             # im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             im = self.semantic_transform(im)
