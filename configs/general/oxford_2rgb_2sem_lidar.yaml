@@ -1,0 +1,9 @@
+debug: False
+seed: 31299
+checkpoints_dir: checkpoints/
+device: cuda
+num_workers: 4
+batch_expansion_th: 0.7
+modalities: [image_stereo_centre, image_mono_rear, semantic_stereo_centre, semantic_mono_rear, cloud,]
+test_modality: fusion
+epochs: 60

@@ -15,7 +15,7 @@ class ImageFeatureExtractor(nn.Module):
 
     def forward(self, image: Tensor) -> Tensor:  # noqa: D102
         raise NotImplementedError()
-    
+
 class DoubleImageFeatureExtractor(nn.Module):
     """Interface class for image feature extractor module."""
 
@@ -176,8 +176,31 @@ class MultiImageModule(nn.Module):
                 x_dict[key] = self.image_module(data[key])
         x = self.fusion_module(x_dict)
         return x
-    
-    
+
+
+class MultiSemanticModule(nn.Module):
+    """Module to work with multiple semantics with late fusion."""
+
+    def __init__(self, image_module: ImageModule, fusion_module: FusionModule) -> None:
+        """Module to work with multiple semantics with late fusion.
+
+        Args:
+            image_module (ImageModule): Module to process each semantics.
+            fusion_module (FusionModule): Module to fuse descriptors of each image.
+        """
+        super().__init__()
+        self.image_module = image_module
+        self.fusion_module = fusion_module
+
+    def forward(self, data: Dict[str, Tensor]) -> Tensor:  # noqa: D102
+        x_dict = {}
+        for key in data:
+            if key.startswith("semantics_"):
+                x_dict[key] = self.image_module(data[key])
+        x = self.fusion_module(x_dict)
+        return x
+
+
 #####################################
 #### Stupid Text Model for ITLP #####
 #####################################
@@ -185,9 +208,9 @@ class BasicTextNN(nn.Module):
     def __init__(self, pca_size=100, hidden_size=100):
         super().__init__()
         self.fc1 = nn.Linear(pca_size, hidden_size)
-        self.relu = nn.ReLU() 
+        self.relu = nn.ReLU()
         self.fc2 = nn.Linear(hidden_size, hidden_size)
-        
+
     def forward(self, pca_vector):
         x = self.fc1(pca_vector)
         x = self.relu(x)
@@ -201,14 +224,14 @@ class FusionTextModel(nn.Module):
         self.back_nn = BasicTextNN(pca_size=pca_size, hidden_size=hidden_size)
         self.front_nn = BasicTextNN(pca_size=pca_size, hidden_size=hidden_size)
         self.fuse_fc1 = nn.Linear(hidden_size*2, hidden_size)
-        
+
     def forward(self, back_vector, front_vector):
         back_feat = self.back_nn(back_vector)
         front_feat = self.front_nn(front_vector)
         fusion_feat = torch.cat((back_feat, front_feat), dim=1)
         embed = self.fuse_fc1(fusion_feat)
         return embed
-    
+
 #####################################
 #### One text model for all cam #####
 #####################################
@@ -216,15 +239,15 @@ class TextModule(nn.Module):
     def __init__(self, text_emb_size=100, hidden_size=100):
         super().__init__()
         self.fc1 = nn.Linear(text_emb_size, hidden_size)
-        self.relu = nn.ReLU() 
+        self.relu = nn.ReLU()
         self.fc2 = nn.Linear(hidden_size, hidden_size)
-        
+
     def forward(self, embedding):
         x = self.fc1(embedding)
         x = self.relu(x)
         x = self.fc2(x)
         return x
-    
+
 class EmptyTextModule(nn.Module):
     def __init__(self, text_emb_size=None, hidden_size=None):
         super().__init__()
@@ -254,7 +277,7 @@ class MultiTextModule(nn.Module):
             if key.startswith("text_emb_"):
                 x_dict[key] = self.text_module(data[key])
         x = self.fusion_module(x_dict)
-        return x    
+        return x
 
 
 class ComposedModel(nn.Module):
@@ -302,14 +325,16 @@ class ComposedModel(nn.Module):
 
             if self.semantic_module is not None and isinstance(self.semantic_module, ImageModule):
                 out_dict["semantic"] = self.semantic_module(batch["semantics"])
-        
+            elif self.semantic_module is not None and isinstance(self.semantic_module, MultiSemanticModule):
+                out_dict["semantic"] = self.semantic_module(batch)
+
         if self.chonky_module is not None and isinstance(self.chonky_module, DoubleImageModule):
             out_dict["image"], out_dict["semantic"] = self.chonky_module(batch['images'], batch['semantics'])
 
         if self.cloud_module is not None:
             cloud = ME.SparseTensor(features=batch["features"], coordinates=batch["coordinates"])
             out_dict["cloud"] = self.cloud_module(cloud)
-            
+
         if self.text_module is not None and isinstance(self.text_module, FusionTextModel):
             out_dict["text"] = self.text_module(batch["back_embs"], batch["front_embs"])
         elif self.text_module is not None and isinstance(self.text_module, MultiTextModule):

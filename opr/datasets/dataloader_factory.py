@@ -53,34 +53,36 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
             ]
         if "image" in data_list[0]:
             images = [e["image"] for e in data_list]
-        
-        
+
+
 
         # TODO: implement multi-camera setup better?
         images_cam = {}
+        semantics_cam = {}
         for cam_name in ["stereo_centre", "mono_rear", "mono_left", "mono_right"] + [
             f"cam{n}" for n in range(6)
         ]:
             if f"image_{cam_name}" in data_list[0]:
                 images_cam[cam_name] = [e[f"image_{cam_name}"] for e in data_list]
-
+            if f"semantic_{cam_name}" in data_list[0]:
+                semantics_cam[cam_name] = [e[f"semantic_{cam_name}"] for e in data_list]
 
         if "semantic" in data_list[0]:
             semantics = [e["semantic"] for e in data_list]
-                  
+
         if "range_image" in data_list[0]:
             range_images = [e["range_image"] for e in data_list]
         if "text_emb_back" in data_list[0]:
             back_embs = [e["text_emb_back"] for e in data_list]
         if "text_emb_front" in data_list[0]:
             front_embs = [e["text_emb_front"] for e in data_list]
-        
+
         text_embs_cam = {}
         for n in range(1, 6):
             cam_name = f"cam{n}"
             if f"text_emb_{cam_name}" in data_list[0]:
                 text_embs_cam[cam_name]  = [e[f"text_emb_{cam_name}"] for e in data_list]
-                
+
         utms = torch.stack([e["utm"] for e in data_list], dim=0)
 
         result: Union[List[Dict[str, Tensor]], Dict[str, Tensor]]
@@ -99,6 +101,8 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
             ]:
                 if f"image_{cam_name}" in data_list[0]:
                     result[f"images_{cam_name}"] = torch.stack(images_cam[cam_name], dim=0)
+                if f"semantic_{cam_name}" in data_list[0]:
+                    result[f"semantics_{cam_name}"] = torch.stack(semantics_cam[cam_name], dim=0)
 
             if "semantic" in data_list[0]:
                 result["semantics"] = torch.stack(semantics, dim=0)
@@ -112,7 +116,7 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
                 cam_name = f"cam{n}"
                 if f"text_emb_{cam_name}" in data_list[0]:
                     result[f"text_emb_{cam_name}"] = torch.stack(text_embs_cam[cam_name], dim=0).squeeze(1)
-                
+
             result["utms"] = utms
         else:  # split the batch into chunks
             raise NotImplementedError("Multistaged batch training not yet implemented")

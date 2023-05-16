@@ -33,7 +33,7 @@ class NCLTDataset(BaseDataset):
         text_embs_dir: Optional[Union[str, Path]] = "tfidf_pca",
         mink_quantization_size: Optional[float] = 0.5,
         coords_limit: Tuple[int, int] = (-100, 100),
-        
+
     ) -> None:
         """NCLT dataset implementation.
 
@@ -84,10 +84,10 @@ class NCLTDataset(BaseDataset):
         self.semantic_transform = DefaultSemanticTransform(train=(self.subset == "train"))
         self.cloud_transform = DefaultCloudTransform(train=(self.subset == "train"))
         self.cloud_set_transform = DefaultCloudSetTransform(train=(self.subset == "train"))
-        
+
         # load text descriptions df
         self.text_embs_dir = text_embs_dir
-        
+
         if text_embs_dir == "tfidf_pca":
             tracks = [i for i in os.listdir(dataset_root) if os.path.isdir(os.path.join(dataset_root, i))]
             df_dict = {}
@@ -95,10 +95,10 @@ class NCLTDataset(BaseDataset):
                 track_path = os.path.join(dataset_root, track)
                 df_dict[track] = {f"cam{n}" : pd.read_csv(os.path.join(track_path, f"descriptions_Cam{n}.csv")) for n in range(1, 6)}
             self.descriptoins_dict = df_dict
-            
+
             # load tfidf and pca
             self.vectorizer, self.pca = self._load_tfidf_pca()
-                
+
     def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
         data: Dict[str, Union[int, Tensor]] = {"idx": idx}
         row = self.dataset_df.iloc[idx]
@@ -120,6 +120,12 @@ class NCLTDataset(BaseDataset):
                 im = self.image_transform(im)
                 data[f"image_cam{n}"] = im
 
+            if f"semantic_cam{n}" in self.modalities:
+                im_filepath = track_dir / f"lb3_segmentation_small/Cam{n}" / f"{row['image']}.png" # image id is equal to semantic mask id~
+                im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
+                im = self.semantic_transform(im)
+                data[f"semantic_cam{n}"] = im
+
         if self.text_embs_dir == "tfidf_pca":
             for n in range(6):
                 if f"text_cam{n}" in self.modalities:
@@ -138,7 +144,7 @@ class NCLTDataset(BaseDataset):
                     track = str(row["track"])
                     imagename = row['image']
                     # emb_path = os.path.join(track_dir, self.text_embs_dir, cam, imagename + ".pt" )
-                    emb_path = track_dir / self.text_embs_dir / cam /  f"{imagename}.pt" 
+                    emb_path = track_dir / self.text_embs_dir / cam /  f"{imagename}.pt"
                     data[f"text_emb_cam{n}"] = torch.load(emb_path, map_location="cpu")
 
         if "semantic" in self.modalities and self.semantic_subdir is not None:
@@ -164,15 +170,15 @@ class NCLTDataset(BaseDataset):
         pc = pc[in_range_idx]
         pc_tensor = torch.tensor(pc, dtype=torch.float32)
         return pc_tensor
-    
+
     def _load_tfidf_pca(self, base_savepath="./opr/datasets/"):
         vectorizer_savepath = os.path.join(base_savepath, 'vectorizer.joblib')
         pca_savepath = os.path.join(base_savepath, 'pca.joblib')
-        
+
         vectorizer = load(vectorizer_savepath)
         pca = load(pca_savepath)
         return vectorizer, pca
-    
+
     def tfidf_pca_text_transform(self, text):
         vect_data = self.vectorizer.transform([text]).toarray()
         pca_data = self.pca.transform(vect_data)

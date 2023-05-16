@@ -126,7 +126,14 @@ class OxfordDataset(BaseDataset):
                 im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
                 im = self.image_transform(im)
                 data[f"image_{cam_name}"] = im
-        
+
+            if f"semantic_{cam_name}" in self.modalities:
+                image_ts = int(row[cam_name])
+                im_filepath = track_dir / f"{cam_name}_segmentation_small" / f"{image_ts}.png" # image id is equal to semantic mask id~
+                im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
+                im = self.semantic_transform(im)
+                data[f"semantic_{cam_name}"] = im
+
         if "semantic" in self.modalities and self.semantic_subdir is not None:
             image_ts = int(row["stereo_centre"])
             im_filepath = track_dir / self.semantic_subdir / f"{image_ts}.png" # image id is equal to semantic mask id~
@@ -255,7 +262,7 @@ class OxfordDataset_OneHotSemantic(BaseDataset):
                 im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
                 im = self.image_transform(im)
                 data[f"image_{cam_name}"] = im
-        
+
         if "semantic" in self.modalities and self.semantic_subdir is not None:
             image_ts = int(row["stereo_centre"])
             im_filepath = track_dir / self.semantic_subdir / f"{image_ts}.png" # image id is equal to semantic mask id~
