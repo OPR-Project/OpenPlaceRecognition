@@ -4,7 +4,7 @@ dataset:
   modalities: ${general.modalities}
   images_subdir: lb3_small/Cam5
   semantic_subdir: lb3_segmentation_small/Cam5
-  text_embs_dir: tfidf_pca
+  text_embs_dir: clip-vit-base-patch32
   mink_quantization_size: 0.5
   coords_limit: [-100, 100]
 

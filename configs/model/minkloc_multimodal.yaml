@@ -40,15 +40,15 @@ cloud_module:
 
 text_module:
     _target_: opr.models.base_models.MultiTextModule
-
+    
     text_module: 
       _target_: opr.models.base_models.TextModule
-      # _target_: opr.models.base_models.EmptyTextModule
-      text_emb_size: 128
+
+      text_emb_size: 512
       hidden_size: 128
 
     fusion_module:
-      _target_: opr.models.fusion.Concat
+      _target_: opr.models.fusion.Add
 
 semantic_module:
   _target_: opr.models.base_models.ImageModule
