@@ -10,18 +10,21 @@ from opr.testing import test
 from opr.datasets.dataloader_factory import make_collate_fn
 
 
-def parse_args() -> Tuple[Path, Path]:
+def parse_args() -> Tuple[Path, Path, Path]:
     parser = argparse.ArgumentParser()
     parser.add_argument("--checkpoint", type=Path, required=True, help="Path to the checkpoint file.")
     parser.add_argument(
         "--config", type=Path, help="path to the model config file (if config not saved in checkpoint)."
     )
+    parser.add_argument(
+        "--dataset_root", type=Path, help="path to the dataset root (will overwrite value from checkpoint config).",
+    )
     args = parser.parse_args()
-    return args.checkpoint, args.config
+    return args.checkpoint, args.config, args.dataset_root
 
 
 if __name__ == "__main__":
-    ckpt_path, cfg_path = parse_args()
+    ckpt_path, cfg_path, dataset_root = parse_args()
     checkpoint = torch.load(ckpt_path)
 
     print("\n=> Loading config")
@@ -43,6 +46,7 @@ if __name__ == "__main__":
     model = model.to(cfg.general.device)
     model.eval()
 
+    cfg.dataset.dataset.dataset_root = dataset_root
     print("\n=> Instantiating dataloader")
     dataset = instantiate(cfg.dataset.dataset, subset="test")
     if "batch_size_limit" not in cfg.dataset.sampler:
