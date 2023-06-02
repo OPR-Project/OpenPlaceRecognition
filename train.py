@@ -21,7 +21,7 @@ def train(cfg: DictConfig):
     Args:
         cfg (DictConfig): config to train with
     """
-    
+
     if not cfg.general.debug and not cfg.wandb.disabled:
         config_dict = OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True)
         wandb.init(
@@ -169,11 +169,11 @@ def train(cfg: DictConfig):
             "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
         }
-        torch.save(checkpoint_dict, checkpoints_dir / f"epoch_{epoch+1}.pth")
+        torch.save(checkpoint_dict, checkpoints_dir / "last.pth")
         # wandb logging
         if not cfg.general.debug and not cfg.wandb.disabled:
             wandb.log(flatten_dict(stats_dict))
-            wandb.save(str((checkpoints_dir / f"epoch_{epoch+1}.pth").relative_to(".")))
+            wandb.save(str((checkpoints_dir / "last.pth").relative_to(".")))
         if recall_at_n[0] > best_recall_at_1:
             print("Recall@1 improved!")
             torch.save(checkpoint_dict, checkpoints_dir / "best.pth")
