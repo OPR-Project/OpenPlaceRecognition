@@ -18,10 +18,12 @@ from torchvision import transforms
 
 class OheHotTransform:
     """Rotate by one of the given angles."""
+
     def __call__(self, image):
-        onehot = torch.squeeze(F.one_hot(torch.from_numpy(image).long(), 65)) #! Magic number
+        onehot = torch.squeeze(F.one_hot(torch.from_numpy(image).long(), 65))  #! Magic number
         onehot = onehot.permute(2, 0, 1).float()
-        return {'image':onehot} 
+        return {"image": onehot}
+
 
 class DefaultImageTransform:
     """Default image augmentation pipeline."""
@@ -108,33 +110,24 @@ class DefaultSemanticTransform:
                     ],
                     p=0.2,
                 ),
-
                 A.OneOf(
                     [
-                        A.CoarseDropout(max_width=96,
-                                        max_height=66,
-                                        min_width=32,
-                                        min_height=22,
-                                        max_holes=1, p=0.5),
-                        A.CoarseDropout(max_width=30,
-                                        max_height=30,
-                                        min_width=10,
-                                        min_height=10,
-                                        max_holes=10, p=0.5),
-                        A.GridDropout (ratio=0.05,
-                                     unit_size_min=4,
-                                     unit_size_max=30,
-                                     p=0.5)
+                        A.CoarseDropout(
+                            max_width=96, max_height=66, min_width=32, min_height=22, max_holes=1, p=0.5
+                        ),
+                        A.CoarseDropout(
+                            max_width=30, max_height=30, min_width=10, min_height=10, max_holes=10, p=0.5
+                        ),
+                        A.GridDropout(ratio=0.05, unit_size_min=4, unit_size_max=30, p=0.5),
                     ],
                     p=0.2,
                 ),
-                
-                A.Normalize(mean=(0.,), std=(1.,)),
+                A.Normalize(mean=(0.0,), std=(1.0,)),
                 ToTensorV2(),
             ]
         else:
             transform_list = [
-                A.Normalize(mean=(0.,), std=(1.,)),
+                A.Normalize(mean=(0.0,), std=(1.0,)),
                 ToTensorV2(),
             ]
 
@@ -175,27 +168,18 @@ class OneHotSemanticTransform:
                     ],
                     p=0.2,
                 ),
-
                 A.OneOf(
                     [
-                        A.CoarseDropout(max_width=96,
-                                        max_height=66,
-                                        min_width=32,
-                                        min_height=22,
-                                        max_holes=1, p=0.5),
-                        A.CoarseDropout(max_width=30,
-                                        max_height=30,
-                                        min_width=10,
-                                        min_height=10,
-                                        max_holes=10, p=0.5),
-                        A.GridDropout (ratio=0.05,
-                                     unit_size_min=4,
-                                     unit_size_max=30,
-                                     p=0.5)
+                        A.CoarseDropout(
+                            max_width=96, max_height=66, min_width=32, min_height=22, max_holes=1, p=0.5
+                        ),
+                        A.CoarseDropout(
+                            max_width=30, max_height=30, min_width=10, min_height=10, max_holes=10, p=0.5
+                        ),
+                        A.GridDropout(ratio=0.05, unit_size_min=4, unit_size_max=30, p=0.5),
                     ],
                     p=0.2,
                 ),
-                
                 OheHotTransform(),
                 # ToTensorV2(),
             ]
@@ -343,19 +327,27 @@ class RandomRotation:
         return expm(np.cross(np.eye(3), axis / norm(axis) * theta)).astype(np.float32)
 
     def __call__(self, coords):
+        if coords.shape[-1] == 4:  # with intensity
+            coords_xyz = coords[:, :, :3]
+        else:  # no intensity
+            coords_xyz = coords
+
         if self.axis is not None:
             axis = self.axis
         else:
             axis = np.random.rand(3) - 0.5
         R = self._M(axis, (np.pi * self.max_theta / 180) * 2 * (np.random.rand(1) - 0.5))
         if self.max_theta2 is None:
-            coords = coords @ R
+            coords_xyz = coords_xyz @ R
         else:
             R_n = self._M(
                 np.random.rand(3) - 0.5, (np.pi * self.max_theta2 / 180) * 2 * (np.random.rand(1) - 0.5)
             )
-            coords = coords @ R @ R_n
-
+            coords_xyz = coords_xyz @ R @ R_n
+        if coords.shape[-1] == 4:  # with intensity
+            coords = torch.cat((coords_xyz, coords[:, :, 3].unsqueeze(dim=2)), axis=2)
+        else:  # no intensity
+            coords = coords_xyz
         return coords
 
 
@@ -364,7 +356,7 @@ class RandomTranslation:
         self.max_delta = max_delta
 
     def __call__(self, coords):
-        trans = self.max_delta * np.random.randn(1, 3)
+        trans = self.max_delta * np.random.randn(1, coords.shape[-1])
         return coords + trans.astype(np.float32)
 
 
@@ -384,7 +376,13 @@ class RandomShear:
 
     def __call__(self, coords):
         T = np.eye(3) + self.delta * np.random.randn(3, 3)
-        return coords @ T.astype(np.float32)
+        if coords.shape[-1] == 4:  # with intensity
+            coords = np.append(
+                coords[:, :, :3] @ T.astype(np.float32), coords[:, :, 3].unsqueeze(dim=2), axis=2
+            )
+        else:  # no intensity
+            coords = coords @ T.astype(np.float32)
+        return coords
 
 
 class JitterPoints:
@@ -397,6 +395,15 @@ class JitterPoints:
         self.p = p
 
     def __call__(self, e):
+        # Should be adapted to clouds with intensity values,
+        # now the sigma values for coordinates/intensities are the same
+        """Randomly jitter points. jittering is per point.
+        Input:
+          BxNx3 array, original batch of point clouds
+        Return:
+          BxNx3 array, jittered batch of point clouds
+        """
+
         sample_shape = (e.shape[0],)
         if self.p < 1.0:
             # Create a mask for points to jitter
@@ -455,7 +462,7 @@ class RemoveRandomBlock:
 
     def get_params(self, coords):
         # Find point cloud 3D bounding box
-        flattened_coords = coords.view(-1, 3)
+        flattened_coords = coords.view(-1, coords.shape[-1])
         min_coords, _ = torch.min(flattened_coords, dim=0)
         max_coords, _ = torch.max(flattened_coords, dim=0)
         span = max_coords - min_coords

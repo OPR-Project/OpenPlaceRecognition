@@ -9,7 +9,7 @@ from torch import Tensor
 from torch.utils.data import DataLoader
 
 from opr.datasets.base import BaseDataset
-from opr.utils import in_sorted_array
+from opr.utils import in_sorted_array, cartesian_to_spherical
 
 
 def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None) -> Callable:
@@ -47,14 +47,26 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
                 # Apply the same transformation on all dataset elements
                 clouds = dataset.cloud_set_transform(clouds)
             clouds = torch.split(clouds.squeeze(0), split_size_or_sections=n_points, dim=0)  # back to list
-            quantized_coords = [
-                ME.utils.sparse_quantize(coordinates=e, quantization_size=dataset.mink_quantization_size)
-                for e in clouds
-            ]
+            coords = []
+            feats = []
+            for e in clouds:
+                if dataset.spherical_coords:
+                    e = torch.tensor(cartesian_to_spherical(e.numpy(), dataset._name), dtype=torch.float)
+                if dataset.with_intensity:
+                    c, f = ME.utils.sparse_quantize(
+                        coordinates=e[:, :3],
+                        features=e[:, 3].reshape([-1, 1]),
+                        quantization_size=dataset.mink_quantization_size,
+                    )
+                else:
+                    c = ME.utils.sparse_quantize(
+                        coordinates=e, quantization_size=dataset.mink_quantization_size
+                    )
+                    f = torch.ones((c.shape[0], 1), dtype=torch.float32)
+                coords.append(c)
+                feats.append(f)
         if "image" in data_list[0]:
             images = [e["image"] for e in data_list]
-
-
 
         # TODO: implement multi-camera setup better?
         images_cam = {}
@@ -81,7 +93,7 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
         for n in range(1, 6):
             cam_name = f"cam{n}"
             if f"text_emb_{cam_name}" in data_list[0]:
-                text_embs_cam[cam_name]  = [e[f"text_emb_{cam_name}"] for e in data_list]
+                text_embs_cam[cam_name] = [e[f"text_emb_{cam_name}"] for e in data_list]
 
         utms = torch.stack([e["utm"] for e in data_list], dim=0)
 
@@ -90,8 +102,8 @@ def make_collate_fn(dataset: BaseDataset, batch_split_size: Optional[int] = None
         if batch_split_size is None or batch_split_size == 0:
             result = {}
             if "cloud" in data_list[0]:
-                result["coordinates"] = ME.utils.batched_coordinates(quantized_coords)
-                result["features"] = torch.ones((result["coordinates"].shape[0], 1), dtype=torch.float32)
+                result["coordinates"] = ME.utils.batched_coordinates(coords)
+                result["features"] = torch.cat(feats, dim=0)
             if "image" in data_list[0]:
                 result["images"] = torch.stack(images, dim=0)
 

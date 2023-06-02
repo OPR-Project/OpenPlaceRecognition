@@ -33,6 +33,9 @@ class BaseDataset(Dataset):
     cloud_transform: DefaultCloudTransform
     cloud_set_transform: DefaultCloudSetTransform
     mink_quantization_size: Optional[float]
+    with_intensity: bool = False
+    spherical_coords: bool = False
+    _name: str = "base_name"
 
     def __init__(
         self,

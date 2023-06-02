@@ -1,0 +1,19 @@
+dataset:
+  _target_: opr.datasets.oxford.OxfordDataset
+
+  dataset_root: /home/docker_opr/Datasets/PlaceRecognition/oxford
+  modalities: ${general.modalities}
+  images_subdir: stereo_centre_small
+  mink_quantization_size: 0.01
+  with_intensity: True
+
+sampler:
+  _target_: opr.datasets.samplers.batch_sampler.BatchSampler
+
+  batch_size: 16
+  batch_size_limit: 256
+  batch_expansion_rate: 1.4
+  positives_per_group: 2
+  seed: ${general.seed}
+
+num_workers: ${general.num_workers}
