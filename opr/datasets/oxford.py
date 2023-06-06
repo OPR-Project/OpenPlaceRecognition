@@ -64,6 +64,20 @@ class OxfordDataset(BaseDataset):
         """
         super().__init__(dataset_root, subset, modalities)
 
+        # lidar2image_index_pickle = self.dataset_root / f"{subset}_lidar2image_index.pickle"
+        # if not lidar2image_index_pickle.exists():
+        #     raise FileNotFoundError(
+        #         f"There is no {subset}_lidar2image_index.pickle file in given dataset_root={self.dataset_root}."
+        #         "Consider checking documentation on how to preprocess the dataset."
+        #     )
+        # with open(lidar2image_index_pickle, "rb") as f:
+        #     self.lidar2image_index = pickle.load(f)
+        # self.random_select_nearest_images = random_select_nearest_images
+
+        if "chonky" in self.modalities:  #! It's a bit tricky but idk how to do it better now
+            self.modalities.append('image')
+            self.modalities.append('semantic')
+
         if "image" in self.modalities:
             if images_subdir:
                 self.images_subdir = Path(images_subdir)

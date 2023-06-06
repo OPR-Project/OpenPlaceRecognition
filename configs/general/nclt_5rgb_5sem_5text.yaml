@@ -1,0 +1,9 @@
+debug: False
+seed: 31299
+checkpoints_dir: checkpoints/
+device: cuda
+num_workers: 4
+batch_expansion_th: 0.7
+modalities: [image_cam5, image_cam2, image_cam1, image_cam3, image_cam4, semantic_cam5, semantic_cam2, semantic_cam1, semantic_cam3, semantic_cam4,text_cam5, text_cam2, text_cam1, text_cam3, text_cam4]
+test_modality: fusion
+epochs: 60
