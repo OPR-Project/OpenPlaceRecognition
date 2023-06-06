@@ -1,0 +1,17 @@
+_target_: opr.models.base_models.ComposedModel
+
+cloud_module:
+  _target_: opr.models.base_models.CloudModule
+
+  backbone:
+    _target_: opr.models.layers.svt.SVTNet
+    out_channels: 256
+    conv0_kernel_size: 5
+    block: BasicBlock
+    layers: [1, 1, 1]
+    planes: [32, 64, 64]
+
+  head:
+    _target_: opr.models.layers.gem.MinkGeM
+    p: 3
+    eps: 0.000001
