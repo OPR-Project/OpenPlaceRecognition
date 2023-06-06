@@ -69,6 +69,10 @@ class OxfordDataset(BaseDataset):
         #     self.lidar2image_index = pickle.load(f)
         # self.random_select_nearest_images = random_select_nearest_images
 
+        if "chonky" in self.modalities:  #! It's a bit tricky but idk how to do it better now
+            self.modalities.append('image')
+            self.modalities.append('semantic')
+
         if "image" in self.modalities:
             if images_subdir:
                 self.images_subdir = Path(images_subdir)
