@@ -5,13 +5,13 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Install system dependencies for convinient development inside container
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-    git \
     curl \
+    git \
     wget \
     vim \
     sudo \
     tar \
-    unzip \ 
+    unzip \
     openssh-server \
     python3-pip \
     build-essential \
@@ -21,13 +21,22 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     ffmpeg \
     libsm6 \
     libxext6 \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev\
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev \
+    libxml2-dev \
+    libxmlsec1-dev \
+    libffi-dev \
+    liblzma-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# symlink for python3
-RUN ln -s /usr/bin/python3 /usr/bin/python
-
 # add user and his password
-ARG USER=docker_opr
+ENV USER=docker_opr
 ARG UID=1000
 ARG GID=1000
 # default password
@@ -43,6 +52,25 @@ RUN mkdir Datasets && chown -R ${UID}:${GID} /home/${USER}
 USER ${UID}:${GID}
 
 ENV PATH="/home/${USER}/.local/bin:$PATH"
+ENV PYENV_ROOT="/home/${USER}/.pyenv"
+ENV PATH="$PYENV_ROOT/bin:$PATH"
+
+# install pyenv to manage multiple python versions
+RUN curl https://pyenv.run | bash \
+    && echo 'export PYENV_ROOT="/home/$USER/.pyenv"' >> ~/.bashrc \
+    && echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc \
+    && echo 'eval "$(pyenv init -)"' >> ~/.bashrc \
+    && echo 'export PYENV_ROOT="/home/$USER/.pyenv"' >> ~/.profile \
+    && echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile \
+    && echo 'eval "$(pyenv init -)"' >> ~/.profile
+
+# install pythons (we have to explicitly source .profile to make pyenv work)
+RUN ["/bin/bash", "-c", "source /home/$USER/.profile \
+    && pyenv install 3.8 \
+    && pyenv install 3.9 \
+    && pyenv install 3.10 \
+    && pyenv install 3.11 \
+    && pyenv global 3.8" ]
 
 # upgrade pip
 RUN pip install --upgrade pip setuptools
