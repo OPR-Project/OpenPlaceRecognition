@@ -1,6 +1,6 @@
 [flake8]
 max-line-length = 110
-exclude = .git, venv, tests, __pycache__, __init__.py
+exclude = .git,venv,tests,__pycache__,__init__.py
 docstring-convention = google
 extend-select = B950
-extend-ignore = E203, E501
+extend-ignore = E203,E501
