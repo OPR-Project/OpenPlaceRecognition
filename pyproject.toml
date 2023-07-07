@@ -2,6 +2,53 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "opr"
+version = "0.1.1"
+description = "Place Recognition library based on Python and PyTorch framework."
+authors = [
+    {name = "Alexander Melekhin", email = "amelekhin96@gmail.com"},
+    {name = "Vitalyy Bezuglyj"},
+    {name = "Ilya Petryashin"},
+    {name = "Dmitry Yudin"},
+]
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+dependencies = [
+    "albumentations",
+    "hydra-core>=1.2",
+    "kaleido",
+    "matplotlib",
+    "numpy",
+    "opencv-python",
+    "pandas",
+    "plotly>=5.14.1",
+    "pytorch_metric_learning",
+    "requests>=2.31.0",
+    "scipy",
+    "tqdm",
+    "wandb",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "flake8",
+    "flake8-bugbear",
+    "flake8-docstrings",
+    "pep8-naming",
+    "mypy",
+    "pytest",
+    "pre-commit",
+]
+notebook = [
+    "ipykernel",
+    "ipywidgets>=7.6",
+    "jupyterlab>=3",
+    "jupyter-dash>=0.4.2",
+    "notebook>=5.3",
+]
 
 [tool.black]
 line-length = 110
