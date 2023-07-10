@@ -30,44 +30,16 @@ repos:
   - id: requirements-txt-fixer
   - id: trailing-whitespace
 
-# code formatter
-- repo: https://github.com/psf/black
-  rev: 23.3.0
-  hooks:
-  - id: black
-    args: ["--line-length=110"]
-
-# sort imports
-- repo: https://github.com/PyCQA/isort
-  rev: 5.12.0
-  hooks:
-  - id: isort
-    args: ["--profile=black"]
-
-# flake8 linter
-- repo: https://github.com/PyCQA/flake8
-  rev: 6.0.0
+- repo: local
   hooks:
   - id: flake8
-    exclude: __init__.py|tests
-    args:
-    - --max-line-length=110
-    - --docstring-convention=google
-    - --extend-select=B950
-    - --extend-ignore=E203,E501
-    additional_dependencies:
-    - pep8-naming
-    - flake8-bugbear
-    - flake8-docstrings
+    name: flake8
+    entry: flake8
+    language: system
+    types: [python]
 
 # type annotations linter
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v1.2.0
   hooks:
   - id: mypy
-
-# darglint docstring linter
-- repo: https://github.com/terrencepreilly/darglint
-  rev: v1.8.1
-  hooks:
-  - id: darglint
