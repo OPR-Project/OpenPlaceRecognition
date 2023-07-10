@@ -37,9 +37,8 @@ repos:
     entry: flake8
     language: system
     types: [python]
-
-# type annotations linter
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v1.2.0
-  hooks:
   - id: mypy
+    name: mypy
+    entry: mypy src scripts tests
+    language: system
+    types: [python]
