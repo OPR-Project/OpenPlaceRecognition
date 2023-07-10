@@ -1,5 +1,6 @@
 bandit==1.7.5
 black==23.3.0
+coverage[toml]==7.2.7
 darglint==1.8.1
 flake8==6.0.0
 flake8-annotations==3.0.1
@@ -16,4 +17,5 @@ pep8-naming==0.13.3
 pre-commit==3.3.3
 pygls==1.0.2
 pytest==7.4.0
+pytest-cov==4.1.0
 types-tqdm==4.65.0.1
