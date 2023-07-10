@@ -39,6 +39,6 @@ repos:
     types: [python]
   - id: mypy
     name: mypy
-    entry: mypy src scripts tests
+    entry: mypy
     language: system
     types: [python]
