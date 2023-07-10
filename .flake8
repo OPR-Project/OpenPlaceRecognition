@@ -1,6 +1,10 @@
 [flake8]
+select = ANN,B,B9,BLK,C,D,DAR,E,F,I,S,W
+ignore = ANN401,E203,E501,W503
+per-file-ignores =
+    tests/*:S101
+max-complexity = 10
 max-line-length = 110
-exclude = .git,venv,tests,__pycache__,__init__.py
+exclude = .git,venv,build,__pycache__
 docstring-convention = google
-extend-select = B950
-extend-ignore = E203,E501
+strictness = short
