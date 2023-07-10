@@ -70,7 +70,7 @@ RUN ["/bin/bash", "-c", "source /home/$USER/.profile \
     && pyenv install 3.9 \
     && pyenv install 3.10 \
     && pyenv install 3.11 \
-    && pyenv global 3.8" ]
+    && pyenv global 3.8 3.9 3.10 3.11" ]
 
 # upgrade pip
 RUN pip install --upgrade pip setuptools
