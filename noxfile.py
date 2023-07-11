@@ -28,7 +28,8 @@ def install_cpu_torch(session: Session, pytorch: str = "1.12.1") -> None:
 
 def install_minkowskiengine(session: Session) -> None:
     """Install the MinkowskiEngine."""
-    session.install("git+https://github.com/NVIDIA/MinkowskiEngine", "--no-deps")
+    session.install("setuptools==68.0.0")
+    session.run("pip", "install", "git+https://github.com/NVIDIA/MinkowskiEngine", "--no-deps")
 
 
 @nox.session
@@ -46,7 +47,7 @@ def tests(session: Session, pytorch: str) -> None:
     args = session.posargs or ["--cov"]
     install_cpu_torch(session, pytorch)
     install_minkowskiengine(session)
-    session.install(".")
+    session.install("-e", ".")
     session.install("-r", "requirements-dev.txt")
     session.run("pytest", *args)
 
@@ -58,6 +59,6 @@ def lint(session: Session) -> None:
     args = session.posargs or locations
     install_cpu_torch(session)
     install_minkowskiengine(session)
-    session.install(".")
+    session.install("-e", ".")
     session.install("-r", "requirements-dev.txt")
     session.run("flake8", *args)
