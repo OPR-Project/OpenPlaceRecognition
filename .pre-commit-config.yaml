@@ -37,9 +37,8 @@ repos:
     entry: flake8
     language: system
     types: [python]
+
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v1.4.1
+  hooks:
   - id: mypy
-    args: [--ignore-missing-imports]
-    name: mypy
-    entry: mypy
-    language: system
-    types: [python]
