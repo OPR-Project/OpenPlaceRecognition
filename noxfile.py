@@ -35,7 +35,7 @@ def install_minkowskiengine(session: Session) -> None:
         (python, pytorch)
         for python in PYTHON_VERSIONS
         for pytorch in PYTORCH_VERSIONS
-        if (python, pytorch) != ("3.11", "1.12.1")
+        if (python, pytorch) not in (("3.11", "1.12.1"), ("3.11", "1.13.1"))
     ],
 )
 def tests(session: Session, pytorch: str) -> None:
