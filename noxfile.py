@@ -2,7 +2,7 @@
 import nox
 from nox.sessions import Session
 
-PYTHON_VERSIONS = ("3.8", "3.9", "3.10", "3.11")
+PYTHON_VERSIONS = ("3.8", "3.9", "3.10")
 PYTORCH_VERSIONS = ("1.12.1", "1.13.1", "2.0.1")
 TORCHVISION_VERSIONS_DICT = {
     "1.12.1": "0.13.1",
