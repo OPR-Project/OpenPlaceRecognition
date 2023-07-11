@@ -38,6 +38,7 @@ repos:
     language: system
     types: [python]
   - id: mypy
+    args: [--ignore-missing-imports]
     name: mypy
     entry: mypy
     language: system
