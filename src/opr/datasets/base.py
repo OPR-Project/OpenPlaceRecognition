@@ -5,6 +5,7 @@ from typing import Dict, List, Literal, Tuple, Union
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
+from scipy.spatial.distance import cdist
 from torch import Tensor
 from torch.utils.data import Dataset
 
@@ -70,8 +71,9 @@ class BasePlaceRecognitionDataset(Dataset):
         if negative_threshold < 0.0:
             raise ValueError(f"negative_threshold must be non-negative, but {negative_threshold!r} given.")
 
-        self._positives_index = self._build_index_by_distance_threshold(positive_threshold)
-        self._nonnegative_index = self._build_index_by_distance_threshold(negative_threshold)
+        self._positives_index, self._nonnegative_index = self._build_indexes(
+            positive_threshold, negative_threshold
+        )
 
     def __len__(self) -> int:  # noqa: D105
         return len(self.dataset_df)
@@ -79,25 +81,31 @@ class BasePlaceRecognitionDataset(Dataset):
     def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
         raise NotImplementedError()
 
-    def _build_index_by_distance_threshold(self, threshold_value: float) -> List[np.ndarray]:
+    def _build_indexes(
+        self, positive_threshold: float, negative_threshold: float
+    ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
         """Build index of elements that satisfy a UTM distance threshold condition.
 
         Args:
-            threshold_value (float): The maximum UTM distance between two elements
+            positive_threshold (float): The maximum UTM distance between two elements
                 for them to be considered positive.
+            negative_threshold (float): The maximum UTM distance between two elements
+                for them to be considered non-negative.
 
         Returns:
-            List[np.ndarray]: List of element indexes that satisfy the UTM distance threshold condition
+            Tuple[List[np.ndarray], List[np.ndarray]]: Tuple (positive_indices, nonnegative_indices)
+                of two lists of element indexes that satisfy the UTM distance threshold condition
                 for each element in the dataset.
         """
-        distances = np.linalg.norm(
-            self.dataset_df[["northing", "easting"]].to_numpy(dtype=np.float64)[:, None, :]
-            - self.dataset_df[["northing", "easting"]].to_numpy(dtype=np.float64)[None, :, :],
-            axis=-1,
+        distances = cdist(
+            self.dataset_df[["northing", "easting"]].to_numpy(dtype=np.float64),
+            self.dataset_df[["northing", "easting"]].to_numpy(dtype=np.float64),
         )
-        mask = distances < threshold_value
-        result = [np.where(row)[0] for row in mask]
-        return result
+        positives_mask = (distances > 0) & (distances < positive_threshold)
+        nonnegatives_mask = distances < negative_threshold
+        positive_indices = [np.where(row)[0] for row in positives_mask]
+        nonnegative_indices = [np.where(row)[0] for row in nonnegatives_mask]
+        return positive_indices, nonnegative_indices
 
     @property
     def positives_index(self) -> List[np.ndarray]:
