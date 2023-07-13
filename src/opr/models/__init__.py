@@ -1,1 +1,1 @@
-from .multimodal import minkloc_multimodal
+"""Module for models."""
