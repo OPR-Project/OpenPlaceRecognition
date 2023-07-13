@@ -1,7 +1,6 @@
 """Base dataset implementation."""
-import pickle
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Tuple, Union
+from typing import Dict, List, Literal, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -9,87 +8,70 @@ from pandas import DataFrame
 from torch import Tensor
 from torch.utils.data import Dataset
 
-from opr.datasets.augmentations import (
-    DefaultCloudSetTransform,
-    DefaultCloudTransform,
-    DefaultImageTransform,
-)
 
-
-class BaseDataset(Dataset):
+class BasePlaceRecognitionDataset(Dataset):
     """Base class for track-based Place Recognition dataset."""
 
-    valid_subsets: Tuple[str, ...] = ("train", "val", "test")
-    # valid_modalities: Tuple[str, ...] = ("image", "cloud")
     dataset_root: Path
     subset: Literal["train", "val", "test"]
     dataset_df: DataFrame
-    modalities: Tuple[str, ...]
-    images_subdir: Optional[Path] = None
-    clouds_subdir: Optional[Path] = None
-    positives_index: Dict[int, List[int]]
-    nonnegatives_index: Dict[int, List[int]]
-    image_transform: DefaultImageTransform
-    cloud_transform: DefaultCloudTransform
-    cloud_set_transform: DefaultCloudSetTransform
-    mink_quantization_size: Optional[float]
-    with_intensity: bool = False
-    spherical_coords: bool = False
-    _name: str = "base_name"
+    data_to_load: Tuple[str, ...]
 
     def __init__(
         self,
         dataset_root: Union[str, Path],
-        subset: Literal["train", "val", "test"] = "train",
-        modalities: Union[str, Tuple[str, ...]] = ("image", "cloud"),
+        subset: Literal["train", "val", "test"],
+        data_to_load: Union[str, Tuple[str, ...]],
+        positive_threshold: float = 10.0,
+        negative_threshold: float = 50.0,
     ) -> None:
         """Base class for track-based Place Recognition dataset.
 
         Args:
-            dataset_root (Union[str, Path]): Path to the dataset root directory.
-            subset (Literal["train", "val", "test"]): Current subset to load. Defaults to "train".
-            modalities (Union[str, Tuple[str, ...]]): List of modalities for which the data should be loaded.
-                Defaults to ( "image", "cloud").
+            dataset_root (Union[str, Path]): The path to the root directory of the dataset.
+            subset (Literal["train", "val", "test"]): The subset of the dataset to load.
+            data_to_load (Union[str, Tuple[str, ...]]): The list of data sources to load.
+            positive_threshold (float): The maximum distance between two elements
+                for them to be considered positive. Defaults to 10.0.
+            negative_threshold (float): The maximum distance between two elements
+                for them to be considered non-negative. Defaults to 50.0.
 
         Raises:
-            FileNotFoundError: If dataset_root doesn't exist.
-            ValueError: If invalid subset given.
-            FileNotFoundError: If there is no csv file for given subset.
-            ValueError: If invalid modalities given.
-            ValueError: If "subset_positives_index.pkl" file is missing.
-            ValueError: If "subset_nonnegatives_index.pkl" file is missing.
+            FileNotFoundError: If the dataset_root directory does not exist.
+            ValueError: If an invalid subset is given.
+            FileNotFoundError: If the csv file for the given subset does not exist.
+            ValueError: If positive_threshold or negative_threshold is a negative number.
         """
         self.dataset_root = Path(dataset_root)
         if not self.dataset_root.exists():
-            raise FileNotFoundError(f"Given dataset_root={self.dataset_root} doesn't exist")
+            raise FileNotFoundError(f"Given dataset_root={self.dataset_root!r} doesn't exist")
 
-        if subset not in self.valid_subsets:
-            raise ValueError(f"Invalid subset argument: '{subset}' not in {self.valid_subsets}")
+        valid_subsets = ("train", "val", "test")
+        if subset not in valid_subsets:
+            raise ValueError(f"Invalid subset argument: {subset!r} not in {valid_subsets!r}")
         self.subset = subset
-        subset_csv = self.dataset_root / f"{subset}.csv"
-        if not subset_csv.exists():
+
+        subset_csv_path = self.dataset_root / f"{subset}.csv"
+        if not subset_csv_path.exists():
             raise FileNotFoundError(
-                f"There is no {subset}.csv file in given dataset_root={self.dataset_root}."
+                f"There is no {subset}.csv file in given dataset_root={self.dataset_root!r}."
                 "Consider checking documentation on how to preprocess the dataset."
             )
-        self.dataset_df = pd.read_csv(subset_csv, index_col=0)
+        self.dataset_df = pd.read_csv(subset_csv_path, index_col=0)
 
-        if isinstance(modalities, str):
-            modalities = tuple([modalities])
-        # if not set(modalities).issubset(self.valid_modalities):
-        #     raise ValueError(f"Invalid modalities argument: '{modalities}' not in {self.valid_modalities}")
-        self.modalities = modalities
+        if isinstance(data_to_load, str):
+            data_to_load = tuple([data_to_load])
+        else:
+            data_to_load = tuple(data_to_load)
+        self.data_to_load = data_to_load
 
-        positives_index_pkl = self.dataset_root / f"{subset}_positives_index.pkl"
-        if not positives_index_pkl.exists():
-            raise ValueError(f"Missing '{subset}_positives_index.pkl' file.")
-        with open(positives_index_pkl, "rb") as f:
-            self.positives_index = pickle.load(f)
-        nonnegatives_index_pkl = self.dataset_root / f"{subset}_nonnegatives_index.pkl"
-        if not nonnegatives_index_pkl.exists():
-            raise ValueError(f"Missing '{subset}_nonnegatives_index.pkl' file.")
-        with open(nonnegatives_index_pkl, "rb") as f:
-            self.nonnegatives_index = pickle.load(f)
+        if positive_threshold < 0.0:
+            raise ValueError(f"positive_threshold must be non-negative, but {positive_threshold!r} given.")
+        if negative_threshold < 0.0:
+            raise ValueError(f"negative_threshold must be non-negative, but {negative_threshold!r} given.")
+
+        self._positives_index = self._build_index_by_distance_threshold(positive_threshold)
+        self._nonnegative_index = self._build_index_by_distance_threshold(negative_threshold)
 
     def __len__(self) -> int:  # noqa: D105
         return len(self.dataset_df)
@@ -97,24 +79,36 @@ class BaseDataset(Dataset):
     def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
         raise NotImplementedError()
 
-    def get_positives(self, idx: int) -> np.ndarray:
-        """Return the indices of positive elements.
+    def _build_index_by_distance_threshold(self, threshold_value: float) -> List[np.ndarray]:
+        """Build index of elements that satisfy a UTM distance threshold condition.
 
         Args:
-            idx (int): Index of element for which the positives needs to be found.
+            threshold_value (float): The maximum UTM distance between two elements
+                for them to be considered positive.
 
         Returns:
-            ndarray: The array of indices of positive elements.
+            List[np.ndarray]: List of element indexes that satisfy the UTM distance threshold condition
+                for each element in the dataset.
         """
-        return np.array(self.positives_index[idx])
+        distances = np.linalg.norm(
+            self.dataset_df[["northing", "easting"]].to_numpy(dtype=np.float64)[:, None, :]
+            - self.dataset_df[["northing", "easting"]].to_numpy(dtype=np.float64)[None, :, :],
+            axis=-1,
+        )
+        mask = distances < threshold_value
+        result = [np.where(row)[0] for row in mask]
+        return result
 
-    def get_nonnegatives(self, idx: int) -> np.ndarray:
-        """Return the indices of non-negatives elements.
+    @property
+    def positives_index(self) -> List[np.ndarray]:
+        """List of indexes of positive samples for each element in the dataset."""
+        return self._positives_index
 
-        Args:
-            idx (int): Index of element for which the non-negatives needs to be found.
+    @property
+    def nonnegative_index(self) -> List[np.ndarray]:
+        """List of indexes of non-negatives samples for each element in the dataset."""
+        return self._nonnegative_index
 
-        Returns:
-            ndarray: The array of indices of non-negatives elements.
-        """
-        return np.array(self.nonnegatives_index[idx])
+    def collate_fn(self) -> Tuple[Dict[str, Tensor], Tensor, Tensor]:
+        """Collate function for torch.utils.data.DataLoader."""
+        raise NotImplementedError()
