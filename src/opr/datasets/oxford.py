@@ -131,8 +131,8 @@ class OxfordDataset(BasePlaceRecognitionDataset):
         self._max_point_distance = max_point_distance
         self._spherical_coords = spherical_coords
 
-    def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
-        data: Dict[str, Union[int, Tensor]] = {"idx": idx}
+    def __getitem__(self, idx: int) -> Dict[str, Tensor]:  # noqa: D105
+        data = {"idx": torch.tensor(idx)}
         row = self.dataset_df.iloc[idx]
         data["utm"] = torch.tensor(row[["northing", "easting"]].to_numpy(dtype=np.float64))
         track_dir = self.dataset_root / str(row["track"])

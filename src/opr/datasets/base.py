@@ -78,7 +78,7 @@ class BasePlaceRecognitionDataset(Dataset):
     def __len__(self) -> int:  # noqa: D105
         return len(self.dataset_df)
 
-    def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
+    def __getitem__(self, idx: int) -> Dict[str, Tensor]:  # noqa: D105
         raise NotImplementedError()
 
     def _build_indexes(
