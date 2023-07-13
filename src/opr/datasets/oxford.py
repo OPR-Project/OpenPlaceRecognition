@@ -57,8 +57,7 @@ class OxfordDataset(BasePlaceRecognitionDataset):
         Original dataset site: https://robotcar-dataset.robots.ox.ac.uk/
 
         We use the preprocessed version of the dataset that was introduced
-        in PointNetVLAD paper: https://arxiv.org/abs/1804.03492.
-        Version with intensity was introduced in MinkLoc3D-SI paper: https://arxiv.org/abs/2112.06539
+            in PointNetVLAD paper: https://arxiv.org/abs/1804.03492.
 
         Args:
             dataset_root (Union[str, Path]): Path to the dataset root directory.
