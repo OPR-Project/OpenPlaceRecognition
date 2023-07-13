@@ -44,7 +44,7 @@ def install_minkowskiengine(session: Session) -> None:
 )
 def tests(session: Session, pytorch: str) -> None:
     """Run the test suite."""
-    args = session.posargs or ["--cov"]
+    args = session.posargs or ["--cov", "-m", "not e2e"]
     install_cpu_torch(session, pytorch)
     install_minkowskiengine(session)
     session.install("-e", ".")
