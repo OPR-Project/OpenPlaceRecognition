@@ -117,6 +117,6 @@ class BasePlaceRecognitionDataset(Dataset):
         """List of indexes of non-negatives samples for each element in the dataset."""
         return self._nonnegative_index
 
-    def collate_fn(self) -> Tuple[Dict[str, Tensor], Tensor, Tensor]:
+    def collate_fn(self, data_list: List[Dict[str, Tensor]]) -> Tuple[Dict[str, Tensor], Tensor, Tensor]:
         """Collate function for torch.utils.data.DataLoader."""
         raise NotImplementedError()
