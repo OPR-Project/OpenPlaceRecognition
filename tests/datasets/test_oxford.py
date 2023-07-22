@@ -20,7 +20,7 @@ def test_oxford_dataset_instantiate_with_real_data() -> None:
 
 
 @pytest.mark.e2e
-def test_oxford_dataset_collate_fn_With_real_data() -> None:
+def test_oxford_dataset_collate_fn_with_real_data() -> None:
     """Should return correct batch, positives and negatives masks."""
     config = load_config("configs/dataset/oxford.yaml")
     config.dataset_root = "/home/docker_opr/Datasets/pnvlad_oxford_robotcar"
