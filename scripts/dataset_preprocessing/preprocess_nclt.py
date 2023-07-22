@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from pathlib import Path
 from time import time
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import cv2
 import matplotlib
@@ -366,6 +366,7 @@ def process_images(
         for n, camera_subdir in enumerate(tqdm(camera_subdirs, desc="Cameras", position=1, leave=False)):
             output_small_cam_subdir = output_small_dir / camera_subdir.name
             output_small_cam_subdir.mkdir(exist_ok=True)
+            output_large_cam_subdir = None
             if save_large:
                 output_large_cam_subdir = output_large_dir / camera_subdir.name
                 output_large_cam_subdir.mkdir(exist_ok=True)
@@ -399,14 +400,14 @@ def process_image(
     undistortion_map: Undistort,
     out_small_filepath: Path,
     save_large: bool,
-    output_large_cam_subdir: Path,
+    output_large_cam_subdir: Optional[Path],
     timestamp: int,
 ):
     img = cv2.imread(str(img_filepath))
     img = undistortion_map(img)
     img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
     img = center_crop(img, IMG_SIZE_LARGE)
-    if save_large:
+    if save_large and output_large_cam_subdir is not None:
         out_large_filepath = output_large_cam_subdir / f"{timestamp}.png"
         cv2.imwrite(str(out_large_filepath), img)
     img = cv2.resize(img, IMG_SIZE_SMALL, interpolation=cv2.INTER_CUBIC)
