@@ -1,0 +1,3 @@
+_target_: opr.miners.batch_hard_triplet_miner.BatchHardTripletMiner
+
+distance: pytorch_metric_learning.distances.LpDistance
