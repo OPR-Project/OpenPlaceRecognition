@@ -32,6 +32,8 @@ DEFAULT_TRACKLIST = [
     "2012-11-04",
     "2012-12-01",
 ]
+IMG_SIZE_LARGE = (768, 960)
+IMG_SIZE_SMALL = (256, 320)
 
 
 class Undistort:
@@ -403,11 +405,11 @@ def process_image(
     img = cv2.imread(str(img_filepath))
     img = undistortion_map(img)
     img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-    img = center_crop(img, (768, 960))
+    img = center_crop(img, IMG_SIZE_LARGE)
     if save_large:
         out_large_filepath = output_large_cam_subdir / f"{timestamp}.png"
         cv2.imwrite(str(out_large_filepath), img)
-    img = cv2.resize(img, (256, 320), interpolation=cv2.INTER_CUBIC)
+    img = cv2.resize(img, IMG_SIZE_SMALL, interpolation=cv2.INTER_CUBIC)
     cv2.imwrite(str(out_small_filepath), img)
 
 
