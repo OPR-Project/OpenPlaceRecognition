@@ -217,7 +217,7 @@ class OxfordDataset(BasePlaceRecognitionDataset):
                     for e in coords_list
                 ]
                 result["pointclouds_lidar_coords"] = ME.utils.batched_coordinates(coords_list)
-                result["pointclouds_lidar_feats"] = torch.stack(feats_list)
+                result["pointclouds_lidar_feats"] = torch.cat(feats_list)
             elif data_key == "pointcloud_lidar_feats":
                 continue
             else:
