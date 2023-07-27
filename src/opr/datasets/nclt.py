@@ -174,13 +174,12 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                 data[data_source] = mask
             elif data_source == "pointcloud_lidar":
                 pc_filepath = track_dir / self._pointclouds_dirname / f"{row['pointcloud']}.bin"
-                coords = self._load_pc(pc_filepath)
-                coords = self.pointcloud_transform(coords)
+                pointcloud = self._load_pc(pc_filepath)
+                data[f"{data_source}_coords"] = self.pointcloud_transform(pointcloud[:, :3])
                 if self._spherical_coords:
                     # TODO: implement conversion to spherical coords
                     raise NotImplementedError("Spherical coords are not implemented yet.")
-                data[f"{data_source}_coords"] = coords
-                data[f"{data_source}_feats"] = torch.ones_like(coords[:, :1])
+                data[f"{data_source}_feats"] = torch.ones_like(pointcloud[:, :1])
 
         return data
 
@@ -224,12 +223,14 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                     # Apply the same transformation on all dataset elements
                     clouds = self.pointcloud_set_transform(coords_tensor)
                 coords_list = torch.split(clouds.squeeze(0), split_size_or_sections=n_points, dim=0)
-                coords_list = [
+                cf_list = [
                     ME.utils.sparse_quantize(
-                        coordinates=e, quantization_size=self._pointcloud_quantization_size
+                        coordinates=c, features=f, quantization_size=self._pointcloud_quantization_size
                     )
-                    for e in coords_list
+                    for c, f in zip(coords_list, feats_list)
                 ]
+                coords_list = [e[0] for e in cf_list]
+                feats_list = [e[1] for e in cf_list]
                 result["pointclouds_lidar_coords"] = ME.utils.batched_coordinates(coords_list)
                 result["pointclouds_lidar_feats"] = torch.cat(feats_list)
             elif data_key == "pointcloud_lidar_feats":
