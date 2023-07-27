@@ -27,6 +27,7 @@ class NCLTDataset(BasePlaceRecognitionDataset):
     _pointcloud_quantization_size: Optional[Union[float, Tuple[float, float, float]]]
     _max_point_distance: Optional[float]
     _spherical_coords: bool
+    _use_intensity_values: bool
     _valid_data: Tuple[str, ...] = (
         "image_lb3_Cam0",
         "image_lb3_Cam1",
@@ -57,6 +58,7 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         pointcloud_quantization_size: Optional[Union[float, Tuple[float, float, float]]] = 0.01,
         max_point_distance: Optional[float] = None,
         spherical_coords: bool = False,
+        use_intensity_values: bool = False,
     ) -> None:
         """NCLT dataset implementation.
 
@@ -81,6 +83,7 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                 Defaults to None.
             spherical_coords (bool): Whether to use spherical coordinates for point clouds.
                 Defaults to False.
+            use_intensity_values (bool): Whether to use intensity values for point clouds. Defaults to False.
 
         Raises:
             ValueError: If data_to_load contains invalid data source names.
@@ -128,6 +131,7 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         self._pointcloud_quantization_size = pointcloud_quantization_size
         self._max_point_distance = max_point_distance
         self._spherical_coords = spherical_coords
+        self._use_intensity_values = use_intensity_values
 
         # TODO: review legacy code:
         # if text_embs_dir == "tfidf_pca":
@@ -179,7 +183,10 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                 if self._spherical_coords:
                     # TODO: implement conversion to spherical coords
                     raise NotImplementedError("Spherical coords are not implemented yet.")
-                data[f"{data_source}_feats"] = torch.ones_like(pointcloud[:, :1])
+                if self._use_intensity_values:
+                    data[f"{data_source}_feats"] = pointcloud[:, 3].unsqueeze(1)
+                else:
+                    data[f"{data_source}_feats"] = torch.ones_like(pointcloud[:, :1])
 
         return data
 
