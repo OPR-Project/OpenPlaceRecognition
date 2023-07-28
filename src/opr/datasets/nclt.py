@@ -92,6 +92,9 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         # TODO: ^ docstring is also not DRY -> it is almost the same as in Oxford dataset
         super().__init__(dataset_root, subset, data_to_load, positive_threshold, negative_threshold)
 
+        if subset == "test":
+            self.dataset_df["in_query"] = True  # for compatibility with Oxford Dataset
+
         if any(elem not in self._valid_data for elem in self.data_to_load):
             raise ValueError(f"Invalid data_to_load argument. Valid data list: {self._valid_data!r}")
 
