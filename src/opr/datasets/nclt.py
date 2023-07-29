@@ -15,7 +15,7 @@ from opr.datasets.augmentations import (
     DefaultSemanticTransform,
 )
 from opr.datasets.base import BasePlaceRecognitionDataset
-from opr.utils import in_sorted_array
+from opr.utils import cartesian_to_spherical, in_sorted_array
 
 
 class NCLTDataset(BasePlaceRecognitionDataset):
@@ -183,9 +183,9 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                 pc_filepath = track_dir / self._pointclouds_dirname / f"{row['pointcloud']}.bin"
                 pointcloud = self._load_pc(pc_filepath)
                 data[f"{data_source}_coords"] = self.pointcloud_transform(pointcloud[:, :3])
-                if self._spherical_coords:
-                    # TODO: implement conversion to spherical coords
-                    raise NotImplementedError("Spherical coords are not implemented yet.")
+                # if self._spherical_coords:
+                #     # TODO: implement conversion to spherical coords
+                #     raise NotImplementedError("Spherical coords are not implemented yet.")
                 if self._use_intensity_values:
                     data[f"{data_source}_feats"] = pointcloud[:, 3].unsqueeze(1)
                 else:
@@ -195,6 +195,8 @@ class NCLTDataset(BasePlaceRecognitionDataset):
 
     def _load_pc(self, filepath: Union[str, Path]) -> Tensor:
         pc = np.fromfile(filepath, dtype=np.float32).reshape(-1, 4)
+        if self._spherical_coords:
+            pc = cartesian_to_spherical(pc, dataset_name="nclt")
         if self._max_point_distance is not None:
             pc = pc[np.linalg.norm(pc, axis=1) < self._max_point_distance]
         pc_tensor = torch.tensor(pc, dtype=torch.float)
