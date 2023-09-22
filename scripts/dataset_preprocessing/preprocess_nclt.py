@@ -20,7 +20,7 @@ from tqdm import tqdm
 
 matplotlib.use("Agg")
 
-DEFAULT_TRACKLIST = [
+ADAFUSION_TRACKLIST = [
     "2012-01-08",
     "2012-01-22",
     "2012-02-12",
@@ -31,6 +31,35 @@ DEFAULT_TRACKLIST = [
     "2012-10-28",
     "2012-11-04",
     "2012-12-01",
+]
+FULL_TRACKLIST = [
+    "2012-01-08",
+    "2012-01-22",
+    "2012-02-04",
+    "2012-02-12",
+    "2012-02-19",
+    "2012-03-25",
+    "2012-04-29",
+    "2012-05-26",
+    "2012-08-04",
+    "2012-09-28",
+    "2012-11-04",
+    "2012-11-17",
+    "2013-01-10",
+    "2013-04-05",
+    "2012-01-15",
+    "2012-02-02",
+    "2012-02-05",
+    "2012-02-18",
+    "2012-03-17",
+    "2012-03-31",
+    "2012-05-11",
+    "2012-06-15",
+    "2012-08-20",
+    "2012-10-28",
+    "2012-11-16",
+    "2012-12-01",
+    "2013-02-23",
 ]
 IMG_SIZE_LARGE = (768, 960)
 IMG_SIZE_SMALL = (256, 320)
@@ -463,7 +492,7 @@ def process_lidar_file(src_filepath: Path, out_filepath: Path) -> None:
 def preprocess_nclt(
     dataset_root: Path,
     output_dir: Path,
-    track_list: List[str] = DEFAULT_TRACKLIST,
+    track_list: List[str],
     save_large: bool = False,
     num_threads: int = 1,
 ) -> None:
@@ -527,7 +556,11 @@ if __name__ == "__main__":
 
     start_time = time()
     preprocess_nclt(
-        dataset_root=dataset_root, output_dir=output_dir, save_large=save_large, num_threads=num_threads
+        dataset_root=dataset_root,
+        output_dir=output_dir,
+        track_list=ADAFUSION_TRACKLIST,
+        save_large=save_large,
+        num_threads=num_threads,
     )
     end_time = time()
     print()
