@@ -1,6 +1,6 @@
 """Base dataset implementation."""
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Tuple, Union
+from typing import Dict, List, Literal, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -159,13 +159,4 @@ class BasePlaceRecognitionDataset(Dataset):
 
     def collate_fn(self, data_list: List[Dict[str, Tensor]]) -> Dict[str, Tensor]:
         """Collate function for torch.utils.data.DataLoader."""
-        raise NotImplementedError()
-
-    def distributed_collate_fn(
-        self,
-        data_list: List[Dict[str, Tensor]],
-        num_replicas: Optional[int] = None,
-        rank: Optional[int] = None,
-    ) -> Dict[str, Tensor]:
-        """Collate function for torch.utils.data.DataLoader with distributed training."""
         raise NotImplementedError()
