@@ -80,10 +80,14 @@ class OxfordDataset(BasePlaceRecognitionDataset):
                 Defaults to None.
             spherical_coords (bool): Whether to use spherical coordinates for point clouds.
                 Defaults to False.
-            image_transform (Any, optional): Images transform. Defaults to None.
-            semantic_transform (Any, optional): Semantic masks transform. Defaults to None.
-            pointcloud_transform (Any, optional): Point clouds transform. Defaults to None.
-            pointcloud_set_transform (Any, optional): Point clouds set transform. Defaults to None.
+            image_transform (Any, optional): Images transform. If None, DefaultImageTransform will be used.
+                Defaults to None.
+            semantic_transform (Any, optional): Semantic masks transform. If None, DefaultSemanticTransform
+                will be used. Defaults to None.
+            pointcloud_transform (Any, optional): Point clouds transform. If None, DefaultCloudTransform
+                will be used. Defaults to None.
+            pointcloud_set_transform (Any, optional): Point clouds set transform. If None,
+                DefaultCloudSetTransform will be used. Defaults to None.
 
         Raises:
             ValueError: If data_to_load contains invalid data source names.
