@@ -1,11 +1,11 @@
 """Base dataset implementation."""
 from pathlib import Path
-from typing import Dict, List, Literal, Tuple, Union
+from typing import Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
+import torch
 from pandas import DataFrame
-from scipy.spatial.distance import cdist
 from torch import Tensor
 from torch.utils.data import Dataset
 
@@ -74,6 +74,7 @@ class BasePlaceRecognitionDataset(Dataset):
         self._positives_index, self._nonnegative_index = self._build_indexes(
             positive_threshold, negative_threshold
         )
+        self._positives_mask, self._negatives_mask = self._build_masks(positive_threshold, negative_threshold)
 
     def __len__(self) -> int:  # noqa: D105
         return len(self.dataset_df)
@@ -81,9 +82,34 @@ class BasePlaceRecognitionDataset(Dataset):
     def __getitem__(self, idx: int) -> Dict[str, Tensor]:  # noqa: D105
         raise NotImplementedError()
 
+    def _build_masks(self, positive_threshold: float, negative_threshold: float) -> Tuple[Tensor, Tensor]:
+        """Build boolean masks for dataset elements that satisfy a UTM distance threshold condition.
+
+        Args:
+            positive_threshold (float): The maximum UTM distance between two elements
+                for them to be considered positive.
+            negative_threshold (float): The maximum UTM distance between two elements
+                for them to be considered non-negative.
+
+        Returns:
+            Tuple[Tensor, Tensor]: A tuple of two boolean masks that satisfy the UTM distance threshold
+                condition for each element in the dataset. The first mask contains the indices of elements
+                that satisfy the positive threshold, while the second mask contains the indices of elements
+                that satisfy the negative threshold.
+        """
+        northing_easting = torch.tensor(
+            self.dataset_df[["northing", "easting"]].to_numpy(dtype=np.float64), dtype=torch.float64
+        )
+        distances = torch.cdist(northing_easting, northing_easting)
+
+        positives_mask = (distances > 0) & (distances < positive_threshold)
+        negatives_mask = distances > negative_threshold
+
+        return positives_mask, negatives_mask
+
     def _build_indexes(
         self, positive_threshold: float, negative_threshold: float
-    ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+    ) -> Tuple[List[Tensor], List[Tensor]]:
         """Build index of elements that satisfy a UTM distance threshold condition.
 
         Args:
@@ -93,30 +119,53 @@ class BasePlaceRecognitionDataset(Dataset):
                 for them to be considered non-negative.
 
         Returns:
-            Tuple[List[np.ndarray], List[np.ndarray]]: Tuple (positive_indices, nonnegative_indices)
+            Tuple[List[Tensor], List[Tensor]]: Tuple (positive_indices, nonnegative_indices)
                 of two lists of element indexes that satisfy the UTM distance threshold condition
                 for each element in the dataset.
         """
-        distances = cdist(
-            self.dataset_df[["northing", "easting"]].to_numpy(dtype=np.float64),
-            self.dataset_df[["northing", "easting"]].to_numpy(dtype=np.float64),
+        northing_easting = torch.tensor(
+            self.dataset_df[["northing", "easting"]].to_numpy(dtype=np.float64), dtype=torch.float64
         )
+        distances = torch.cdist(northing_easting, northing_easting)
+
         positives_mask = (distances > 0) & (distances < positive_threshold)
         nonnegatives_mask = distances < negative_threshold
-        positive_indices = [np.where(row)[0] for row in positives_mask]
-        nonnegative_indices = [np.where(row)[0] for row in nonnegatives_mask]
+
+        # Convert the boolean masks to index tensors
+        positive_indices = [torch.nonzero(row).squeeze(dim=-1) for row in positives_mask]
+        nonnegative_indices = [torch.nonzero(row).squeeze(dim=-1) for row in nonnegatives_mask]
+
         return positive_indices, nonnegative_indices
 
     @property
-    def positives_index(self) -> List[np.ndarray]:
+    def positives_index(self) -> List[Tensor]:
         """List of indexes of positive samples for each element in the dataset."""
         return self._positives_index
 
     @property
-    def nonnegative_index(self) -> List[np.ndarray]:
+    def nonnegative_index(self) -> List[Tensor]:
         """List of indexes of non-negatives samples for each element in the dataset."""
         return self._nonnegative_index
 
-    def collate_fn(self, data_list: List[Dict[str, Tensor]]) -> Tuple[Dict[str, Tensor], Tensor, Tensor]:
+    @property
+    def positives_mask(self) -> Tensor:
+        """Boolean mask of positive samples for each element in the dataset."""
+        return self._positives_mask
+
+    @property
+    def negatives_mask(self) -> Tensor:
+        """Boolean mask of negative samples for each element in the dataset."""
+        return self._negatives_mask
+
+    def collate_fn(self, data_list: List[Dict[str, Tensor]]) -> Dict[str, Tensor]:
         """Collate function for torch.utils.data.DataLoader."""
+        raise NotImplementedError()
+
+    def distributed_collate_fn(
+        self,
+        data_list: List[Dict[str, Tensor]],
+        num_replicas: Optional[int] = None,
+        rank: Optional[int] = None,
+    ) -> Dict[str, Tensor]:
+        """Collate function for torch.utils.data.DataLoader with distributed training."""
         raise NotImplementedError()
