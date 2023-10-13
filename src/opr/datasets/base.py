@@ -1,6 +1,6 @@
 """Base dataset implementation."""
 from pathlib import Path
-from typing import Dict, List, Literal, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -8,6 +8,13 @@ import torch
 from pandas import DataFrame
 from torch import Tensor
 from torch.utils.data import Dataset
+
+from opr.datasets.augmentations import (
+    DefaultCloudSetTransform,
+    DefaultCloudTransform,
+    DefaultImageTransform,
+    DefaultSemanticTransform,
+)
 
 
 class BasePlaceRecognitionDataset(Dataset):
@@ -25,6 +32,10 @@ class BasePlaceRecognitionDataset(Dataset):
         data_to_load: Union[str, Tuple[str, ...]],
         positive_threshold: float = 10.0,
         negative_threshold: float = 50.0,
+        image_transform: Optional[Any] = None,
+        semantic_transform: Optional[Any] = None,
+        pointcloud_transform: Optional[Any] = None,
+        pointcloud_set_transform: Optional[Any] = None,
     ) -> None:
         """Base class for track-based Place Recognition dataset.
 
@@ -36,6 +47,10 @@ class BasePlaceRecognitionDataset(Dataset):
                 for them to be considered positive. Defaults to 10.0.
             negative_threshold (float): The maximum distance between two elements
                 for them to be considered non-negative. Defaults to 50.0.
+            image_transform (Any, optional): Images transform. Defaults to None.
+            semantic_transform (Any, optional): Semantic masks transform. Defaults to None.
+            pointcloud_transform (Any, optional): Point clouds transform. Defaults to None.
+            pointcloud_set_transform (Any, optional): Point clouds set transform. Defaults to None.
 
         Raises:
             FileNotFoundError: If the dataset_root directory does not exist.
@@ -75,6 +90,18 @@ class BasePlaceRecognitionDataset(Dataset):
             positive_threshold, negative_threshold
         )
         self._positives_mask, self._negatives_mask = self._build_masks(positive_threshold, negative_threshold)
+
+        # TODO: images and masks transforms should be performed simualtenously via Albumentations
+        self.image_transform = image_transform or DefaultImageTransform(train=(self.subset == "train"))
+        self.semantic_transform = semantic_transform or DefaultSemanticTransform(
+            train=(self.subset == "train")
+        )
+        self.pointcloud_transform = pointcloud_transform or DefaultCloudTransform(
+            train=(self.subset == "train")
+        )
+        self.pointcloud_set_transform = pointcloud_set_transform or DefaultCloudSetTransform(
+            train=(self.subset == "train")
+        )
 
     def __len__(self) -> int:  # noqa: D105
         return len(self.dataset_df)

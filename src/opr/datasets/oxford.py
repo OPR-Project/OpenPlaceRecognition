@@ -8,12 +8,6 @@ import numpy as np
 import torch
 from torch import Tensor
 
-from opr.datasets.augmentations import (
-    DefaultCloudSetTransform,
-    DefaultCloudTransform,
-    DefaultImageTransform,
-    DefaultSemanticTransform,
-)
 from opr.datasets.base import BasePlaceRecognitionDataset
 
 
@@ -95,7 +89,17 @@ class OxfordDataset(BasePlaceRecognitionDataset):
             ValueError: If data_to_load contains invalid data source names.
             FileNotFoundError: If images, masks or pointclouds directory does not exist.
         """
-        super().__init__(dataset_root, subset, data_to_load, positive_threshold, negative_threshold)
+        super().__init__(
+            dataset_root,
+            subset,
+            data_to_load,
+            positive_threshold,
+            negative_threshold,
+            image_transform,
+            semantic_transform,
+            pointcloud_transform,
+            pointcloud_set_transform,
+        )
 
         if any(elem not in self._valid_data for elem in self.data_to_load):
             raise ValueError(f"Invalid data_to_load argument. Valid data list: {self._valid_data!r}")
@@ -123,18 +127,6 @@ class OxfordDataset(BasePlaceRecognitionDataset):
                 raise FileNotFoundError(
                     f"Pointclouds directory {self._pointclouds_dirname!r} does not exist."
                 )
-
-        # TODO: images and masks transforms should be performed simualtenously via Albumentations
-        self.image_transform = image_transform or DefaultImageTransform(train=(self.subset == "train"))
-        self.semantic_transform = semantic_transform or DefaultSemanticTransform(
-            train=(self.subset == "train")
-        )
-        self.pointcloud_transform = pointcloud_transform or DefaultCloudTransform(
-            train=(self.subset == "train")
-        )
-        self.pointcloud_set_transform = pointcloud_set_transform or DefaultCloudSetTransform(
-            train=(self.subset == "train")
-        )
 
         self._pointcloud_quantization_size = pointcloud_quantization_size
         self._max_point_distance = max_point_distance
