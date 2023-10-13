@@ -1,6 +1,6 @@
 """PointNetVLAD Oxford RobotCar dataset implementation."""
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import cv2
 import MinkowskiEngine as ME  # type: ignore
@@ -15,7 +15,6 @@ from opr.datasets.augmentations import (
     DefaultSemanticTransform,
 )
 from opr.datasets.base import BasePlaceRecognitionDataset
-from opr.utils import in_sorted_array
 
 
 class OxfordDataset(BasePlaceRecognitionDataset):
@@ -47,12 +46,16 @@ class OxfordDataset(BasePlaceRecognitionDataset):
         data_to_load: Union[str, Tuple[str, ...]],
         positive_threshold: float = 10.0,
         negative_threshold: float = 50.0,
-        images_dirname: str = "images",
-        masks_dirname: str = "segmentation_masks",
+        images_dirname: str = "images_small",
+        masks_dirname: str = "segmentation_masks_small",
         pointclouds_dirname: Optional[str] = None,
         pointcloud_quantization_size: Optional[Union[float, Tuple[float, float, float]]] = 0.01,
         max_point_distance: Optional[float] = None,
         spherical_coords: bool = False,
+        image_transform: Optional[Any] = None,
+        semantic_transform: Optional[Any] = None,
+        pointcloud_transform: Optional[Any] = None,
+        pointcloud_set_transform: Optional[Any] = None,
     ) -> None:
         """Oxford RobotCar dataset implementation.
 
@@ -71,9 +74,9 @@ class OxfordDataset(BasePlaceRecognitionDataset):
             negative_threshold (float): The UTM distance threshold value for negative samples.
                 Defaults to 50.0.
             images_dirname (str): Images directory name. It should be specified explicitly
-                if custom preprocessing was done. Defaults to "images".
+                if custom preprocessing was done. Defaults to "images_small".
             masks_dirname (str): Masks directory name. It should be specified explicitly
-                if custom preprocessing was done. Defaults to "segmentation_masks".
+                if custom preprocessing was done. Defaults to "segmentation_masks_small".
             pointclouds_dirname (Optional[str]): Point clouds directory name. It should be specified
                 explicitly if custom preprocessing was done. Defaults to None, which sets the dirnames
                 like in original PointNetVLAD dataset configuration.
@@ -83,6 +86,10 @@ class OxfordDataset(BasePlaceRecognitionDataset):
                 Defaults to None.
             spherical_coords (bool): Whether to use spherical coordinates for point clouds.
                 Defaults to False.
+            image_transform (Any, optional): Images transform. Defaults to None.
+            semantic_transform (Any, optional): Semantic masks transform. Defaults to None.
+            pointcloud_transform (Any, optional): Point clouds transform. Defaults to None.
+            pointcloud_set_transform (Any, optional): Point clouds set transform. Defaults to None.
 
         Raises:
             ValueError: If data_to_load contains invalid data source names.
@@ -92,11 +99,6 @@ class OxfordDataset(BasePlaceRecognitionDataset):
 
         if any(elem not in self._valid_data for elem in self.data_to_load):
             raise ValueError(f"Invalid data_to_load argument. Valid data list: {self._valid_data!r}")
-
-        # TODO: review legacy code:
-        # if "chonky" in self.modalities:  # ! It's a bit tricky but idk how to do it better now
-        #     self.modalities.append("image")
-        #     self.modalities.append("semantic")
 
         _track_name = self.dataset_df.iloc[0]["track"]
 
@@ -123,19 +125,24 @@ class OxfordDataset(BasePlaceRecognitionDataset):
                 )
 
         # TODO: images and masks transforms should be performed simualtenously via Albumentations
-        # TODO: transforms should be passed to init function as arguments
-        self.image_transform = DefaultImageTransform(train=(self.subset == "train"))
-        self.semantic_transform = DefaultSemanticTransform(train=(self.subset == "train"))
-        self.pointcloud_transform = DefaultCloudTransform(train=(self.subset == "train"))
-        self.pointcloud_set_transform = DefaultCloudSetTransform(train=(self.subset == "train"))
+        self.image_transform = image_transform or DefaultImageTransform(train=(self.subset == "train"))
+        self.semantic_transform = semantic_transform or DefaultSemanticTransform(
+            train=(self.subset == "train")
+        )
+        self.pointcloud_transform = pointcloud_transform or DefaultCloudTransform(
+            train=(self.subset == "train")
+        )
+        self.pointcloud_set_transform = pointcloud_set_transform or DefaultCloudSetTransform(
+            train=(self.subset == "train")
+        )
 
         self._pointcloud_quantization_size = pointcloud_quantization_size
         self._max_point_distance = max_point_distance
         self._spherical_coords = spherical_coords
 
     def __getitem__(self, idx: int) -> Dict[str, Tensor]:  # noqa: D105
-        data = {"idx": torch.tensor(idx)}
         row = self.dataset_df.iloc[idx]
+        data = {"idx": torch.tensor(idx, dtype=int)}
         data["utm"] = torch.tensor(row[["northing", "easting"]].to_numpy(dtype=np.float64))
         track_dir = self.dataset_root / str(row["track"])
 
@@ -143,9 +150,7 @@ class OxfordDataset(BasePlaceRecognitionDataset):
             if data_source.startswith("image_"):
                 cam_name = data_source[6:]  # remove "image_" prefix
                 image_ts = int(row[cam_name])
-                im_filepath = (
-                    track_dir / self._images_dirname / f"{cam_name}_small" / f"{image_ts}.png"
-                )  # TODO: get rid of _small
+                im_filepath = track_dir / self._images_dirname / f"{cam_name}" / f"{image_ts}.png"
                 im = cv2.imread(str(im_filepath))
                 im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
                 im = self.image_transform(im)
@@ -153,9 +158,7 @@ class OxfordDataset(BasePlaceRecognitionDataset):
             elif data_source.startswith("mask_"):
                 cam_name = data_source[5:]  # remove "mask_" prefix
                 image_ts = int(row[cam_name])
-                mask_filepath = (
-                    track_dir / self._masks_dirname / f"{cam_name}_small" / f"{image_ts}.png"
-                )  # TODO: get rid of _small
+                mask_filepath = track_dir / self._masks_dirname / f"{cam_name}" / f"{image_ts}.png"
                 mask = cv2.imread(str(mask_filepath), cv2.IMREAD_UNCHANGED)
                 mask = self.semantic_transform(mask)
                 data[data_source] = mask
@@ -178,20 +181,9 @@ class OxfordDataset(BasePlaceRecognitionDataset):
         pc_tensor = torch.tensor(pc, dtype=torch.float)
         return pc_tensor
 
-    def collate_fn(self, data_list: List[Dict[str, Tensor]]) -> Tuple[Dict[str, Tensor], Tensor, Tensor]:
-        """Pack input data list into batch.
-
-        Args:
-            data_list (List[Dict[str, Tensor]]): batch data list generated by DataLoader.
-
-        Returns:
-            Dict[str, Tensor]: dictionary of batched data.
-
-        Raises:
-            ValueError: if data source is not supported.
-        """
+    def _collate_data_dict(self, data_list: List[Dict[str, Tensor]]) -> Dict[str, Tensor]:
         result: Dict[str, Tensor] = {}
-        indices = torch.stack([e["idx"] for e in data_list], dim=0).tolist()
+        result["idxs"] = torch.stack([e["idx"] for e in data_list], dim=0)
         for data_key in data_list[0].keys():
             if data_key == "idx":
                 continue
@@ -205,29 +197,72 @@ class OxfordDataset(BasePlaceRecognitionDataset):
                 coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
                 feats_list = [e["pointcloud_lidar_feats"] for e in data_list]
                 n_points = [int(e.shape[0]) for e in coords_list]
-                coords_tensor = torch.cat(list(coords_list), dim=0).unsqueeze(0)  # (1,batch_size*n_points,3)
+                coords_tensor = torch.cat(coords_list, dim=0).unsqueeze(0)  # (1,batch_size*n_points,3)
                 if self.pointcloud_set_transform is not None:
                     # Apply the same transformation on all dataset elements
-                    clouds = self.pointcloud_set_transform(coords_tensor)
-                coords_list = torch.split(clouds.squeeze(0), split_size_or_sections=n_points, dim=0)
-                coords_list = [
-                    ME.utils.sparse_quantize(
-                        coordinates=e, quantization_size=self._pointcloud_quantization_size
+                    coords_tensor = self.pointcloud_set_transform(coords_tensor)
+                coords_list = torch.split(coords_tensor.squeeze(0), split_size_or_sections=n_points, dim=0)
+                quantized_coords_list = []
+                quantized_feats_list = []
+                for coords, feats in zip(coords_list, feats_list):
+                    quantized_coords, quantized_feats = ME.utils.sparse_quantize(
+                        coordinates=coords,
+                        features=feats,
+                        quantization_size=self._pointcloud_quantization_size,
                     )
-                    for e in coords_list
-                ]
-                result["pointclouds_lidar_coords"] = ME.utils.batched_coordinates(coords_list)
-                result["pointclouds_lidar_feats"] = torch.cat(feats_list)
+                    quantized_coords_list.append(quantized_coords)
+                    quantized_feats_list.append(quantized_feats)
+
+                result["pointclouds_lidar_coords"] = ME.utils.batched_coordinates(quantized_coords_list)
+                result["pointclouds_lidar_feats"] = torch.cat(quantized_feats_list)
             elif data_key == "pointcloud_lidar_feats":
                 continue
             else:
                 raise ValueError(f"Unknown data key: {data_key!r}")
+        return result
 
-        positives_mask = torch.tensor(
-            [[in_sorted_array(e, self.positives_index[label]) for e in indices] for label in indices]
-        )
-        negatives_mask = torch.tensor(
-            [[not in_sorted_array(e, self.nonnegative_index[label]) for e in indices] for label in indices]
-        )
+    def collate_fn(self, data_list: List[Dict[str, Tensor]]) -> Dict[str, Tensor]:
+        """Pack input data list into batch.
 
-        return result, positives_mask, negatives_mask
+        Args:
+            data_list (List[Dict[str, Tensor]]): batch data list generated by DataLoader.
+
+        Returns:
+            Dict[str, Tensor]: dictionary of batched data.
+        """
+        return self._collate_data_dict(data_list)
+
+    def distributed_collate_fn(
+        self,
+        data_list: List[Dict[str, Tensor]],
+        num_replicas: Optional[int] = None,
+        rank: Optional[int] = None,
+    ) -> Dict[str, Tensor]:
+        """Pack input data list into batch.
+
+        Args:
+            data_list (List[Dict[str, Tensor]]): batch data list generated by DataLoader.
+            num_replicas (int, optional): Number of processes. If None, will be set to global world size.
+                Defaults to None.
+            rank (int, optional): Rank of the current process. If None, will be set automatically.
+                Defaults to None.
+
+        Returns:
+            Dict[str, Tensor]: dictionary of batched data.
+
+        Raises:
+            RuntimeError: If distributed package is not available.
+            ValueError: If rank is out of range.
+        """
+        if num_replicas is None:
+            if not torch.distributed.is_available():
+                raise RuntimeError("Requires distributed package to be available")
+            num_replicas = torch.distributed.get_world_size()
+        if rank is None:
+            if not torch.distributed.is_available():
+                raise RuntimeError("Requires distributed package to be available")
+            rank = torch.distributed.get_rank()
+        if rank >= num_replicas or rank < 0:
+            raise ValueError(f"Invalid rank {rank}, rank should be in the interval [0, {num_replicas - 1}]")
+
+        return self._collate_data_dict(data_list)
