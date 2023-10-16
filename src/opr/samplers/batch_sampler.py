@@ -5,6 +5,7 @@ Code adopted from repository: https://github.com/jac99/MinkLocMultimodal, MIT Li
 from typing import Iterator, List, Optional
 
 import numpy as np
+import torch
 from numpy.random import default_rng
 from torch.utils.data import Sampler
 
@@ -31,6 +32,7 @@ class BatchSampler(Sampler):
         max_batches: Optional[int] = None,
         positives_per_group: int = 2,
         seed: Optional[int] = None,
+        drop_last: bool = True,
     ) -> None:
         """Sampler returning list of indices to form a mini-batch.
 
@@ -45,9 +47,12 @@ class BatchSampler(Sampler):
                 is enabled (see MinkLoc paper for details). Defaults to None.
             batch_expansion_rate (float, optional): Batch expansion rate if dynamic batch sizing
                 is enabled (see MinkLoc paper for details). Defaults to None.
-            max_batches (int, optional): Maximum number of batches to generate in epoch. Defaults to None.
+            max_batches (int, optional): Maximum number of batches to generate in epoch. If None, then
+                no limit will be applied. Defaults to None.
             positives_per_group (int): Number of positive elements to sample in group. Defaults to 2.
             seed (int, optional): Random seed. Defaults to None.
+            drop_last (bool): If True, the sampler will drop the last batch if its size would be less
+                than batch_size. Defaults to True.
 
         Raises:
             ValueError: If batch_size_limit is not specified when batch_expansion_rate is specified.
@@ -67,6 +72,7 @@ class BatchSampler(Sampler):
         self.batch_size_limit = batch_size_limit
         self.batch_expansion_rate = batch_expansion_rate
         self.max_batches = max_batches
+        self.drop_last = drop_last
         self.dataset = dataset
 
         if positives_per_group < 2:
@@ -149,6 +155,9 @@ class BatchSampler(Sampler):
                     # to find negative examples in the batch
                     if len(current_batch) % self.positives_per_group != 0:
                         raise ValueError("Batch size must be divisible by number of positives per group.")
+                    if self.drop_last and len(current_batch) < self.batch_size:
+                        # Drop last batch if it is smaller than batch_size
+                        break
                     self.batch_idx.append(current_batch)
                     current_batch = []
                     if (self.max_batches is not None) and (len(self.batch_idx) >= self.max_batches):
@@ -162,7 +171,7 @@ class BatchSampler(Sampler):
                 unused_elements_ndx, np.argwhere(unused_elements_ndx == selected_element)
             )
 
-            positives = self.dataset.positives_index[selected_element]
+            positives = self.dataset.positives_index[selected_element].numpy()
             if len(positives) < (self.positives_per_group - 1):
                 # we need at least k-1 positive examples
                 continue
@@ -188,3 +197,59 @@ class BatchSampler(Sampler):
             if len(batch) % self.positives_per_group != 0:
                 raise ValueError(f"Incorrect bach size: {len(batch)}")
         self.is_batches_generated = True
+
+
+class DistributedBatchSamplerWrapper(Sampler):
+    """Wrapper for BatchSampler that supports distributed batch sampling."""
+
+    def __init__(
+        self, sampler: BatchSampler, num_replicas: Optional[int] = None, rank: Optional[int] = None
+    ) -> None:
+        """Wrapper for BatchSampler that supports distributed batch sampling.
+
+        Args:
+            sampler (BatchSampler): BatchSampler instance to wrap.
+            num_replicas (int, optional): Number of processes participating in distributed training.
+                If None, then torch.distributed.get_world_size() will be used. Defaults to None.
+            rank (int, optional): Process rank. If None, then torch.distributed.get_rank() will be used.
+                Defaults to None.
+
+        Raises:
+            ValueError: If sampler has drop_last=False.
+            RuntimeError: If distributed package is not available.
+            ValueError: If rank is out of range [0, num_replicas-1].
+            ValueError: If batch size is not divisible by the number of replicas.
+        """
+        self.sampler = sampler
+        if not self.sampler.drop_last:
+            raise ValueError(
+                "DistributedBatchSamplerWrapper currently requires sampler to have drop_last=True"
+            )
+        if num_replicas is None:
+            if not torch.distributed.is_available():
+                raise RuntimeError("Requires distributed package to be available")
+            num_replicas = torch.distributed.get_world_size()
+        if rank is None:
+            if not torch.distributed.is_available():
+                raise RuntimeError("Requires distributed package to be available")
+            rank = torch.distributed.get_rank()
+        if rank >= num_replicas or rank < 0:
+            raise ValueError(f"Invalid rank {rank}, rank should be in the interval [0, {num_replicas - 1}]")
+        self.num_replicas = num_replicas
+        self.rank = rank
+        self.global_batch_size = self.sampler.batch_size
+        if self.global_batch_size % self.num_replicas != 0:
+            raise ValueError("Batch size should be divisible by the number of replicas")
+        self.local_batch_size = self.global_batch_size // self.num_replicas
+        self.start_end_indices = self.local_batch_size * self.rank, self.local_batch_size * (self.rank + 1)
+
+    def __iter__(self) -> Iterator[List[int]]:  # noqa: D105
+        start_idx, end_idx = self.start_end_indices
+        if not self.sampler.is_batches_generated:
+            self.sampler.generate_batches()  # re-generate batches on every epoch
+        for batch in self.sampler.batch_idx:
+            yield batch[start_idx:end_idx]
+        self.is_batches_generated = False
+
+    def __len__(self) -> int:  # noqa: D105
+        return len(self.sampler)
