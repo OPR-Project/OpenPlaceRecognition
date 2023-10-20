@@ -34,6 +34,31 @@
     pip install .
     ```
 
+## Package Structure
+
+### opr.datasets
+
+Subpackage containing dataset classes and functions.
+
+Usage example:
+
+```python
+from opr.datasets import OxfordDataset
+
+train_dataset = OxfordDataset(
+    dataset_root="/home/docker_opr/Datasets/pnvlad_oxford_robotcar_full/",
+    subset="train",
+    data_to_load=["image_stereo_centre", "pointcloud_lidar"]
+)
+```
+
+The iterator will return a dictionary with the following keys:
+- `"idx"`: index of the sample in the dataset, single number Tensor
+- `"utm"`: UTM coordinates of the sample, Tensor of shape `(2)`
+- (optional) `"image_stereo_centre"`: image Tensor of shape `(C, H, W)`
+- (optional) `"pointcloud_lidar_feats"`: point cloud features Tensor of shape `(N, 1)`
+- (optional) `"pointcloud_lidar_coords"`: point cloud coordinates Tensor of shape `(N, 3)`
+
 ## License
 
 [MIT License](./LICENSE) (**_the license is subject to change in future versions_**)
