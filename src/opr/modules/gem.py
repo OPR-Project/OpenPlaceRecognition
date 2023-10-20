@@ -7,9 +7,6 @@ machine intelligence 41.7 (2018): 1655-1668.
 Paper: https://arxiv.org/abs/1711.02512
 Code adopted from the repository: https://github.com/jac99/MinkLocMultimodal, MIT License
 """
-
-from typing import Tuple
-
 import MinkowskiEngine as ME  # noqa: N817
 import torch
 import torch.nn.functional as F  # noqa: N812
@@ -60,29 +57,6 @@ class GeM(nn.Module):
 
     def forward(self, x: Tensor) -> Tensor:  # noqa: D102
         return self._gem(x, p=self.p, eps=self.eps)
-
-    def _gem(self, x: Tensor, p: nn.Parameter, eps: float) -> Tensor:
-        return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1.0 / p).squeeze()
-
-
-class DoubleGeM(nn.Module):
-    """GeM pooling layer."""
-
-    def __init__(self, p: int = 3, eps: float = 1e-6) -> None:
-        """Generalized-Mean pooling layer.
-
-        Original paper: https://arxiv.org/abs/1711.02512
-
-        Args:
-            p (int): Initial value of learnable parameter 'p', see paper for more details. Defaults to 3.
-            eps (float): Negative values will be clamped to `eps` (ReLU). Defaults to 1e-6.
-        """
-        super().__init__()
-        self.p = nn.Parameter(torch.ones(1) * p)
-        self.eps = eps
-
-    def forward(self, x_left: Tensor, x_right: Tensor) -> Tuple[Tensor, Tensor]:  # noqa: D102
-        return self._gem(x_left, p=self.p, eps=self.eps), self._gem(x_right, p=self.p, eps=self.eps)
 
     def _gem(self, x: Tensor, p: nn.Parameter, eps: float) -> Tensor:
         return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1.0 / p).squeeze()
