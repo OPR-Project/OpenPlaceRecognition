@@ -1,2 +1,2 @@
 """Module for Place Recognition models."""
-from .minkloc import MinkLoc3D
+from .minkloc import MinkLoc3D, MinkLoc3Dv2

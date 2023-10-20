@@ -55,3 +55,48 @@ class MinkLoc3D(CloudModel):
             backbone=feature_extractor,
             head=pooling,
         )
+
+
+class MinkLoc3Dv2(MinkLoc3D):
+    """Improving Point Cloud Based Place Recognition with Ranking-based Loss and Large Batch Training.
+
+    Paper: https://arxiv.org/abs/2203.00972
+    Code is adopted from the original repository: https://github.com/jac99/MinkLoc3Dv2, MIT License
+    """
+
+    def __init__(
+        self,
+        in_channels: int = 1,
+        out_channels: int = 256,
+        num_top_down: int = 2,
+        conv0_kernel_size: int = 5,
+        block: str = "ECABasicBlock",
+        layers: Tuple[int, ...] = (1, 1, 1, 1),
+        planes: Tuple[int, ...] = (64, 128, 64, 32),
+        pooling: str = "gem",
+    ) -> None:
+        """Improving Point Cloud Based Place Recognition with Ranking-based Loss and Large Batch Training.
+
+        Paper: https://arxiv.org/abs/2203.00972
+        Code is adopted from the original repository: https://github.com/jac99/MinkLoc3Dv2, MIT License
+
+        Args:
+            in_channels (int): Number of input channels. Defaults to 1.
+            out_channels (int): Number of output channels. Defaults to 256.
+            num_top_down (int): Number of top-down blocks. Defaults to 2.
+            conv0_kernel_size (int): Kernel size of the first convolution. Defaults to 5.
+            block (str): Type of the network block. Defaults to "ECABasicBlock".
+            layers (Tuple[int, ...]): Number of blocks in each layer. Defaults to (1, 1, 1, 1).
+            planes (Tuple[int, ...]): Number of channels in each layer. Defaults to (64, 128, 64, 32).
+            pooling (str): Type of pooling. Defaults to "gem".
+        """
+        super().__init__(
+            in_channels,
+            out_channels,
+            num_top_down,
+            conv0_kernel_size,
+            block,
+            layers,
+            planes,
+            pooling,
+        )
