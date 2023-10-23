@@ -4,7 +4,10 @@
 
 ### Pre-requisites
 
-- The library requires PyTorch~=1.13 and MinkowskiEngine library to be installed manually. See [PyTorch website](https://pytorch.org/get-started/previous-versions/) and [MinkowskiEngine repository](https://github.com/NVIDIA/MinkowskiEngine) for the detailed instructions.
+- The library requires `PyTorch`, `MinkowskiEngine` and (optionally) `faiss` libraries to be installed manually:
+  - [PyTorch Get Started](https://pytorch.org/get-started/locally/)
+  - [MinkowskiEngine repository](https://github.com/NVIDIA/MinkowskiEngine)
+  - [faiss repository](https://github.com/facebookresearch/faiss)
 
 - Another option is to use the suggested Dockerfile. The following commands should be used to build, start and enter the container:
 

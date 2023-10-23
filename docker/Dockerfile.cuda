@@ -17,6 +17,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     build-essential \
     ninja-build \
     cmake \
+    swig \
     libopenblas-dev \
     ffmpeg \
     libsm6 \
@@ -34,6 +35,13 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libffi-dev \
     liblzma-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# upgrade cmake
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.26.5/cmake-3.26.5-linux-x86_64.sh && \
+    mkdir /opt/cmake-3.26.5 && \
+    bash cmake-3.26.5-linux-x86_64.sh --skip-license --prefix=/opt/cmake-3.26.5/ && \
+    ln -s /opt/cmake-3.26.5/bin/* /usr/local/bin && \
+    rm cmake-3.26.5-linux-x86_64.sh
 
 # add user and his password
 ENV USER=docker_opr
@@ -107,3 +115,22 @@ RUN pip install -r requirements-dev.txt && \
 COPY requirements-notebook.txt .
 RUN pip install -r requirements-notebook.txt && \
     rm requirements-notebook.txt
+
+# faiss installation
+RUN git clone https://github.com/facebookresearch/faiss.git && \
+    cd faiss && \
+    git checkout c3b93749 && \
+    cmake -B build . \
+        -Wno-dev \
+        -DFAISS_ENABLE_GPU=ON \
+        -DFAISS_ENABLE_PYTHON=ON \
+        -DBUILD_TESTING=OFF \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCUDAToolkit_ROOT=/usr/local/cuda-11.3 \
+        -DCMAKE_CUDA_ARCHITECTURES="60;61;70;75;80;86" \
+        -DPython_EXECUTABLE=/home/${USER}/.pyenv/shims/python3.8 && \
+    make -C build -j4 faiss && \
+    make -C build -j4 swigfaiss && \
+    (cd build/faiss/python && /bin/bash -c "source /home/$USER/.profile && python setup.py install") && \
+    cd .. && \
+    rm -rf faiss
