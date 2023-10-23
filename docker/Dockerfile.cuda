@@ -81,7 +81,9 @@ RUN ["/bin/bash", "-c", "source /home/$USER/.profile \
     && pyenv global 3.8 3.9 3.10 3.11" ]
 
 # upgrade pip
-RUN pip install --upgrade pip setuptools
+ARG PIP_VERSION=23.3
+ARG SETUPTOOLS_VERSION=68.2.2
+RUN pip install pip==${PIP_VERSION} setuptools==${SETUPTOOLS_VERSION}
 
 # install pytorch 1.12.1 and torchvision
 # it may take a long time, so it is better be done in separate 'layer'
@@ -96,9 +98,12 @@ ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0 7.5 8.0 8.6"
 ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
 ENV CUDA_HOME=/usr/local/cuda-11.3
 ENV MAX_JOBS=4
-RUN pip install git+https://github.com/NVIDIA/MinkowskiEngine -v --no-deps \
-                          --global-option="--force_cuda" \
-                          --global-option="--blas=openblas"
+RUN git clone --recursive "https://github.com/NVIDIA/MinkowskiEngine" && \
+    cd MinkowskiEngine && \
+    git checkout 02fc608 && \
+    /bin/bash -c "source /home/$USER/.profile && python setup.py install --force_cuda --blas=openblas" && \
+    cd .. && \
+    rm -rf MinkowskiEngine
 
 
 # install other requirements from requirements.txt
