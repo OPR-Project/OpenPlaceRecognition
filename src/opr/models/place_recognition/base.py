@@ -4,6 +4,8 @@ from typing import Dict, Optional
 import MinkowskiEngine as ME  # noqa: N817
 from torch import Tensor, nn
 
+from opr.modules import Concat
+
 
 class ImageModel(nn.Module):
     """Meta-model for image-based Place Recognition. Combines feature extraction backbone and head modules."""
@@ -27,7 +29,7 @@ class ImageModel(nn.Module):
         self.head = head
         self.fusion = fusion
 
-    def forward(self, batch: Dict[str, Tensor]) -> Tensor:  # noqa: D102
+    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         img_descriptors = {}
         for key, value in batch.items():
             if key.startswith("images_"):
@@ -40,7 +42,8 @@ class ImageModel(nn.Module):
             if self.fusion is not None:
                 raise ValueError("Fusion module is defined but only one image is provided")
             descriptor = list(img_descriptors.values())[0]
-        return descriptor
+        out_dict: Dict[str, Tensor] = {"final_descriptor": descriptor}
+        return out_dict
 
 
 class CloudModel(nn.Module):
@@ -61,13 +64,14 @@ class CloudModel(nn.Module):
         self.backbone = backbone
         self.head = head
 
-    def forward(self, batch: Dict[str, Tensor]) -> Tensor:  # noqa: D102
+    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         x = ME.SparseTensor(
             features=batch["pointclouds_lidar_feats"], coordinates=batch["pointclouds_lidar_coords"]
         )
         x = self.backbone(x)
         x = self.head(x)
-        return x
+        out_dict: Dict[str, Tensor] = {"final_descriptor": x}
+        return out_dict
 
 
 class LateFusionModel(nn.Module):
@@ -87,7 +91,8 @@ class LateFusionModel(nn.Module):
             image_module (ImageModule, optional): Image modality branch. Defaults to None.
             semantic_module (ImageModule, optional): Semantic modality branch. Defaults to None.
             cloud_module (CloudModule, optional): Cloud modality branch. Defaults to None.
-            fusion_module (FusionModule, optional): Module to fuse different modalities. Defaults to None.
+            fusion_module (FusionModule, optional): Module to fuse different modalities.
+                If None, will be set to opr.modules.Concat(). Defaults to None.
         """
         super().__init__()
 
@@ -95,14 +100,13 @@ class LateFusionModel(nn.Module):
         self.semantic_module = semantic_module
         self.cloud_module = cloud_module
         # self.text_module = text_module
-        self.fusion_module = fusion_module
+        if fusion_module:
+            self.fusion_module = fusion_module
+        else:
+            self.fusion_module = Concat()
 
-    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Optional[Tensor]]:  # noqa: D102
-        out_dict: Dict[str, Optional[Tensor]] = {
-            "image": None,
-            "semantic": None,
-            "cloud": None,
-        }
+    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
+        out_dict: Dict[str, Tensor] = {}
 
         if self.image_module is not None:
             out_dict["image"] = self.image_module(batch)
@@ -118,7 +122,6 @@ class LateFusionModel(nn.Module):
         # elif self.text_module is not None and isinstance(self.text_module, MultiTextModule):
         #     out_dict["text"] = self.text_module(batch)
 
-        if self.fusion_module is not None:
-            out_dict["fusion"] = self.fusion_module(out_dict)
+        out_dict["final_descriptor"] = self.fusion_module(out_dict)
 
         return out_dict
