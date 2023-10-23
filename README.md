@@ -59,6 +59,8 @@ The iterator will return a dictionary with the following keys:
 - (optional) `"pointcloud_lidar_feats"`: point cloud features Tensor of shape `(N, 1)`
 - (optional) `"pointcloud_lidar_coords"`: point cloud coordinates Tensor of shape `(N, 3)`
 
+More details can be found in the [demo_datasets.ipynb](./notebooks/demo_datasets.ipynb) notebook.
+
 ## License
 
 [MIT License](./LICENSE) (**_the license is subject to change in future versions_**)
