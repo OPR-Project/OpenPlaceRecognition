@@ -61,6 +61,34 @@ The iterator will return a dictionary with the following keys:
 
 More details can be found in the [demo_datasets.ipynb](./notebooks/demo_datasets.ipynb) notebook.
 
+### opr.models
+
+The `opr.models` subpackage contains ready-to-use neural networks implemented in PyTorch, featuring a common interface.
+
+Usage example:
+
+```python
+from opr.models.place_recognition import MinkLoc3D
+
+model = MinkLoc3D()
+
+# forward pass
+output = model(batch)
+```
+
+The models introduce unified input and output formats:
+- **Input:** a `batch` dictionary with the following keys
+  (all keys are optional, depending on the model and dataset):
+  - `"images_<camera_name>"`: images Tensor of shape `(B, 3, H, W)`
+  - `"masks_<camera_name>"`: semantic segmentation masks Tensor of shape `(B, 1, H, W)`
+  - `"pointclouds_lidar_coords"`: point cloud coordinates Tensor of shape `(B * N_points, 4)`
+  - `"pointclouds_lidar_feats"`: point cloud features Tensor of shape `(B * N_points, C)`
+- **Output:** a dictionary with the requiered key `"final_descriptor"`
+  and optional keys for intermediate descriptors:
+  - `"final_descriptor"`: final descriptor Tensor of shape `(B, D)`
+
+More details can be found in the [demo_models.ipynb](./notebooks/demo_models.ipynb) notebook.
+
 ## License
 
 [MIT License](./LICENSE) (**_the license is subject to change in future versions_**)
