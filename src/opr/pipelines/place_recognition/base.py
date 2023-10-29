@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, Optional, Union
 
 import MinkowskiEngine as ME
+import numpy as np
 import pandas as pd
 import torch
 from torch import Tensor, nn
@@ -73,7 +74,7 @@ class PlaceRecognitionPipeline:
                 out_dict["pointclouds_lidar_feats"] = quantized_feats.to(self.device)
         return out_dict
 
-    def infer(self, input_data: Dict[str, Tensor]) -> Dict[str, Tensor]:
+    def infer(self, input_data: Dict[str, Tensor]) -> Dict[str, np.ndarray]:
         """Single sample inference.
 
         Args:
@@ -88,7 +89,7 @@ class PlaceRecognitionPipeline:
                 "pointcloud_lidar_feats" for pointcloud features from lidar.
 
         Returns:
-            Dict[str, Tensor]: Inference results. Dictionary with keys:
+            Dict[str, np.ndarray]: Inference results. Dictionary with keys:
 
                 "pose" for predicted pose in the format [tx, ty, tz, qx, qy, qz, qw],
 
