@@ -92,6 +92,37 @@ The models introduce unified input and output formats:
 
 More details can be found in the [demo_models.ipynb](./notebooks/demo_models.ipynb) notebook.
 
+### opr.pipelines
+
+The `opr.pipelines` subpackage contains ready-to-use pipelines for model inference.
+
+Usage example:
+
+```python
+from opr.models.place_recognition import MinkLoc3Dv2
+from opr.pipelines.place_recognition import PlaceRecognitionPipeline
+
+pipe = PlaceRecognitionPipeline(
+    database_dir="/home/docker_opr/Datasets/ITLP_Campus/ITLP_Campus_outdoor/databases/00",
+    model=MinkLoc3Dv2(),
+    model_weights_path=None,
+    device="cuda",
+)
+
+out = pipe.infer(sample)
+```
+
+The pipeline introduces a unified interface for model inference:
+- **Input:** a dictionary with the following keys
+  (all keys are optional, depending on the model and dataset):
+  - `"image_<camera_name>"`: image Tensor of shape `(3, H, W)`
+  - `"mask_<camera_name>"`: semantic segmentation mask Tensor of shape `(1, H, W)`
+  - `"pointcloud_lidar_coords"`: point cloud coordinates Tensor of shape `(N_points, 4)`
+  - `"pointcloud_lidar_feats"`: point cloud features Tensor of shape `(N_points, C)`
+- **Output:** a dictionary with keys:
+  - `"pose"` for predicted pose in the format `[tx, ty, tz, qx, qy, qz, qw]`,
+  - `"descriptor"` for predicted descriptor.
+
 ## License
 
 [MIT License](./LICENSE) (**_the license is subject to change in future versions_**)
