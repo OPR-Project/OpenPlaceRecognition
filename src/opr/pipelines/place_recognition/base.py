@@ -29,7 +29,18 @@ class PlaceRecognitionPipeline:
         device: Union[str, int, torch.device] = "cpu",
         pointcloud_quantization_size: float = 0.5,
     ) -> None:
-        """Basic Place Recognition pipeline."""
+        """Basic Place Recognition pipeline.
+
+        Args:
+            database_dir (Union[str, PathLike]): Path to the database directory. The directory must contain
+                "track.csv" and "index.faiss" files.
+            model (nn.Module): Model. The forward method must take a dictionary and return a dictionary
+                in the predefined format. See the "infer" method for details.
+            model_weights_path (Union[str, PathLike], optional): Path to the model weights.
+                If None, the weights are not loaded. Defaults to None.
+            device (Union[str, int, torch.device]): Device to use. Defaults to "cpu".
+            pointcloud_quantization_size (float): Pointcloud quantization size. Defaults to 0.5.
+        """
         self.device = self._parse_device(device)
         self._init_model(model, model_weights_path)
         self._init_database(database_dir)
