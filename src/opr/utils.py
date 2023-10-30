@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import torch
+from torch import Tensor
 
 
 def set_seed(seed: int = 0, make_deterministic: bool = False) -> None:
@@ -28,19 +29,19 @@ def set_seed(seed: int = 0, make_deterministic: bool = False) -> None:
         torch.use_deterministic_algorithms(False, warn_only=True)
 
 
-def in_sorted_array(e: int, array: np.ndarray) -> bool:
+def in_sorted_array(e: int, array: Tensor) -> bool:
     """Checks whether the given value `e` is in sorted array.
 
     Code adopted from repository: https://github.com/jac99/MinkLocMultimodal, MIT License
 
     Args:
         e (int): Value to search for.
-        array (np.ndarray): Sorted array to look from.
+        array (Tensor): Sorted array to look from.
 
     Returns:
         bool: Whether the given value `e` is in sorted `array`.
     """
-    pos = np.searchsorted(array, e)
+    pos = torch.searchsorted(array, e)
     if pos == len(array) or pos == -1:
         return False
     else:
@@ -129,7 +130,7 @@ def merge_nested_dicts(dict1: Dict[str, Any], dict2: Dict[str, Any]) -> Dict[str
     return merged_dict
 
 
-def flatten_dict(nested_dict: Dict[str, Any], parent_key="", sep="/") -> Dict[str, Any]:
+def flatten_dict(nested_dict: Dict[str, Any], parent_key: str = "", sep: str = "/") -> Dict[str, Any]:
     """Flatten a nested dictionary with keys separated by `sep`.
 
     Args:
@@ -152,41 +153,42 @@ def flatten_dict(nested_dict: Dict[str, Any], parent_key="", sep="/") -> Dict[st
 
 # TODO: refactor - may it be re-written in vectorized form?
 def cartesian_to_spherical(points: np.ndarray, dataset_name: str) -> np.ndarray:
-    spherical_points = []
-    for point in points:
-        if (np.abs(point[:3]) < 1e-4).all():
-            continue
+    """Converts cartesian coordinates to spherical coordinates."""
+    if (np.abs(points[:, :3]) < 1e-4).all(axis=1).any():
+        points = points[(np.abs(points[:, :3]) >= 1e-4).any(axis=1)]
 
-        r = np.linalg.norm(point[:3])
+    r = np.linalg.norm(points[:, :3], axis=1)
 
-        # Theta is calculated as an angle measured from the y-axis towards the x-axis
-        # Shifted to range (0, 360)
-        theta = np.arctan2(point[1], point[0]) * 180 / np.pi
-        if theta < 0:
-            theta += 360
+    # Theta is calculated as an angle measured from the y-axis towards the x-axis
+    # Shifted to range (0, 360)
+    theta = np.arctan2(points[:, 1], points[:, 0]) * 180 / np.pi
+    theta[theta < 0] += 360
 
-        if dataset_name.lower() == "USyd":
-            # VLP-16 has 2 deg VRes and (+15, -15 VFoV).
-            # Phi calculated from the vertical axis, so (75, 105)
-            # Shifted to (0, 30)
-            phi = (np.arccos(point[2] / r) * 180 / np.pi) - 75
+    if dataset_name.lower() == "usyd":
+        # VLP-16 has 2 deg VRes and (+15, -15 VFoV).
+        # Phi calculated from the vertical axis, so (75, 105)
+        # Shifted to (0, 30)
+        phi = (np.arccos(points[:, 2] / r) * 180 / np.pi) - 75
 
-        elif dataset_name in ["IntensityOxford", "Oxford"]:
-            # Oxford scans are built from a 2D scanner.
-            # Phi calculated from the vertical axis, so (0, 180)
-            phi = np.arccos(point[2] / r) * 180 / np.pi
+    elif dataset_name in ["intensityoxford", "oxford"]:
+        # Oxford scans are built from a 2D scanner.
+        # Phi calculated from the vertical axis, so (0, 180)
+        phi = np.arccos(points[:, 2] / r) * 180 / np.pi
 
-        elif dataset_name == "KITTI":
-            # HDL-64 has 0.4 deg VRes and (+2, -24.8 VFoV).
-            # Phi calculated from the vertical axis, so (88, 114.8)
-            # Shifted to (0, 26.8)
-            phi = (np.arccos(point[2] / r) * 180 / np.pi) - 88
-        else:
-            raise NotImplementedError(f"Converting cartesian to spherical for {dataset_name} no supported.")
+    elif dataset_name == "kitti":
+        # HDL-64 has 0.4 deg VRes and (+2, -24.8 VFoV).
+        # Phi calculated from the vertical axis, so (88, 114.8)
+        # Shifted to (0, 26.8)
+        phi = (np.arccos(points[:, 2] / r) * 180 / np.pi) - 88
 
-        if point.shape[-1] == 4:
-            spherical_points.append([r, theta, phi, point[3]])
-        else:
-            spherical_points.append([r, theta, phi])
+    elif dataset_name.lower() == "nclt":
+        # from +10.67° to -30.67°
+        phi = (np.arccos(points[:, 2] / r) * 180 / np.pi) - 79.33
 
-    return np.array(spherical_points)
+    else:
+        raise NotImplementedError(f"Converting cartesian to spherical for {dataset_name} no supported.")
+
+    if points.shape[-1] == 4:
+        return np.column_stack((r, theta, phi, points[:, 3]))
+    else:
+        return np.column_stack((r, theta, phi))
