@@ -9,6 +9,8 @@ import pandas as pd
 import torch
 from torch import Tensor, nn
 
+from opr.utils import parse_device
+
 try:
     import faiss
 except ImportError as import_error:
@@ -41,7 +43,7 @@ class PlaceRecognitionPipeline:
             device (Union[str, int, torch.device]): Device to use. Defaults to "cpu".
             pointcloud_quantization_size (float): Pointcloud quantization size. Defaults to 0.5.
         """
-        self.device = self._parse_device(device)
+        self.device = parse_device(device)
         self._init_model(model, model_weights_path)
         self._init_database(database_dir)
         self._pointcloud_quantization_size = pointcloud_quantization_size
@@ -118,25 +120,3 @@ class PlaceRecognitionPipeline:
         output["pose"] = pred_pose
         output["descriptor"] = descriptor[0]
         return output
-
-    @staticmethod
-    def _parse_device(device: Union[str, int, torch.device]) -> torch.device:
-        """Parse given device argument and return torch.device object.
-
-        Args:
-            device (Union[str, int, torch.device]): Device argument.
-
-        Returns:
-            torch.device: Device object.
-
-        Raises:
-            ValueError: If device is not a string, integer or torch.device object.
-        """
-        if isinstance(device, torch.device):
-            return device
-        elif isinstance(device, str):
-            return torch.device(device)
-        elif isinstance(device, int):
-            return torch.device(type="cuda", index=device) if device >= 0 else torch.device(type="cpu")
-        else:
-            raise ValueError(f"Invalid device: {device}")

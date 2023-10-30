@@ -1,6 +1,6 @@
 """Package-level utility functions."""
 import random
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Union
 
 import numpy as np
 import torch
@@ -27,6 +27,28 @@ def set_seed(seed: int = 0, make_deterministic: bool = False) -> None:
         torch.backends.cudnn.benchmark = True
         torch.backends.cudnn.deterministic = False
         torch.use_deterministic_algorithms(False, warn_only=True)
+
+
+def parse_device(device: Union[str, int, torch.device]) -> torch.device:
+    """Parse given device argument and return torch.device object.
+
+    Args:
+        device (Union[str, int, torch.device]): Device argument.
+
+    Returns:
+        torch.device: Device object.
+
+    Raises:
+        ValueError: If device is not a string, integer or torch.device object.
+    """
+    if isinstance(device, torch.device):
+        return device
+    elif isinstance(device, str):
+        return torch.device(device)
+    elif isinstance(device, int):
+        return torch.device(type="cuda", index=device) if device >= 0 else torch.device(type="cpu")
+    else:
+        raise ValueError(f"Invalid device: {device}")
 
 
 def in_sorted_array(e: int, array: Tensor) -> bool:
