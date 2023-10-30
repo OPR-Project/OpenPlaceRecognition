@@ -64,6 +64,35 @@ The iterator will return a dictionary with the following keys:
 
 More details can be found in the [demo_datasets.ipynb](./notebooks/demo_datasets.ipynb) notebook.
 
+### opr.losses
+
+The `opr.losses` subpackage contains ready-to-use loss functions implemented in PyTorch, featuring a common interface.
+
+Usage example:
+
+```python
+from opr.losses import BatchHardTripletMarginLoss
+
+loss_fn = BatchHardTripletMarginLoss(margin=0.2)
+
+idxs = sample_batch["idxs"]
+positives_mask = dataset.positives_mask[idxs][:, idxs]
+negatives_mask = dataset.negatives_mask[idxs][:, idxs]
+
+loss, stats = loss_fn(output["final_descriptor"], positives_mask, negatives_mask)
+```
+
+The loss functions introduce a unified interface:
+- **Input:**
+  - `embeddings`: descriptor Tensor of shape `(B, D)`
+  - `positives_mask`: boolean mask Tensor of shape `(B, B)`
+  - `negatives_mask`: boolean mask Tensor of shape `(B, B)`
+- **Output:**
+  - `loss`: loss value Tensor
+  - `stats`: dictionary with additional statistics
+
+More details can be found in the [demo_losses.ipynb](./notebooks/demo_losses.ipynb) notebook.
+
 ### opr.models
 
 The `opr.models` subpackage contains ready-to-use neural networks implemented in PyTorch, featuring a common interface.
