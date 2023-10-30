@@ -11,7 +11,7 @@ from pytorch_metric_learning.losses import TripletMarginLoss
 from pytorch_metric_learning.reducers import AvgNonZeroReducer, MeanReducer, SumReducer
 from torch import Tensor, nn
 
-from opr.miners import HardTripletMiner
+from opr.miners import BatchHardTripletMiner
 
 
 class MultimodalTripletMarginLoss(nn.Module):
@@ -26,11 +26,12 @@ class MultimodalTripletMarginLoss(nn.Module):
         self,
         margin: float,
         distance: Union[LpDistance, CosineSimilarity],
-        miner: HardTripletMiner,
+        miner: BatchHardTripletMiner,
         reducer: Union[AvgNonZeroReducer, MeanReducer, SumReducer],
         swap: bool = False,
         modalities: Union[
-            Literal["image", "cloud", "semantic", "fusion"], Sequence[Literal["image", "cloud", "semantic", "fusion"]]
+            Literal["image", "cloud", "semantic", "fusion"],
+            Sequence[Literal["image", "cloud", "semantic", "fusion"]],
         ] = ("image",),
         weights: Union[float, Sequence[float]] = 1.0,
     ) -> None:
@@ -39,14 +40,13 @@ class MultimodalTripletMarginLoss(nn.Module):
         Args:
             margin (float): Margin hyperparameter.
             distance (Union[LpDistance, CosineSimilarity]): Distance function for loss calculation.
-            miner (HardTripletMiner): Miner function to form triplets.
+            miner (BatchHardTripletMiner): Miner function to form triplets.
             reducer (Union[AvgNonZeroReducer, MeanReducer, SumReducer]): Reducer function. Will be used
                 to reduce loss values to scalar.
             swap (bool): Use the positive-negative distance instead of anchor-negative distance,
                 if it violates the margin more. Defaults to False.
-            modalities (Union[Literal["image", "cloud", "semantic", "fusion"],
-                Sequence[Literal["image", "cloud", "semantic", "fusion"]]]): For which modalities loss will be calculated.
-                Defaults to ("image",).
+            modalities (Union[Literal["image", "cloud", "semantic", "fusion"], Sequence[Literal["image",
+                "cloud", "semantic", "fusion"]]]): For which modalities loss will be calculated. Defaults to ("image",).
             weights (Union[float, Sequence[float]]): Weight for each given modality. Defaults to 1.0.
 
         Raises:
@@ -61,7 +61,7 @@ class MultimodalTripletMarginLoss(nn.Module):
         if isinstance(modalities, str):
             modalities = tuple([modalities])
         if not set(modalities).issubset(self.valid_modalities):
-            raise ValueError(f"Invalid modalities argument: '{modalities}' not in {self.valid_modalities}")
+            raise ValueError(f"Invalid modalities argument: {modalities!r} not in {self.valid_modalities}")
         self.modalities = modalities
 
         if isinstance(weights, float):
@@ -75,7 +75,7 @@ class MultimodalTripletMarginLoss(nn.Module):
         else:
             raise ValueError(f"Incorrect distance_fn = {distance}")
 
-        if isinstance(miner, HardTripletMiner):
+        if isinstance(miner, BatchHardTripletMiner):
             self.miner_fn = miner
         else:
             raise ValueError(f"Incorrect miner_fn = {miner}")
