@@ -37,7 +37,7 @@ class BatchHardTripletMiner(nn.Module):
         """Mine hard triplets from given batch of embeddings. For each element in batch triplet will be mined.
 
         Args:
-            embeddings (Tensor): Dictionary with model output embeddings.
+            embeddings (Tensor): Model output embeddings.
             positives_mask (Tensor): Binary mask of positive elements in batch.
             negatives_mask (Tensor): Binary mask of negative elements in batch.
 
