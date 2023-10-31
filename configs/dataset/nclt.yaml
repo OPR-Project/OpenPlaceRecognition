@@ -1,10 +1,17 @@
 _target_: opr.datasets.nclt.NCLTDataset
 
 dataset_root: ???
-subset: train
-data_to_load: [pointcloud_lidar]
+data_to_load: [pointcloud_lidar,]
 positive_threshold: 10.0
 negative_threshold: 50.0
+images_dirname: images_small
+masks_dirname: segmentation_masks_small
+pointclouds_dirname: velodyne_data
 pointcloud_quantization_size: 0.5
-max_point_distance: null
+max_point_distance: 40.0
 spherical_coords: False
+use_intensity_values: False
+image_transform: null
+semantic_transform: null
+pointcloud_transform: null
+pointcloud_set_transform: null

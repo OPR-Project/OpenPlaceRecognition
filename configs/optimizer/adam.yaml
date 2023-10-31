@@ -1,12 +1,5 @@
-learning_rates:
-  image_lr: 0.0001
-  semantic_lr: 0.0001
-  chonky_lr: 0.0001
-  cloud_lr: 0.001
-  fusion_lr: 0.001
-  text_lr: 0.0001
+_target_: torch.optim.Adam
+_convert_: all
 
-fn:
-  _target_: torch.optim.Adam
-  _convert_: all
-  weight_decay: 0.0001
+lr: 0.001
+weight_decay: 0.0001

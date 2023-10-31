@@ -1,10 +1,16 @@
-_target_: opr.datasets.oxford.OxfordDataset
+_target_: opr.datasets.OxfordDataset
 
 dataset_root: ???
-subset: train
-data_to_load: [pointcloud_lidar]
+data_to_load: [pointcloud_lidar,]
 positive_threshold: 10.0
 negative_threshold: 50.0
+images_dirname: images_small
+masks_dirname: segmentation_masks_small
+pointclouds_dirname: null
 pointcloud_quantization_size: 0.01
 max_point_distance: null
 spherical_coords: False
+image_transform: null
+semantic_transform: null
+pointcloud_transform: null
+pointcloud_set_transform: null

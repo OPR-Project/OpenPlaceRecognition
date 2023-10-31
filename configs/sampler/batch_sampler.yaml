@@ -1,7 +1,9 @@
-_target_: opr.samplers.batch_sampler.BatchSampler
-batch_size: 8
-batch_size_limit: null
-batch_expansion_rate: null
+_target_: opr.samplers.BatchSampler
+
+batch_size: 32
+batch_size_limit: 256
+batch_expansion_rate: 1.4
 max_batches: null
 positives_per_group: 2
-seed: null
+seed: ${seed}
+drop_last: True
