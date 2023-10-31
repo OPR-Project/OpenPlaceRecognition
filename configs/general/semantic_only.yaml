@@ -1,9 +1,0 @@
-debug: False
-seed: 31299
-checkpoints_dir: checkpoints/
-device: cuda
-num_workers: 4
-batch_expansion_th: 0.7
-modalities: [semantic] # default: [image, cloud]
-test_modality: semantic
-epochs: 60 # default: 2
