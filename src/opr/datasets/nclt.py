@@ -49,7 +49,7 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         images_dirname: str = "images_small",
         masks_dirname: str = "segmentation_masks_small",
         pointclouds_dirname: str = "velodyne_data",
-        pointcloud_quantization_size: Optional[Union[float, Tuple[float, float, float]]] = 0.01,
+        pointcloud_quantization_size: Optional[Union[float, Tuple[float, float, float]]] = 0.5,
         max_point_distance: Optional[float] = None,
         spherical_coords: bool = False,
         use_intensity_values: bool = False,
