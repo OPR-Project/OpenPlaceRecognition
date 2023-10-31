@@ -2,6 +2,7 @@
 
 Code adopted from repository: https://github.com/jac99/MinkLocMultimodal, MIT License
 """
+import logging
 from typing import Iterator, List, Optional
 
 import numpy as np
@@ -60,6 +61,8 @@ class BatchSampler(Sampler):
             ValueError: If batch_size_limit is less or equal to batch_size.
             ValueError: If positives_per_group is less than 2.
         """
+        self.logger = logging.getLogger(self.__class__.__name__)
+
         if batch_expansion_rate is not None:
             if batch_size_limit is None:
                 raise ValueError("batch_size_limit must be specified if batch_expansion_rate is specified")
@@ -81,21 +84,20 @@ class BatchSampler(Sampler):
 
         if self.batch_size < 2 * self.positives_per_group:
             self.batch_size = 2 * self.positives_per_group
-            print("WARNING: Batch too small. Batch size increased to {}.".format(self.batch_size))
-            # TODO: change print to logger
+            self.logger.warning(f"Batch too small. Batch size increased to {self.batch_size}.")
         elif self.batch_size % self.positives_per_group != 0:
             self.batch_size = self.batch_size - (self.batch_size % self.positives_per_group)
-            print(
-                "WARNING: Batch size must be divisible by number of positives per group.",
-                f"Batch size decreased to {self.batch_size}",
+            self.logger.warning(
+                "Batch size must be divisible by number of positives per group. "
+                f"Batch size decreased to {self.batch_size} "
                 f"(positives_per_group={self.positives_per_group}).",
             )
 
         if self.batch_size_limit is not None and (self.batch_size_limit % self.positives_per_group != 0):
             self.batch_size_limit = self.batch_size_limit - (self.batch_size_limit % self.positives_per_group)
-            print(
-                "WARNING: Batch size limit must be divisible by number of positives per group.",
-                f"Batch size limit decreased to {self.batch_size_limit}",
+            self.logger.warning(
+                "Batch size limit must be divisible by number of positives per group. "
+                f"Batch size limit decreased to {self.batch_size_limit} "
                 f"(positives_per_group={self.positives_per_group}).",
             )
             if self.batch_size > self.batch_size_limit:
@@ -120,7 +122,7 @@ class BatchSampler(Sampler):
     def expand_batch(self) -> None:
         """Batch expansion method. See MinkLoc paper for details about dynamic batch sizing."""
         if self.batch_expansion_rate is None or self.batch_size_limit is None:
-            print("WARNING: dynamic batch sizing is disabled but 'expand_batch' method was called.")
+            self.logger.warning("Dynamic batch sizing is disabled but 'expand_batch' method was called.")
             return
 
         if self.batch_size >= self.batch_size_limit:
@@ -135,7 +137,7 @@ class BatchSampler(Sampler):
             self.batch_size += self.positives_per_group  # smallest possible step
         # then check if it is smaller than the limit
         self.batch_size = min(self.batch_size, self.batch_size_limit)
-        print(f"=> Batch size increased from: {old_batch_size} to {self.batch_size}")
+        self.logger.info(f"=> Batch size increased from: {old_batch_size} to {self.batch_size}")
         self.generate_batches()
 
     def generate_batches(self) -> None:  # noqa: C901 # TODO: refactor to reduce complexity
