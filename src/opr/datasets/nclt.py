@@ -176,10 +176,10 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         if self._use_intensity_values:
             raise NotImplementedError("Intensity values are not supported yet.")
         pc = np.fromfile(filepath, dtype=np.float32).reshape(-1, 3)  # TODO: preprocess pointclouds properly
-        if self._spherical_coords:
-            pc = cartesian_to_spherical(pc, dataset_name="nclt")
         if self._max_point_distance is not None:
             pc = pc[np.linalg.norm(pc, axis=1) < self._max_point_distance]
+        if self._spherical_coords:
+            pc = cartesian_to_spherical(pc, dataset_name="nclt")
         pc_tensor = torch.tensor(pc, dtype=torch.float)
         return pc_tensor
 
