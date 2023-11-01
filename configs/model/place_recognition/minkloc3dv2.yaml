@@ -1,0 +1,10 @@
+_target_: opr.models.place_recognition.MinkLoc3Dv2
+
+in_channels: 1
+out_channels: 256
+num_top_down: 2
+conv0_kernel_size: 5
+block: ECABasicBlock
+layers: [1, 1, 1, 1]
+planes: [64, 128, 64, 32]
+pooling: gem
