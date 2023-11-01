@@ -4,12 +4,11 @@ from typing import Literal, Optional, Tuple
 
 import numpy as np
 import torch
+from torch import nn, Tensor
 from pytorch_metric_learning.distances import LpDistance
 from sklearn.neighbors import KDTree
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-
-from opr.models.base_models import ComposedModel
 
 
 def get_recalls(
@@ -72,7 +71,7 @@ def get_recalls(
 
 
 def test(
-    model: ComposedModel,
+    model: nn.Module,
     descriptor_key: Literal["image", "cloud", "semantic", "fusion"],
     dataloader: DataLoader,
     dist_thresh: float = 25.0,
@@ -81,7 +80,7 @@ def test(
     """Test Place Recognition Average Recall@N metric performance.
 
     Args:
-        model (ComposedModel): The model to test.
+        model (nn.Module): The model to test.
         descriptor_key (Literal["image", "cloud", "semantic", "fusion"]): The embedding key which should be tested.
         dataloader (DataLoader): Test dataloader object.
         dist_thresh (float): Distance threshold for positive match. Defaults to 25.0.
@@ -218,7 +217,7 @@ def get_recalls_with_reranking(
 
 
 def test_image_model_with_reranking(
-    model: ComposedModel,
+    model: nn.Module,
     dataloader: DataLoader,
     dist_thresh: float = 25.0,
     device: str = "cuda",
@@ -226,7 +225,7 @@ def test_image_model_with_reranking(
     """Test Place Recognition Average Recall@N metric performance.
 
     Args:
-        model (ComposedModel): The model to test.
+        model (nn.Module): The model to test.
         dataloader (DataLoader): Test dataloader object.
         dist_thresh (float): Distance threshold for positive match. Defaults to 25.0.
         device (str): Device ("cpu" or "cuda"). Defaults to "cuda".
