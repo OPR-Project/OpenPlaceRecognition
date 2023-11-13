@@ -61,8 +61,8 @@ class ResNet18FPNFeatureExtractor(nn.Module):
                 groups=self.resnet_fe[0].groups,
                 bias=self.resnet_fe[0].bias,
                 padding_mode=self.resnet_fe[0].padding_mode,
-                device=self.resnet_fe[0].device,
-                dtype=self.resnet_fe[0].dtype,
+                device=next(self.resnet_fe[0].parameters()).device,
+                dtype=next(self.resnet_fe[0].parameters()).dtype,
             )
 
         # Lateral connections and top-down pass for the feature extraction head
