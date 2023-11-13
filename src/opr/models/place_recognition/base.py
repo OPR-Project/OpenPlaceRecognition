@@ -46,6 +46,46 @@ class ImageModel(nn.Module):
         return out_dict
 
 
+class SemanticModel(ImageModel):
+    """Meta-model for semantic-based Place Recognition. Combines feature extraction backbone and head modules."""
+
+    def __init__(
+        self,
+        backbone: nn.Module,
+        head: nn.Module,
+        fusion: Optional[nn.Module] = None,
+    ) -> None:
+        """Meta-model for semantic-based Place Recognition.
+
+        Args:
+            backbone (ImageFeatureExtractor): Semantic feature extraction backbone.
+            head (ImageHead): Image head module.
+            fusion (FusionModule, optional): Module to fuse descriptors for multiple images in batch.
+                Defaults to None.
+        """
+        super().__init__(
+            backbone=backbone,
+            head=head,
+            fusion=fusion,
+        )
+
+    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
+        mask_descriptors = {}
+        for key, value in batch.items():
+            if key.startswith("masks_"):
+                mask_descriptors[key] = self.head(self.backbone(value))
+        if len(mask_descriptors) > 1:
+            if self.fusion is None:
+                raise ValueError("Fusion module is not defined but multiple masks are provided")
+            descriptor = self.fusion(mask_descriptors)
+        else:
+            if self.fusion is not None:
+                raise ValueError("Fusion module is defined but only one mask is provided")
+            descriptor = list(mask_descriptors.values())[0]
+        out_dict: Dict[str, Tensor] = {"final_descriptor": descriptor}
+        return out_dict
+
+
 class CloudModel(nn.Module):
     """Meta-model for lidar-based Place Recognition. Combines feature extraction backbone and head modules."""
 
