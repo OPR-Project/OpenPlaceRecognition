@@ -1,14 +1,16 @@
 """Testing functions implementation."""
 import itertools
-from typing import Literal, Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import numpy as np
 import torch
-from torch import nn, Tensor
 from pytorch_metric_learning.distances import LpDistance
 from sklearn.neighbors import KDTree
+from torch import nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+
+from opr.utils import parse_device
 
 
 def get_recalls(
@@ -72,37 +74,33 @@ def get_recalls(
 
 def test(
     model: nn.Module,
-    descriptor_key: Literal["image", "cloud", "semantic", "fusion"],
     dataloader: DataLoader,
-    dist_thresh: float = 25.0,
-    device: str = "cuda",
+    distance_threshold: float = 25.0,
+    device: Union[str, int, torch.device] = "cuda",
 ) -> Tuple[np.ndarray, float, float]:
-    """Test Place Recognition Average Recall@N metric performance.
+    """Evaluates the model on the test set.
 
     Args:
         model (nn.Module): The model to test.
-        descriptor_key (Literal["image", "cloud", "semantic", "fusion"]): The embedding key which should be tested.
-        dataloader (DataLoader): Test dataloader object.
-        dist_thresh (float): Distance threshold for positive match. Defaults to 25.0.
-        device (str): Device ("cpu" or "cuda"). Defaults to "cuda".
+        dataloader (DataLoader): The data loader for the test set.
+        distance_threshold (float): The distance threshold for a correct match. Defaults to 25.0.
+        device (Union[str, int, torch.device]): Device ("cpu" or "cuda"). Defaults to "cuda".
 
     Returns:
         Tuple[np.ndarray, float, float]: Array of AverageRecall@N (N from 1 to 25), AverageRecall@1%
             and mean top-1 distance.
     """
-    model = model.to(device)
-    model.eval()
+    device = parse_device(device)
     with torch.no_grad():
-        test_embeddings_list = []
-        for data in tqdm(dataloader, desc="Calculating test set descriptors"):
-            batch, _, _ = data
+        embeddings_list = []
+        for batch in tqdm(dataloader, desc="Calculating test set descriptors", leave=False):
             batch = {e: batch[e].to(device) for e in batch}
-            batch_embeddings = model(batch)
-            test_embeddings_list.append(batch_embeddings[descriptor_key].cpu().numpy())
-        test_embeddings = np.vstack(test_embeddings_list)
+            embeddings = model(batch)["final_descriptor"]
+            embeddings_list.append(embeddings.cpu().numpy())
+            torch.cuda.empty_cache()
+        test_embeddings = np.vstack(embeddings_list)
 
-    # TODO: resolve mypy typing here
-    test_df = dataloader.dataset.dataset_df  # type: ignore
+    test_df = dataloader.dataset.dataset_df
 
     queries = []
     databases = []
@@ -123,7 +121,7 @@ def test(
     ij_permutations = list(itertools.permutations(range(len(queries)), 2))
     count_r_at_1 = 0
 
-    for i, j in tqdm(ij_permutations, desc="Calculating metrics"):
+    for i, j in tqdm(ij_permutations, desc="Calculating metrics", leave=False):
         query = queries[i]
         database = databases[j]
         query_embs = test_embeddings[query]
@@ -134,7 +132,7 @@ def test(
             recalls_at_n[i, j],
             recalls_at_one_percent[i, j],
             top1_distance,
-        ) = get_recalls(query_embs, database_embs, distances, at_n=n, dist_thresh=dist_thresh)
+        ) = get_recalls(query_embs, database_embs, distances, at_n=n, dist_thresh=distance_threshold)
 
         if top1_distance:
             count_r_at_1 += 1
@@ -142,9 +140,6 @@ def test(
     mean_recall_at_n = recalls_at_n.sum(axis=(0, 1)) / len(ij_permutations)
     mean_recall_at_one_percent = recalls_at_one_percent.sum(axis=(0, 1)).squeeze() / len(ij_permutations)
     mean_top1_distance = top1_distances.sum(axis=(0, 1)).squeeze() / len(ij_permutations)
-    print(f"Mean Recall@N:\n{mean_recall_at_n}")
-    print(f"Mean Recall@1% = {mean_recall_at_one_percent}")
-    print(f"Mean top-1 distance = {mean_top1_distance}")
 
     return mean_recall_at_n, mean_recall_at_one_percent, mean_top1_distance
 
