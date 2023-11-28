@@ -1,19 +1,16 @@
-dataset:
-  _target_: opr.datasets.oxford.OxfordDataset
+_target_: opr.datasets.OxfordDataset
 
-  dataset_root: /home/docker_opr/Datasets/pnvlad_oxford_robotcar
-  modalities: [image, cloud,]
-  images_subdir: stereo_centre_small
-  random_select_nearest_images: False
-  mink_quantization_size: 0.01
-
-sampler:
-  _target_: opr.datasets.samplers.batch_sampler.BatchSampler
-
-  batch_size: 8
-  batch_size_limit: 160
-  batch_expansion_rate: 1.4
-  positives_per_group: 2
-  seed: 3121999
-
-num_workers: 4
+dataset_root: ???
+data_to_load: [pointcloud_lidar,]
+positive_threshold: 10.0
+negative_threshold: 50.0
+images_dirname: images_small
+masks_dirname: segmentation_masks_small
+pointclouds_dirname: null
+pointcloud_quantization_size: 0.01
+max_point_distance: null
+spherical_coords: False
+image_transform: null
+semantic_transform: null
+pointcloud_transform: null
+pointcloud_set_transform: null

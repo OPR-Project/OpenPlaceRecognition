@@ -4,7 +4,10 @@
 
 ### Pre-requisites
 
-- The library requires PyTorch~=1.13 and MinkowskiEngine library to be installed manually. See [PyTorch website](https://pytorch.org/get-started/previous-versions/) and [MinkowskiEngine repository](https://github.com/NVIDIA/MinkowskiEngine) for the detailed instructions.
+- The library requires `PyTorch`, `MinkowskiEngine` and (optionally) `faiss` libraries to be installed manually:
+  - [PyTorch Get Started](https://pytorch.org/get-started/locally/)
+  - [MinkowskiEngine repository](https://github.com/NVIDIA/MinkowskiEngine)
+  - [faiss repository](https://github.com/facebookresearch/faiss)
 
 - Another option is to use the suggested Dockerfile. The following commands should be used to build, start and enter the container:
 
@@ -34,17 +37,120 @@
     pip install .
     ```
 
-## Usage
+## Package Structure
 
-Currently only MinkLoc++ pretrained on Oxford RobotCar available. You can download it using [google drive link](https://drive.google.com/file/d/1zlfdX217Nh3_QL5r0XAHUjDFjIPxUmMg/view?usp=share_link) (the link is subject to change).
+### opr.datasets
 
-If everything is installed correctly, you can use the library like below:
+Subpackage containing dataset classes and functions.
+
+Usage example:
 
 ```python
-from opr.models import minkloc_multimodal
+from opr.datasets import OxfordDataset
 
-baseline_model = minkloc_multimodal(weights="path_to_checkpoint")
+train_dataset = OxfordDataset(
+    dataset_root="/home/docker_opr/Datasets/pnvlad_oxford_robotcar_full/",
+    subset="train",
+    data_to_load=["image_stereo_centre", "pointcloud_lidar"]
+)
 ```
+
+The iterator will return a dictionary with the following keys:
+- `"idx"`: index of the sample in the dataset, single number Tensor
+- `"utm"`: UTM coordinates of the sample, Tensor of shape `(2)`
+- (optional) `"image_stereo_centre"`: image Tensor of shape `(C, H, W)`
+- (optional) `"pointcloud_lidar_feats"`: point cloud features Tensor of shape `(N, 1)`
+- (optional) `"pointcloud_lidar_coords"`: point cloud coordinates Tensor of shape `(N, 3)`
+
+More details can be found in the [demo_datasets.ipynb](./notebooks/demo_datasets.ipynb) notebook.
+
+### opr.losses
+
+The `opr.losses` subpackage contains ready-to-use loss functions implemented in PyTorch, featuring a common interface.
+
+Usage example:
+
+```python
+from opr.losses import BatchHardTripletMarginLoss
+
+loss_fn = BatchHardTripletMarginLoss(margin=0.2)
+
+idxs = sample_batch["idxs"]
+positives_mask = dataset.positives_mask[idxs][:, idxs]
+negatives_mask = dataset.negatives_mask[idxs][:, idxs]
+
+loss, stats = loss_fn(output["final_descriptor"], positives_mask, negatives_mask)
+```
+
+The loss functions introduce a unified interface:
+- **Input:**
+  - `embeddings`: descriptor Tensor of shape `(B, D)`
+  - `positives_mask`: boolean mask Tensor of shape `(B, B)`
+  - `negatives_mask`: boolean mask Tensor of shape `(B, B)`
+- **Output:**
+  - `loss`: loss value Tensor
+  - `stats`: dictionary with additional statistics
+
+More details can be found in the [demo_losses.ipynb](./notebooks/demo_losses.ipynb) notebook.
+
+### opr.models
+
+The `opr.models` subpackage contains ready-to-use neural networks implemented in PyTorch, featuring a common interface.
+
+Usage example:
+
+```python
+from opr.models.place_recognition import MinkLoc3D
+
+model = MinkLoc3D()
+
+# forward pass
+output = model(batch)
+```
+
+The models introduce unified input and output formats:
+- **Input:** a `batch` dictionary with the following keys
+  (all keys are optional, depending on the model and dataset):
+  - `"images_<camera_name>"`: images Tensor of shape `(B, 3, H, W)`
+  - `"masks_<camera_name>"`: semantic segmentation masks Tensor of shape `(B, 1, H, W)`
+  - `"pointclouds_lidar_coords"`: point cloud coordinates Tensor of shape `(B * N_points, 4)`
+  - `"pointclouds_lidar_feats"`: point cloud features Tensor of shape `(B * N_points, C)`
+- **Output:** a dictionary with the requiered key `"final_descriptor"`
+  and optional keys for intermediate descriptors:
+  - `"final_descriptor"`: final descriptor Tensor of shape `(B, D)`
+
+More details can be found in the [demo_models.ipynb](./notebooks/demo_models.ipynb) notebook.
+
+### opr.pipelines
+
+The `opr.pipelines` subpackage contains ready-to-use pipelines for model inference.
+
+Usage example:
+
+```python
+from opr.models.place_recognition import MinkLoc3Dv2
+from opr.pipelines.place_recognition import PlaceRecognitionPipeline
+
+pipe = PlaceRecognitionPipeline(
+    database_dir="/home/docker_opr/Datasets/ITLP_Campus/ITLP_Campus_outdoor/databases/00",
+    model=MinkLoc3Dv2(),
+    model_weights_path=None,
+    device="cuda",
+)
+
+out = pipe.infer(sample)
+```
+
+The pipeline introduces a unified interface for model inference:
+- **Input:** a dictionary with the following keys
+  (all keys are optional, depending on the model and dataset):
+  - `"image_<camera_name>"`: image Tensor of shape `(3, H, W)`
+  - `"mask_<camera_name>"`: semantic segmentation mask Tensor of shape `(1, H, W)`
+  - `"pointcloud_lidar_coords"`: point cloud coordinates Tensor of shape `(N_points, 4)`
+  - `"pointcloud_lidar_feats"`: point cloud features Tensor of shape `(N_points, C)`
+- **Output:** a dictionary with keys:
+  - `"pose"` for predicted pose in the format `[tx, ty, tz, qx, qy, qz, qw]`,
+  - `"descriptor"` for predicted descriptor.
 
 ## License
 

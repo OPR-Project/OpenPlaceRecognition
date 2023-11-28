@@ -1,8 +1,13 @@
 albumentations
-hydra-core
+hydra-core>=1.2
+kaleido
+matplotlib
 numpy
 opencv-python
 pandas
+plotly>=5.14.1
 pytorch_metric_learning
+requests>=2.31.0
 scipy
 tqdm
+wandb

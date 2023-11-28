@@ -1,0 +1,9 @@
+_target_: opr.samplers.BatchSampler
+
+batch_size: 32
+batch_size_limit: 256
+batch_expansion_rate: 1.4
+max_batches: null
+positives_per_group: 2
+seed: ${seed}
+drop_last: True

@@ -1,0 +1,3 @@
+_target_: opr.losses.BatchHardTripletMarginLoss
+
+margin: 0.2

@@ -1,6 +1,5 @@
 _target_: torch.optim.AdamW
-params:
-  image_lr: 0.0001
-  cloud_lr: 0.001
-  fusion_lr: 0.001
-  weight_decay: 0.0001
+_convert_: all
+
+lr: 0.001
+weight_decay: 0.0001
