@@ -121,6 +121,34 @@ The models introduce unified input and output formats:
 
 More details can be found in the [demo_models.ipynb](./notebooks/demo_models.ipynb) notebook.
 
+### opr.trainers
+
+The `opr.trainers` subpackage contains ready-to-use training algorithms.
+
+Usage example:
+
+```python
+from opr.trainers.place_recognition import UnimodalPlaceRecognitionTrainer
+
+trainer = UnimodalPlaceRecognitionTrainer(
+    checkpoints_dir=checkpoints_dir,
+    model=model,
+    loss_fn=loss_fn,
+    optimizer=optimizer,
+    scheduler=scheduler,
+    batch_expansion_threshold=cfg.batch_expansion_threshold,
+    wandb_log=(not cfg.debug and not cfg.wandb.disabled),
+    device=cfg.device,
+)
+
+trainer.train(
+    epochs=cfg.epochs,
+    train_dataloader=dataloaders["train"],
+    val_dataloader=dataloaders["val"],
+    test_dataloader=dataloaders["test"],
+)
+```
+
 ### opr.pipelines
 
 The `opr.pipelines` subpackage contains ready-to-use pipelines for model inference.
