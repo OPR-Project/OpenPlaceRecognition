@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "opr"
-version = "0.2.0"
+version = "0.2.1"
 description = "Place Recognition library based on Python and PyTorch framework."
 authors = [
     {name = "Alexander Melekhin", email = "amelekhin96@gmail.com"},
