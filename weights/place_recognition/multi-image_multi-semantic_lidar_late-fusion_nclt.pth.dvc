@@ -1,0 +1,5 @@
+outs:
+- md5: 1cfbc7acebd8e63ca01d7ababaf7487c
+  size: 33570105
+  hash: md5
+  path: multi-image_multi-semantic_lidar_late-fusion_nclt.pth
