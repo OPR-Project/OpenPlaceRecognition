@@ -120,16 +120,15 @@ class LateFusionModel(nn.Module):
     def __init__(
         self,
         image_module: Optional[ImageModel] = None,
-        semantic_module: Optional[ImageModel] = None,
+        semantic_module: Optional[SemanticModel] = None,
         cloud_module: Optional[CloudModel] = None,
-        # text_module: Optional[Union[FusionTextModel, MultiTextModule]] = None,  # TODO: re-think
         fusion_module: Optional[nn.Module] = None,
     ) -> None:
         """Meta-model for multimodal Place Recognition architectures with late fusion.
 
         Args:
             image_module (ImageModule, optional): Image modality branch. Defaults to None.
-            semantic_module (ImageModule, optional): Semantic modality branch. Defaults to None.
+            semantic_module (SemanticModel, optional): Semantic modality branch. Defaults to None.
             cloud_module (CloudModule, optional): Cloud modality branch. Defaults to None.
             fusion_module (FusionModule, optional): Module to fuse different modalities.
                 If None, will be set to opr.modules.Concat(). Defaults to None.
@@ -139,7 +138,6 @@ class LateFusionModel(nn.Module):
         self.image_module = image_module
         self.semantic_module = semantic_module
         self.cloud_module = cloud_module
-        # self.text_module = text_module
         if fusion_module:
             self.fusion_module = fusion_module
         else:
@@ -156,11 +154,6 @@ class LateFusionModel(nn.Module):
 
         if self.cloud_module is not None:
             out_dict["cloud"] = self.cloud_module(batch)
-
-        # if self.text_module is not None and isinstance(self.text_module, FusionTextModel):
-        #     out_dict["text"] = self.text_module(batch["back_embs"], batch["front_embs"])
-        # elif self.text_module is not None and isinstance(self.text_module, MultiTextModule):
-        #     out_dict["text"] = self.text_module(batch)
 
         out_dict["final_descriptor"] = self.fusion_module(out_dict)
 
