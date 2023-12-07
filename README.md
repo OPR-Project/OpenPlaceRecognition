@@ -180,6 +180,15 @@ The pipeline introduces a unified interface for model inference:
   - `"pose"` for predicted pose in the format `[tx, ty, tz, qx, qy, qz, qw]`,
   - `"descriptor"` for predicted descriptor.
 
+## Model Zoo
+
+### Place Recognition
+
+| Model      | Modality | Train Dataset | Config | Weights |
+| ---------- | -------- | ------------- | ------ | ------- |
+| MinkLoc3D ([paper](https://openaccess.thecvf.com/content/WACV2021/html/Komorowski_MinkLoc3D_Point_Cloud_Based_Large-Scale_Place_Recognition_WACV_2021_paper.html)) | LiDAR | NCLT | [minkloc3d.yaml](./configs/model/place_recognition/minkloc3d.yaml) | `minkloc3d_nclt.pth` |
+| Custom | Multi-Image, Multi-Semantic, LiDAR | NCLT | [multi-image_multi-semantic_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_multi-semantic_lidar_late-fusion.yaml) | `multi-image_multi-semantic_lidar_late-fusion_nclt.pth` |
+
 ## License
 
 [MIT License](./LICENSE) (**_the license is subject to change in future versions_**)
