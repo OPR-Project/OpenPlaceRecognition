@@ -214,3 +214,66 @@ def cartesian_to_spherical(points: np.ndarray, dataset_name: str) -> np.ndarray:
         return np.column_stack((r, theta, phi, points[:, 3]))
     else:
         return np.column_stack((r, theta, phi))
+
+
+def distribute_batch_size(global_batch_size: int, num_replicas: int) -> List[int]:
+    """Distributes the global batch size over the replicas.
+
+    Args:
+        global_batch_size (int): The global batch size.
+        num_replicas (int): The number of replicas.
+
+    Returns:
+        List[int]: A list of batch sizes for each replica.
+
+    Examples:
+        >>> print(distribute_batch_size(4096, 6))
+        [43, 43, 43, 43, 42, 42]
+    """
+    initial_local_batch_size = global_batch_size // num_replicas
+    local_batch_sizes = np.full(num_replicas, initial_local_batch_size, dtype=int)
+    local_batch_sizes[: global_batch_size % num_replicas] += 1
+    return local_batch_sizes.tolist()
+
+
+def get_local_batch_size(global_batch_size: int, num_replicas: int, rank: int) -> int:
+    """Gets the local batch size on the given rank in the global batch.
+
+    Args:
+        global_batch_size (int): The global batch size.
+        num_replicas (int): The number of replicas.
+        rank (int): The rank of the replica.
+
+    Returns:
+        int: The local batch size on the given rank in the global batch.
+    """
+    local_batch_sizes = distribute_batch_size(global_batch_size, num_replicas)
+    return local_batch_sizes[rank]
+
+
+def get_start_end_indices_of_local_batch(
+    global_batch_size: int, num_replicas: int, rank: int
+) -> Tuple[int, int]:
+    """Gets the start and end indices of the local batch on the given rank in the global batch.
+
+    Args:
+        global_batch_size (int): The global batch size.
+        num_replicas (int): The number of replicas.
+        rank (int): The rank of the replica.
+
+    Returns:
+        List[Tuple[int, int]]: A list of tuples containing the start and end indices
+            of the local batch in the global batch.
+
+    Examples:
+        >>> print(get_start_end_indices_in_global_batch(256, 6, 1))
+        (43, 86)
+    """
+    local_batch_sizes = distribute_batch_size(global_batch_size, num_replicas)
+    start_end_indices = []
+    start_index = 0
+    for local_batch_size in local_batch_sizes:
+        end_index = start_index + local_batch_size
+        start_end_indices.append((start_index, end_index))
+        start_index = end_index
+    return start_end_indices[rank]
