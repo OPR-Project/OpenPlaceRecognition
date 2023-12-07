@@ -1,4 +1,5 @@
 albumentations
+dvc[gdrive]
 hydra-core>=1.2
 kaleido
 matplotlib

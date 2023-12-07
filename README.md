@@ -121,6 +121,34 @@ The models introduce unified input and output formats:
 
 More details can be found in the [demo_models.ipynb](./notebooks/demo_models.ipynb) notebook.
 
+### opr.trainers
+
+The `opr.trainers` subpackage contains ready-to-use training algorithms.
+
+Usage example:
+
+```python
+from opr.trainers.place_recognition import UnimodalPlaceRecognitionTrainer
+
+trainer = UnimodalPlaceRecognitionTrainer(
+    checkpoints_dir=checkpoints_dir,
+    model=model,
+    loss_fn=loss_fn,
+    optimizer=optimizer,
+    scheduler=scheduler,
+    batch_expansion_threshold=cfg.batch_expansion_threshold,
+    wandb_log=(not cfg.debug and not cfg.wandb.disabled),
+    device=cfg.device,
+)
+
+trainer.train(
+    epochs=cfg.epochs,
+    train_dataloader=dataloaders["train"],
+    val_dataloader=dataloaders["val"],
+    test_dataloader=dataloaders["test"],
+)
+```
+
 ### opr.pipelines
 
 The `opr.pipelines` subpackage contains ready-to-use pipelines for model inference.
@@ -151,6 +179,15 @@ The pipeline introduces a unified interface for model inference:
 - **Output:** a dictionary with keys:
   - `"pose"` for predicted pose in the format `[tx, ty, tz, qx, qy, qz, qw]`,
   - `"descriptor"` for predicted descriptor.
+
+## Model Zoo
+
+### Place Recognition
+
+| Model      | Modality | Train Dataset | Config | Weights |
+| ---------- | -------- | ------------- | ------ | ------- |
+| MinkLoc3D ([paper](https://openaccess.thecvf.com/content/WACV2021/html/Komorowski_MinkLoc3D_Point_Cloud_Based_Large-Scale_Place_Recognition_WACV_2021_paper.html)) | LiDAR | NCLT | [minkloc3d.yaml](./configs/model/place_recognition/minkloc3d.yaml) | `minkloc3d_nclt.pth` |
+| Custom | Multi-Image, Multi-Semantic, LiDAR | NCLT | [multi-image_multi-semantic_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_multi-semantic_lidar_late-fusion.yaml) | `multi-image_multi-semantic_lidar_late-fusion_nclt.pth` |
 
 ## License
 

@@ -1,3 +1,4 @@
+*.sif
 checkpoints/
 outputs/
 wandb/
@@ -157,28 +158,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-
-
-outputs/
-checkpoints/
-wandb/
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
-.gitignore
-
-configs/general/multimodal.yaml
-configs/nclt_lidar_cam5.yaml
-configs/config_nclt_text_PCA_concat.yaml
-configs/config_nclt_text_PCA_concat_lr_0.0001.yaml
-.gitignore
-configs/config_nclt_text_PCA_add_lr_0.0001.yaml
-configs/config_itlp_default.yaml
-configs/config_nclt_text_PCA_add.yaml
-configs/nclt_lidar_cam5_texts.yaml
-configs/config_nclt_text.yaml
-.gitignore
-configs/config_nclt_text.yaml

@@ -74,10 +74,10 @@ def split_dataframe(
     step = split_distance // 5
     for i in range(0, len(track_df), step):
         row = track_df.iloc[i]
-        if check_in_test_set(row["x"], row["y"], test_boundary_points=P, boundary_width=P_WIDTH):
+        if check_in_test_set(row["northing"], row["easting"], test_boundary_points=P, boundary_width=P_WIDTH):
             test_rows.append(row)
         elif not check_in_buffer_set(
-            row["x"], row["y"], test_boundary_points=P, boundary_width=P_WIDTH, buffer_width=BUFFER_WIDTH
+            row["northing"], row["easting"], test_boundary_points=P, boundary_width=P_WIDTH, buffer_width=BUFFER_WIDTH
         ):
             train_rows.append(row)
     train_df = pd.DataFrame(train_rows)
@@ -90,7 +90,7 @@ def split_dataframe(
 if __name__ == "__main__":
     dataset_root, track_files = parse_args()
     print(f"Found {len(track_files)} 'track.csv' files in the subdirectories of the given dataset_root")
-    column_names = ["track", "image", "pointcloud", "x", "y"]
+    column_names = ["track", "image", "pointcloud", "northing", "easting"]
     train_df = DataFrame(columns=column_names)
     test_df = DataFrame(columns=column_names)
     for track_file in track_files:
@@ -101,6 +101,8 @@ if __name__ == "__main__":
         test_df = pd.concat([test_df, track_test_df], ignore_index=True)
     train_df = train_df[column_names]
     test_df = test_df[column_names]
+    # train_df = train_df.rename(columns={"x": "northing", "y": "easting"})
+    # test_df = test_df.rename(columns={"x": "northing", "y": "easting"})
     train_df[["image", "pointcloud"]] = train_df[["image", "pointcloud"]].astype("int64")
     test_df[["image", "pointcloud"]] = test_df[["image", "pointcloud"]].astype("int64")
     train_df.to_csv(dataset_root / "train.csv")

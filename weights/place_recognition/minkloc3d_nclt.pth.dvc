@@ -1,0 +1,5 @@
+outs:
+- md5: bc78a5f5874cd5d40ff73c95e524b5ce
+  size: 4251539
+  hash: md5
+  path: minkloc3d_nclt.pth
