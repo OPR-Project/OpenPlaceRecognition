@@ -37,6 +37,16 @@
     pip install .
     ```
 
+### How to load the weights
+
+We use [DVC](https://dvc.org/) to manage the weights storage. To download the weights, run the following command (assuming that dvc is already installed):
+
+```bash
+dvc pull
+```
+
+You will be be asked to authorize the Google Drive access. After that, the weights will be downloaded to the `weights` directory. For more details, see the [DVC documentation](https://dvc.org/doc).
+
 ## Package Structure
 
 ### opr.datasets
