@@ -104,6 +104,8 @@ class PlaceRecognitionPipeline:
         Returns:
             Dict[str, np.ndarray]: Inference results. Dictionary with keys:
 
+                "idx" for predicted index in the database,
+
                 "pose" for predicted pose in the format [tx, ty, tz, qx, qy, qz, qw],
 
                 "descriptor" for predicted descriptor.
@@ -117,6 +119,7 @@ class PlaceRecognitionPipeline:
         pred_pose = self.database_df.iloc[pred_i][["tx", "ty", "tz", "qx", "qy", "qz", "qw"]].to_numpy(
             dtype=float
         )
+        output["idx"] = pred_i
         output["pose"] = pred_pose
         output["descriptor"] = descriptor[0]
         return output
