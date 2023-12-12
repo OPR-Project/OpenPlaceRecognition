@@ -89,8 +89,6 @@ class ITLPCampus(Dataset):
         subset_csv = self.dataset_root / "track.csv"
         self.dataset_df = pd.read_csv(subset_csv, index_col=0)
 
-        print(self.dataset_df.info())
-
         if isinstance(sensors, str):
             sensors = tuple([sensors])
         self.sensors = sensors
