@@ -191,6 +191,8 @@ The pipeline introduces a unified interface for model inference:
   - `"pose"` for predicted pose in the format `[tx, ty, tz, qx, qy, qz, qw]`,
   - `"descriptor"` for predicted descriptor.
 
+More details can be found in the [demo_pipelines.ipynb](./notebooks/demo_pipelines.ipynb) notebook.
+
 ## Model Zoo
 
 ### Place Recognition
