@@ -187,6 +187,7 @@ The pipeline introduces a unified interface for model inference:
   - `"pointcloud_lidar_coords"`: point cloud coordinates Tensor of shape `(N_points, 4)`
   - `"pointcloud_lidar_feats"`: point cloud features Tensor of shape `(N_points, C)`
 - **Output:** a dictionary with keys:
+  - `"idx"` for predicted index in the database,
   - `"pose"` for predicted pose in the format `[tx, ty, tz, qx, qy, qz, qw]`,
   - `"descriptor"` for predicted descriptor.
 
