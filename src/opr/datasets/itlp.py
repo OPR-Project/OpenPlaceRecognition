@@ -89,6 +89,8 @@ class ITLPCampus(Dataset):
         subset_csv = self.dataset_root / "track.csv"
         self.dataset_df = pd.read_csv(subset_csv, index_col=0)
 
+        print(self.dataset_df.info())
+
         if isinstance(sensors, str):
             sensors = tuple([sensors])
         self.sensors = sensors
@@ -141,10 +143,10 @@ class ITLPCampus(Dataset):
         data: Dict[str, Union[int, Tensor]] = {"idx": torch.tensor(idx)}
         row = self.dataset_df.iloc[idx]
         data["pose"] = torch.tensor(
-            row[["tx", "ty", "tz", "qx", "qy", "qz", "qw"]].to_numpy(dtype=np.float32)
+            self.dataset_df.iloc[idx][["tx", "ty", "tz", "qx", "qy", "qz", "qw"]].to_numpy(dtype=np.float32)
         )
         if "front_cam" in self.sensors:
-            image_ts = int(row["front_cam_ts"])
+            image_ts = int(self.dataset_df["front_cam_ts"].iloc[idx])
             im_filepath = self.dataset_root / self.images_subdir / "front_cam" / f"{image_ts}.png"
             im = cv2.imread(str(im_filepath))
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
@@ -173,7 +175,7 @@ class ITLPCampus(Dataset):
                 ]
                 data["aruco_labels_front_cam_df"] = aruco_labels_df
         if "back_cam" in self.sensors:
-            image_ts = int(row["back_cam_ts"])
+            image_ts = int(self.dataset_df["back_cam_ts"].iloc[idx])
             im_filepath = self.dataset_root / self.images_subdir / "back_cam" / f"{image_ts}.png"
             im = cv2.imread(str(im_filepath))
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
@@ -202,7 +204,8 @@ class ITLPCampus(Dataset):
                 ]
                 data["aruco_labels_back_cam_df"] = aruco_labels_df
         if "lidar" in self.sensors:
-            pc_filepath = self.dataset_root / self.clouds_subdir / f"{int(row['lidar_ts'])}.bin"
+            lidar_ts = int(self.dataset_df["lidar_ts"].iloc[idx])
+            pc_filepath = self.dataset_root / self.clouds_subdir / f"{lidar_ts}.bin"
             pc = self._load_pc(pc_filepath)
             data["pointcloud_lidar_coords"] = pc
             data["pointcloud_lidar_feats"] = torch.ones_like(pc[:, :1])
