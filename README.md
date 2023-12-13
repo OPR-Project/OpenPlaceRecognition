@@ -169,7 +169,7 @@ Usage example:
 from opr.models.place_recognition import MinkLoc3Dv2
 from opr.pipelines.place_recognition import PlaceRecognitionPipeline
 
-pipe = PlaceRecognitionPipeline(
+pipe = **PlaceRecognitionPipeline**(
     database_dir="/home/docker_opr/Datasets/ITLP_Campus/ITLP_Campus_outdoor/databases/00",
     model=MinkLoc3Dv2(),
     model_weights_path=None,
@@ -201,6 +201,7 @@ More details can be found in the [demo_pipelines.ipynb](./notebooks/demo_pipelin
 | ---------- | -------- | ------------- | ------ | ------- |
 | MinkLoc3D ([paper](https://openaccess.thecvf.com/content/WACV2021/html/Komorowski_MinkLoc3D_Point_Cloud_Based_Large-Scale_Place_Recognition_WACV_2021_paper.html)) | LiDAR | NCLT | [minkloc3d.yaml](./configs/model/place_recognition/minkloc3d.yaml) | `minkloc3d_nclt.pth` |
 | Custom | Multi-Image, Multi-Semantic, LiDAR | NCLT | [multi-image_multi-semantic_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_multi-semantic_lidar_late-fusion.yaml) | `multi-image_multi-semantic_lidar_late-fusion_nclt.pth` |
+| Custom | Multi-Image, LiDAR | NCLT | [multi-image_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_lidar_late-fusion.yaml) | `multi-image_lidar_late-fusion_nclt.pth` |
 
 ## License
 
