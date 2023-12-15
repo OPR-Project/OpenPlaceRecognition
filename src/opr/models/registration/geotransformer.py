@@ -4,7 +4,7 @@ Paper: https://arxiv.org/abs/2202.06688
 
 Code is adopted from original repository: https://github.com/qinzheng93/GeoTransformer, MIT License
 """
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import torch
 import torch.nn.functional as F
@@ -28,6 +28,11 @@ try:
     from geotransformer.modules.ops import index_select, point_to_node_partition
     from geotransformer.modules.registration import get_node_correspondences
     from geotransformer.modules.sinkhorn import LearnableLogOptimalTransport
+    from geotransformer.utils.data import (
+        calibrate_neighbors_stack_mode,
+        registration_collate_fn_stack_mode,
+    )
+    from geotransformer.utils.torch import to_cuda
 except ImportError as err:
     raise ImportError(
         "To use the GeoTransformer model, please install the geotransformer package first."
@@ -202,16 +207,18 @@ class GeoTransformer(nn.Module):
         self.num_points_in_patch = model.num_points_in_patch
         self.matching_radius = model.ground_truth_matching_radius
 
-        backbone_init_radius = backbone.base_radius * backbone.init_voxel_size
-        backbone_init_sigma = backbone.base_sigma * backbone.init_voxel_size
+        backbone.init_radius = backbone.base_radius * backbone.init_voxel_size
+        backbone.init_sigma = backbone.base_sigma * backbone.init_voxel_size
+
+        self.backbone_cfg = backbone
 
         self.backbone = KPConvFPN(
             backbone.input_dim,
             backbone.output_dim,
             backbone.init_dim,
             backbone.kernel_size,
-            backbone_init_radius,
-            backbone_init_sigma,
+            backbone.init_radius,
+            backbone.init_sigma,
             backbone.group_norm,
         )
 
@@ -249,7 +256,47 @@ class GeoTransformer(nn.Module):
 
         self.optimal_transport = LearnableLogOptimalTransport(model.num_sinkhorn_iterations)
 
-    def forward(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:  # noqa: D102
+    @property
+    def _is_cuda(self) -> bool:
+        for param in self.parameters():
+            if param.is_cuda:
+                return True
+        return False
+
+    def _preprocess_input(
+        self, query_pc: Tensor, db_pc: Tensor, gt_transform: Optional[Tensor] = None
+    ) -> Dict[str, Any]:
+        data_dict = {}
+        data_dict["ref_points"] = query_pc
+        data_dict["src_points"] = db_pc
+        data_dict["ref_feats"] = torch.ones((query_pc.shape[0], 1), dtype=torch.float32)
+        data_dict["src_feats"] = torch.ones((db_pc.shape[0], 1), dtype=torch.float32)
+        if gt_transform:
+            data_dict["transform"] = gt_transform
+        else:
+            data_dict["transform"] = torch.eye(4, dtype=torch.float32)
+        neighbor_limits = calibrate_neighbors_stack_mode(
+            [data_dict],
+            registration_collate_fn_stack_mode,
+            self.backbone_cfg.num_stages,
+            self.backbone_cfg.init_voxel_size,
+            self.backbone_cfg.init_radius,
+        )
+        data_dict = registration_collate_fn_stack_mode(
+            [data_dict],
+            self.backbone_cfg.num_stages,
+            self.backbone_cfg.init_voxel_size,
+            self.backbone_cfg.init_radius,
+            neighbor_limits,
+        )
+        if self._is_cuda:
+            data_dict = to_cuda(data_dict)
+        return data_dict
+
+    def forward(  # noqa: D102
+        self, query_pc: Tensor, db_pc: Tensor, gt_transform: Optional[Tensor] = None
+    ) -> Dict[str, Any]:
+        data_dict = self._preprocess_input(query_pc, db_pc, gt_transform)
         output_dict = {}
 
         # Downsample point clouds
@@ -258,24 +305,24 @@ class GeoTransformer(nn.Module):
 
         ref_length_c = data_dict["lengths"][-1][0].item()
         ref_length_f = data_dict["lengths"][1][0].item()
-        ref_length = data_dict["lengths"][0][0].item()
+        # ref_length = data_dict["lengths"][0][0].item()
         points_c = data_dict["points"][-1].detach()
         points_f = data_dict["points"][1].detach()
-        points = data_dict["points"][0].detach()
+        # points = data_dict["points"][0].detach()
 
         ref_points_c = points_c[:ref_length_c]
         src_points_c = points_c[ref_length_c:]
         ref_points_f = points_f[:ref_length_f]
         src_points_f = points_f[ref_length_f:]
-        ref_points = points[:ref_length]
-        src_points = points[ref_length:]
+        # ref_points = points[:ref_length]
+        # src_points = points[ref_length:]
 
-        output_dict["ref_points_c"] = ref_points_c
-        output_dict["src_points_c"] = src_points_c
-        output_dict["ref_points_f"] = ref_points_f
-        output_dict["src_points_f"] = src_points_f
-        output_dict["ref_points"] = ref_points
-        output_dict["src_points"] = src_points
+        # output_dict["ref_points_c"] = ref_points_c
+        # output_dict["src_points_c"] = src_points_c
+        # output_dict["ref_points_f"] = ref_points_f
+        # output_dict["src_points_f"] = src_points_f
+        # output_dict["ref_points"] = ref_points
+        # output_dict["src_points"] = src_points
 
         # 1. Generate ground truth node correspondences
         _, ref_node_masks, ref_node_knn_indices, ref_node_knn_masks = point_to_node_partition(
@@ -303,8 +350,8 @@ class GeoTransformer(nn.Module):
             src_knn_masks=src_node_knn_masks,
         )
 
-        output_dict["gt_node_corr_indices"] = gt_node_corr_indices
-        output_dict["gt_node_corr_overlaps"] = gt_node_corr_overlaps
+        # output_dict["gt_node_corr_indices"] = gt_node_corr_indices
+        # output_dict["gt_node_corr_overlaps"] = gt_node_corr_overlaps
 
         # 2. KPFCNN Encoder
         feats_list = self.backbone(feats, data_dict)
@@ -324,14 +371,14 @@ class GeoTransformer(nn.Module):
         ref_feats_c_norm = F.normalize(ref_feats_c.squeeze(0), p=2, dim=1)
         src_feats_c_norm = F.normalize(src_feats_c.squeeze(0), p=2, dim=1)
 
-        output_dict["ref_feats_c"] = ref_feats_c_norm
-        output_dict["src_feats_c"] = src_feats_c_norm
+        # output_dict["ref_feats_c"] = ref_feats_c_norm
+        # output_dict["src_feats_c"] = src_feats_c_norm
 
         # 5. Head for fine level matching
         ref_feats_f = feats_f[:ref_length_f]
         src_feats_f = feats_f[ref_length_f:]
-        output_dict["ref_feats_f"] = ref_feats_f
-        output_dict["src_feats_f"] = src_feats_f
+        # output_dict["ref_feats_f"] = ref_feats_f
+        # output_dict["src_feats_f"] = src_feats_f
 
         # 6. Select topk nearest node correspondences
         with torch.no_grad():
@@ -339,8 +386,8 @@ class GeoTransformer(nn.Module):
                 ref_feats_c_norm, src_feats_c_norm, ref_node_masks, src_node_masks
             )
 
-            output_dict["ref_node_corr_indices"] = ref_node_corr_indices
-            output_dict["src_node_corr_indices"] = src_node_corr_indices
+            # output_dict["ref_node_corr_indices"] = ref_node_corr_indices
+            # output_dict["src_node_corr_indices"] = src_node_corr_indices
 
             # 7 Random select ground truth node correspondences during training
             if self.training:
@@ -365,10 +412,10 @@ class GeoTransformer(nn.Module):
             src_padded_feats_f, src_node_corr_knn_indices, dim=0
         )  # (P, K, C)
 
-        output_dict["ref_node_corr_knn_points"] = ref_node_corr_knn_points
-        output_dict["src_node_corr_knn_points"] = src_node_corr_knn_points
-        output_dict["ref_node_corr_knn_masks"] = ref_node_corr_knn_masks
-        output_dict["src_node_corr_knn_masks"] = src_node_corr_knn_masks
+        # output_dict["ref_node_corr_knn_points"] = ref_node_corr_knn_points
+        # output_dict["src_node_corr_knn_points"] = src_node_corr_knn_points
+        # output_dict["ref_node_corr_knn_masks"] = ref_node_corr_knn_masks
+        # output_dict["src_node_corr_knn_masks"] = src_node_corr_knn_masks
 
         # 8. Optimal transport
         matching_scores = torch.einsum(
@@ -379,7 +426,7 @@ class GeoTransformer(nn.Module):
             matching_scores, ref_node_corr_knn_masks, src_node_corr_knn_masks
         )
 
-        output_dict["matching_scores"] = matching_scores
+        # output_dict["matching_scores"] = matching_scores
 
         # 9. Generate final correspondences during testing
         with torch.no_grad():
@@ -395,9 +442,9 @@ class GeoTransformer(nn.Module):
                 node_corr_scores,
             )
 
-            output_dict["ref_corr_points"] = ref_corr_points
-            output_dict["src_corr_points"] = src_corr_points
-            output_dict["corr_scores"] = corr_scores
+            # output_dict["ref_corr_points"] = ref_corr_points
+            # output_dict["src_corr_points"] = src_corr_points
+            # output_dict["corr_scores"] = corr_scores
             output_dict["estimated_transform"] = estimated_transform
 
         return output_dict
