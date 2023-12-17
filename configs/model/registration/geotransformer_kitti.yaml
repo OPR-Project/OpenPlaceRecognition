@@ -1,0 +1,45 @@
+_target_: opr.models.registration.geotransformer.GeoTransformer
+
+model:
+  ground_truth_matching_radius: 0.6
+  num_points_in_patch: 128
+  num_sinkhorn_iterations: 100
+
+backbone:
+  num_stages: 5
+  init_voxel_size: 0.3
+  kernel_size: 15
+  base_radius: 4.25
+  base_sigma: 2.0
+  group_norm: 32
+  input_dim: 1
+  init_dim: 64
+  output_dim: 256
+
+geotransformer:
+  input_dim: 2048
+  hidden_dim: 128
+  output_dim: 256
+  num_heads: 4
+  blocks: [self, cross, self, cross, self, cross]
+  sigma_d: 4.8
+  sigma_a: 15
+  angle_k: 3
+  reduction_a: max
+
+coarse_matching:
+  num_targets: 128
+  overlap_threshold: 0.1
+  num_correspondences: 256
+  dual_normalization: True
+
+fine_matching:
+  topk: 2
+  acceptance_radius: 0.6
+  mutual: True
+  confidence_threshold: 0.05
+  use_dustbin: False
+  use_global_score: False
+  correspondence_threshold: 3
+  correspondence_limit: null
+  num_refinement_steps: 5

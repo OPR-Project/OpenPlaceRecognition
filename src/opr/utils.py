@@ -1,10 +1,11 @@
 """Package-level utility functions."""
 import random
-from typing import Any, Dict, List, Tuple, Union
+from os import PathLike
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import torch
-from torch import Tensor
+from torch import Tensor, nn
 
 
 def set_seed(seed: int = 0, make_deterministic: bool = False) -> None:
@@ -49,6 +50,26 @@ def parse_device(device: Union[str, int, torch.device]) -> torch.device:
         return torch.device(type="cuda", index=device) if device >= 0 else torch.device(type="cpu")
     else:
         raise ValueError(f"Invalid device: {device}")
+
+
+def init_model(
+    model: nn.Module, weights_path: Optional[Union[str, PathLike]], device: Union[str, int, torch.device]
+) -> nn.Module:
+    """Transfers the model to the device, loads the weights and sets the model to eval mode.
+
+    Args:
+        model (nn.Module): Model.
+        weights_path (Union[str, PathLike]): Path to the model weights.
+            If None, the weights are not loaded.
+        device (Union[str, int, torch.device]): Device to use.
+
+    Returns:
+        nn.Module: Model in eval mode.
+    """
+    model = model.to(device)
+    if weights_path is not None:
+        model.load_state_dict(torch.load(weights_path, map_location=device))
+    return model.eval()
 
 
 def in_sorted_array(e: int, array: Tensor) -> bool:

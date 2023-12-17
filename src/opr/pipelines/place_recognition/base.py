@@ -9,7 +9,7 @@ import pandas as pd
 import torch
 from torch import Tensor, nn
 
-from opr.utils import parse_device
+from opr.utils import init_model, parse_device
 
 try:
     import faiss
@@ -44,16 +44,9 @@ class PlaceRecognitionPipeline:
             pointcloud_quantization_size (float): Pointcloud quantization size. Defaults to 0.5.
         """
         self.device = parse_device(device)
-        self._init_model(model, model_weights_path)
+        self.model = init_model(model, model_weights_path, self.device)
         self._init_database(database_dir)
         self._pointcloud_quantization_size = pointcloud_quantization_size
-
-    def _init_model(self, model: nn.Module, weights_path: Optional[Union[str, PathLike]]) -> None:
-        """Initialize model."""
-        self.model = model.to(self.device)
-        if weights_path is not None:
-            self.model.load_state_dict(torch.load(weights_path, map_location=self.device))
-        self.model.eval()
 
     def _init_database(self, database_dir: Union[str, PathLike]) -> None:
         """Initialize database."""

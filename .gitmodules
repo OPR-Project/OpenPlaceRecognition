@@ -1,0 +1,3 @@
+[submodule "third_party/GeoTransformer"]
+	path = third_party/GeoTransformer
+	url = https://github.com/alexmelekhin/GeoTransformer.git
