@@ -1,0 +1,5 @@
+outs:
+- md5: d4d4c885a306ba7eaadd31170335ed13
+  size: 102123209
+  hash: md5
+  path: geotransformer_kitti.pth
