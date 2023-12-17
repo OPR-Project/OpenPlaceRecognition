@@ -267,8 +267,8 @@ class GeoTransformer(nn.Module):
         self, query_pc: Tensor, db_pc: Tensor, gt_transform: Optional[Tensor] = None
     ) -> Dict[str, Any]:
         data_dict = {}
-        data_dict["ref_points"] = query_pc
-        data_dict["src_points"] = db_pc
+        data_dict["ref_points"] = db_pc
+        data_dict["src_points"] = query_pc
         data_dict["ref_feats"] = torch.ones((query_pc.shape[0], 1), dtype=torch.float32)
         data_dict["src_feats"] = torch.ones((db_pc.shape[0], 1), dtype=torch.float32)
         if gt_transform:
