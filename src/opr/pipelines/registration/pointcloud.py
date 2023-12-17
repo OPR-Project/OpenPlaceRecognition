@@ -37,10 +37,10 @@ class PointcloudRegistrationPipeline:
         """Downsample the pointcloud.
 
         Args:
-            pc (Tensor): Pointcloud.
+            pc (Tensor): Pointcloud. Coordinates array of shape (N, 3).
 
         Returns:
-            Tensor: Downsampled pointcloud.
+            Tensor: Downsampled pointcloud. Coordinates array of shape (M, 3), where M <= N.
         """
         pcd = o3d.geometry.PointCloud()
         pcd.points = o3d.utility.Vector3dVector(pc.cpu().numpy())
@@ -52,8 +52,8 @@ class PointcloudRegistrationPipeline:
         """Infer the transformation between the query and the database pointclouds.
 
         Args:
-            query_pc (Tensor): Query pointcloud.
-            db_pc (Tensor): Database pointcloud.
+            query_pc (Tensor): Query pointcloud. Coordinates array of shape (N, 3).
+            db_pc (Tensor): Database pointcloud. Coordinates array of shape (M, 3).
 
         Returns:
             np.ndarray: Transformation matrix.
