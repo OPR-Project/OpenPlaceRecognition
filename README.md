@@ -39,7 +39,7 @@
 
 ### Third-party packages
 
-- If you want to use the `GeoTransformer` module, you should install the package located in the `third_party` directory:
+- If you want to use the `GeoTransformer` model for pointcloud registration, you should install the package located in the `third_party` directory:
 
     ```bash
     # load submodules from git
