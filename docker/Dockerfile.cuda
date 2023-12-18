@@ -106,6 +106,9 @@ RUN git clone --recursive "https://github.com/NVIDIA/MinkowskiEngine" && \
     cd .. && \
     rm -rf MinkowskiEngine
 
+# to install "dvc[gdrive]" we need to install "distro" package first
+ARG DISTRO_VERSION=1.8.0
+RUN pip install distro==${DISTRO_VERSION}
 
 # install other requirements from requirements.txt
 COPY requirements.txt .
