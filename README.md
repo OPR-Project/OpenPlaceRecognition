@@ -37,6 +37,21 @@
     pip install .
     ```
 
+### Third-party packages
+
+- If you want to use the `GeoTransformer` model for pointcloud registration, you should install the package located in the `third_party` directory:
+
+    ```bash
+    # load submodules from git
+    git submodule update --init
+
+    # change dir
+    cd third_party/GeoTransformer/
+
+    # install the package
+    bash setup.sh
+    ```
+
 ### How to load the weights
 
 We use [DVC](https://dvc.org/) to manage the weights storage. To download the weights, run the following command (assuming that dvc is already installed):

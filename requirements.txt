@@ -1,9 +1,11 @@
 albumentations
 dvc[gdrive]
+gdown
 hydra-core>=1.2
 kaleido
 matplotlib
 numpy
+open3d
 opencv-python
 pandas
 plotly>=5.14.1
