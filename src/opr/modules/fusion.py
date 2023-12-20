@@ -28,4 +28,7 @@ class Add(nn.Module):
     def forward(self, data: Dict[str, Tensor]) -> Tensor:  # noqa: D102
         data = {key: value for key, value in data.items() if value is not None}
         fusion_global_descriptor = torch.stack(list(data.values()), dim=0).sum(dim=0)
+        if len(fusion_global_descriptor.shape) == 1:
+            fusion_global_descriptor = fusion_global_descriptor.unsqueeze(0)
+
         return fusion_global_descriptor
