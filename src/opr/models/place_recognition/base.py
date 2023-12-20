@@ -147,13 +147,13 @@ class LateFusionModel(nn.Module):
         out_dict: Dict[str, Tensor] = {}
 
         if self.image_module is not None:
-            out_dict["image"] = self.image_module(batch)
+            out_dict["image"] = self.image_module(batch)["final_descriptor"]
 
         if self.semantic_module is not None:
-            out_dict["semantic"] = self.semantic_module(batch)
+            out_dict["semantic"] = self.semantic_module(batch)["final_descriptor"]
 
         if self.cloud_module is not None:
-            out_dict["cloud"] = self.cloud_module(batch)
+            out_dict["cloud"] = self.cloud_module(batch)["final_descriptor"]
 
         out_dict["final_descriptor"] = self.fusion_module(out_dict)
 
