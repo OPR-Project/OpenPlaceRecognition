@@ -61,6 +61,8 @@ class ITLPCampus(Dataset):
         load_text_labels: bool = False,
         load_aruco_labels: bool = False,
         indoor: bool = False,
+        positive_threshold: float = 10.0,
+        negative_threshold: float = 50.0,
     ) -> None:
         """ITLP Campus dataset implementation.
 
@@ -133,6 +135,17 @@ class ITLPCampus(Dataset):
                 )
 
         self.indoor = indoor
+
+        # omg so wet 💦💦💦
+        if positive_threshold < 0.0:
+            raise ValueError(f"positive_threshold must be non-negative, but {positive_threshold!r} given.")
+        if negative_threshold < 0.0:
+            raise ValueError(f"negative_threshold must be non-negative, but {negative_threshold!r} given.")
+
+        self._positives_index, self._nonnegative_index = self._build_indexes(
+            positive_threshold, negative_threshold
+        )
+        self._positives_mask, self._negatives_mask = self._build_masks(positive_threshold, negative_threshold)
 
         self.image_transform = DefaultImageTransform(resize=(320, 192), train=False)
         self.semantic_transform = DefaultSemanticTransform(resize=(320, 192), train=False)
@@ -290,6 +303,82 @@ class ITLPCampus(Dataset):
             Dict[str, Tensor]: dictionary of batched data.
         """
         return self._collate_data_dict(data_list)
+
+    # omg so wet 💦💦💦
+    def _build_masks(self, positive_threshold: float, negative_threshold: float) -> Tuple[Tensor, Tensor]:
+        """Build boolean masks for dataset elements that satisfy a UTM distance threshold condition.
+
+        Args:
+            positive_threshold (float): The maximum UTM distance between two elements
+                for them to be considered positive.
+            negative_threshold (float): The maximum UTM distance between two elements
+                for them to be considered non-negative.
+
+        Returns:
+            Tuple[Tensor, Tensor]: A tuple of two boolean masks that satisfy the UTM distance threshold
+                condition for each element in the dataset. The first mask contains the indices of elements
+                that satisfy the positive threshold, while the second mask contains the indices of elements
+                that satisfy the negative threshold.
+        """
+        xyz = torch.tensor(
+            self.dataset_df[["tx", "ty", "tz"]].to_numpy(dtype=np.float32), dtype=torch.float32
+        )
+        distances = torch.cdist(xyz, xyz)
+
+        positives_mask = (distances > 0) & (distances < positive_threshold)
+        negatives_mask = distances > negative_threshold
+
+        return positives_mask, negatives_mask
+
+    def _build_indexes(
+        self, positive_threshold: float, negative_threshold: float
+    ) -> Tuple[List[Tensor], List[Tensor]]:
+        """Build index of elements that satisfy a UTM distance threshold condition.
+
+        Args:
+            positive_threshold (float): The maximum UTM distance between two elements
+                for them to be considered positive.
+            negative_threshold (float): The maximum UTM distance between two elements
+                for them to be considered non-negative.
+
+        Returns:
+            Tuple[List[Tensor], List[Tensor]]: Tuple (positive_indices, nonnegative_indices)
+                of two lists of element indexes that satisfy the UTM distance threshold condition
+                for each element in the dataset.
+        """
+        xyz = torch.tensor(
+            self.dataset_df[["tx", "ty", "tz"]].to_numpy(dtype=np.float32), dtype=torch.float32
+        )
+        distances = torch.cdist(xyz, xyz)
+
+        positives_mask = (distances > 0) & (distances < positive_threshold)
+        nonnegatives_mask = distances < negative_threshold
+
+        # Convert the boolean masks to index tensors
+        positive_indices = [torch.nonzero(row).squeeze(dim=-1) for row in positives_mask]
+        nonnegative_indices = [torch.nonzero(row).squeeze(dim=-1) for row in nonnegatives_mask]
+
+        return positive_indices, nonnegative_indices
+
+    @property
+    def positives_index(self) -> List[Tensor]:
+        """List of indexes of positive samples for each element in the dataset."""
+        return self._positives_index
+
+    @property
+    def nonnegative_index(self) -> List[Tensor]:
+        """List of indexes of non-negatives samples for each element in the dataset."""
+        return self._nonnegative_index
+
+    @property
+    def positives_mask(self) -> Tensor:
+        """Boolean mask of positive samples for each element in the dataset."""
+        return self._positives_mask
+
+    @property
+    def negatives_mask(self) -> Tensor:
+        """Boolean mask of negative samples for each element in the dataset."""
+        return self._negatives_mask
 
     @staticmethod
     def download_data(out_dir: Union[Path, str]) -> None:
