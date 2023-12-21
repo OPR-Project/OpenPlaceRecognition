@@ -52,6 +52,7 @@ class ITLPCampus(Dataset):
     def __init__(
         self,
         dataset_root: Union[str, Path],
+        csv_file: str = "track.csv",
         sensors: Union[str, Tuple[str, ...]] = ("front_cam", "lidar"),
         mink_quantization_size: Optional[float] = 0.5,
         max_point_distance: Optional[float] = None,
@@ -65,6 +66,7 @@ class ITLPCampus(Dataset):
 
         Args:
             dataset_root (Union[str, Path]): Path to the dataset track root directory.
+            csv_file (str): Name of the csv file with dataset information. Defaults to "track.csv".
             sensors (Union[str, Tuple[str, ...]]): List of sensors for which the data should be loaded.
                 Defaults to ("front_cam", "lidar").
             mink_quantization_size (Optional[float]): The quantization size for point clouds. Defaults to 0.5.
@@ -86,7 +88,7 @@ class ITLPCampus(Dataset):
         if not self.dataset_root.exists():
             raise FileNotFoundError(f"Given dataset_root={self.dataset_root} doesn't exist")
 
-        subset_csv = self.dataset_root / "track.csv"
+        subset_csv = self.dataset_root / csv_file
         self.dataset_df = pd.read_csv(subset_csv)
 
         if isinstance(sensors, str):
@@ -144,16 +146,17 @@ class ITLPCampus(Dataset):
             self.dataset_df.iloc[idx][["tx", "ty", "tz", "qx", "qy", "qz", "qw"]].to_numpy(dtype=np.float32)
         )
         floor = self._get_floor_subdir(idx)
+        track = self._get_track_subdir(idx)
         if "front_cam" in self.sensors:
             image_ts = int(self.dataset_df["front_cam_ts"].iloc[idx])
-            im_filepath = self.dataset_root / floor / self.images_subdir / "front_cam" / f"{image_ts}.png"
+            im_filepath = self.dataset_root / track / floor / self.images_subdir / "front_cam" / f"{image_ts}.png"
             im = cv2.imread(str(im_filepath))
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             im = self.image_transform(im)
             data["image_front_cam"] = im
             if self.load_semantics:
                 im_filepath = (
-                    self.dataset_root / floor / self.semantic_subdir / "front_cam" / f"{image_ts}.png"
+                    self.dataset_root / track / floor / self.semantic_subdir / "front_cam" / f"{image_ts}.png"
                 )  # image id is equal to semantic mask id~
                 im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
                 im = self.semantic_transform(im)
@@ -175,14 +178,14 @@ class ITLPCampus(Dataset):
                 data["aruco_labels_front_cam_df"] = aruco_labels_df
         if "back_cam" in self.sensors:
             image_ts = int(self.dataset_df["back_cam_ts"].iloc[idx])
-            im_filepath = self.dataset_root / floor / self.images_subdir / "back_cam" / f"{image_ts}.png"
+            im_filepath = self.dataset_root / track / floor / self.images_subdir / "back_cam" / f"{image_ts}.png"
             im = cv2.imread(str(im_filepath))
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             im = self.image_transform(im)
             data["image_back_cam"] = im
             if self.load_semantics:
                 im_filepath = (
-                    self.dataset_root / floor / self.semantic_subdir / "back_cam" / f"{image_ts}.png"
+                    self.dataset_root / track / floor / self.semantic_subdir / "back_cam" / f"{image_ts}.png"
                 )  # image id is equal to semantic mask id~
                 im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
                 im = self.semantic_transform(im)
@@ -204,7 +207,7 @@ class ITLPCampus(Dataset):
                 data["aruco_labels_back_cam_df"] = aruco_labels_df
         if "lidar" in self.sensors:
             lidar_ts = int(self.dataset_df["lidar_ts"].iloc[idx])
-            pc_filepath = self.dataset_root / floor / self.clouds_subdir / f"{lidar_ts}.bin"
+            pc_filepath = self.dataset_root / track / floor / self.clouds_subdir / f"{lidar_ts}.bin"
             pc = self._load_pc(pc_filepath)
             data["pointcloud_lidar_coords"] = pc
             data["pointcloud_lidar_feats"] = torch.ones_like(pc[:, :1])
@@ -216,6 +219,12 @@ class ITLPCampus(Dataset):
     def _get_floor_subdir(self, idx: int) -> str:
         if "floor" in self.dataset_df.columns:
             return f"floor_{self.dataset_df['floor'].iloc[idx]}"
+        else:
+            return ""
+
+    def _get_track_subdir(self, idx: int) -> str:
+        if "track" in self.dataset_df.columns:
+            return self.dataset_df['track'].iloc[idx]
         else:
             return ""
 
