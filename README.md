@@ -34,7 +34,7 @@
 - After the pre-requisites are met, install the Open Place Recognition library with the following command:
 
     ```bash
-    pip install .
+    pip install -e .
     ```
 
 ### Third-party packages
