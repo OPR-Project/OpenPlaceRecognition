@@ -1,7 +1,9 @@
 albumentations
 dvc[gdrive]
+einops
 gdown
 hydra-core>=1.2
+ipdb
 kaleido
 matplotlib
 numpy
