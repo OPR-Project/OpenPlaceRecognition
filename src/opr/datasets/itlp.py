@@ -87,7 +87,7 @@ class ITLPCampus(Dataset):
             raise FileNotFoundError(f"Given dataset_root={self.dataset_root} doesn't exist")
 
         subset_csv = self.dataset_root / "track.csv"
-        self.dataset_df = pd.read_csv(subset_csv, index_col=0)
+        self.dataset_df = pd.read_csv(subset_csv)
 
         if isinstance(sensors, str):
             sensors = tuple([sensors])
@@ -143,16 +143,17 @@ class ITLPCampus(Dataset):
         data["pose"] = torch.tensor(
             self.dataset_df.iloc[idx][["tx", "ty", "tz", "qx", "qy", "qz", "qw"]].to_numpy(dtype=np.float32)
         )
+        floor = self._get_floor_subdir(idx)
         if "front_cam" in self.sensors:
             image_ts = int(self.dataset_df["front_cam_ts"].iloc[idx])
-            im_filepath = self.dataset_root / self.images_subdir / "front_cam" / f"{image_ts}.png"
+            im_filepath = self.dataset_root / floor / self.images_subdir / "front_cam" / f"{image_ts}.png"
             im = cv2.imread(str(im_filepath))
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             im = self.image_transform(im)
             data["image_front_cam"] = im
             if self.load_semantics:
                 im_filepath = (
-                    self.dataset_root / self.semantic_subdir / "front_cam" / f"{image_ts}.png"
+                    self.dataset_root / floor / self.semantic_subdir / "front_cam" / f"{image_ts}.png"
                 )  # image id is equal to semantic mask id~
                 im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
                 im = self.semantic_transform(im)
@@ -174,14 +175,14 @@ class ITLPCampus(Dataset):
                 data["aruco_labels_front_cam_df"] = aruco_labels_df
         if "back_cam" in self.sensors:
             image_ts = int(self.dataset_df["back_cam_ts"].iloc[idx])
-            im_filepath = self.dataset_root / self.images_subdir / "back_cam" / f"{image_ts}.png"
+            im_filepath = self.dataset_root / floor / self.images_subdir / "back_cam" / f"{image_ts}.png"
             im = cv2.imread(str(im_filepath))
             im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
             im = self.image_transform(im)
             data["image_back_cam"] = im
             if self.load_semantics:
                 im_filepath = (
-                    self.dataset_root / self.semantic_subdir / "back_cam" / f"{image_ts}.png"
+                    self.dataset_root / floor / self.semantic_subdir / "back_cam" / f"{image_ts}.png"
                 )  # image id is equal to semantic mask id~
                 im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
                 im = self.semantic_transform(im)
@@ -203,7 +204,7 @@ class ITLPCampus(Dataset):
                 data["aruco_labels_back_cam_df"] = aruco_labels_df
         if "lidar" in self.sensors:
             lidar_ts = int(self.dataset_df["lidar_ts"].iloc[idx])
-            pc_filepath = self.dataset_root / self.clouds_subdir / f"{lidar_ts}.bin"
+            pc_filepath = self.dataset_root / floor / self.clouds_subdir / f"{lidar_ts}.bin"
             pc = self._load_pc(pc_filepath)
             data["pointcloud_lidar_coords"] = pc
             data["pointcloud_lidar_feats"] = torch.ones_like(pc[:, :1])
@@ -211,6 +212,12 @@ class ITLPCampus(Dataset):
 
     def __len__(self) -> int:  # noqa: D105
         return len(self.dataset_df)
+
+    def _get_floor_subdir(self, idx: int) -> str:
+        if "floor" in self.dataset_df.columns:
+            return f"floor_{self.dataset_df['floor'].iloc[idx]}"
+        else:
+            return ""
 
     def _load_pc(self, filepath: Union[str, Path]) -> Tensor:
         pc = np.fromfile(filepath, dtype=np.float32).reshape((-1, 4))[:, :-1]
