@@ -1,6 +1,6 @@
 """Pointcloud registration pipeline."""
 from os import PathLike
-from typing import Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import open3d as o3d
@@ -63,6 +63,62 @@ class PointcloudRegistrationPipeline:
         with torch.no_grad():
             transform = self.model(query_pc, db_pc)["estimated_transform"]
         return transform.cpu().numpy()
+
+
+class SequencePointcloudRegistrationPipeline(PointcloudRegistrationPipeline):
+    """Pointcloud registration pipeline that supports sequences."""
+
+    def __init__(
+        self,
+        model: nn.Module,
+        model_weights_path: Optional[Union[str, PathLike]] = None,
+        device: Union[str, int, torch.device] = "cuda",
+        voxel_downsample_size: Optional[float] = 0.3,
+    ) -> None:
+        """Pointcloud registration pipeline that supports sequences.
+
+        Args:
+            model (nn.Module): Model.
+            model_weights_path (Union[str, PathLike], optional): Path to the model weights.
+                If None, the weights are not loaded. Defaults to None.
+            device (Union[str, int, torch.device]): Device to use. Defaults to "cuda".
+            voxel_downsample_size (Optional[float]): Voxel downsample size. Defaults to 0.3.
+        """
+        super().__init__(model, model_weights_path, device, voxel_downsample_size)
+        self.ransac_pipeline = RansacGlobalRegistrationPipeline(
+            voxel_downsample_size=0.5  # handcrafted optimal value for fast inference
+        )
+
+    def _transform_points(self, points: Tensor, transform: Tensor) -> Tensor:
+        points_hom = torch.cat((points, torch.ones((points.shape[0], 1), device=points.device)), dim=1)
+        print(type(points_hom), type(transform))
+        print(points_hom.dtype, transform.dtype)
+        points_transformed_hom = points_hom @ transform
+        points_transformed = points_transformed_hom[:, :3] / points_transformed_hom[:, 3].unsqueeze(-1)
+        return points_transformed
+
+    def infer(self, query_pc_list: List[Tensor], db_pc: Tensor) -> np.ndarray:
+        """Infer the transformation between the query sequence and the database pointclouds.
+
+        Args:
+            query_pc_list (List[Tensor]): Sequence of query pointclouds. Coordinates arrays of shape (N, 3).
+            db_pc (Tensor): Database pointcloud. Coordinates array of shape (M, 3).
+
+        Returns:
+            np.ndarray: Transformation matrix.
+        """
+        if len(query_pc_list) > 1:
+            accumulated_query_pc = query_pc_list[-1]
+            for pc in query_pc_list[-2::-1]:
+                transform = torch.tensor(
+                    self.ransac_pipeline.infer(accumulated_query_pc, pc), dtype=torch.float32
+                )
+                accumulated_query_pc = torch.cat(
+                    [accumulated_query_pc, self._transform_points(pc, transform)], dim=0
+                )
+        else:
+            accumulated_query_pc = query_pc_list[0]
+        return super().infer(accumulated_query_pc, db_pc)
 
 
 class RansacGlobalRegistrationPipeline:
