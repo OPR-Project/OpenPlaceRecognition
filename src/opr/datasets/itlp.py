@@ -63,6 +63,7 @@ class ITLPCampus(Dataset):
         indoor: bool = False,
         positive_threshold: float = 10.0,
         negative_threshold: float = 50.0,
+        image_transform = DefaultImageTransform(resize=(320, 192), train=False)
     ) -> None:
         """ITLP Campus dataset implementation.
 
@@ -147,7 +148,7 @@ class ITLPCampus(Dataset):
         )
         self._positives_mask, self._negatives_mask = self._build_masks(positive_threshold, negative_threshold)
 
-        self.image_transform = DefaultImageTransform(resize=(320, 192), train=False)
+        self.image_transform = image_transform
         self.semantic_transform = DefaultSemanticTransform(resize=(320, 192), train=False)
         self.pointcloud_transform = DefaultCloudTransform(train=False)
         self.pointcloud_set_transform = DefaultCloudSetTransform(train=False)
