@@ -13,9 +13,9 @@ get_real_path(){
 
 ARCH=`uname -m`
 if [ $ARCH == "x86_64" ]; then
-    if command -v nvidia-smi &> /dev/null; then
+    if command -v nvcc &> /dev/null; then
         DEVICE=cuda
-        ARGS="--ipc host --gpus all -e NVIDIA_DRIVER_CAPABILITIES=all"
+        ARGS="--ipc host --gpus all"
     else
         echo "${orange}CPU-only${reset_color} build is not supported yet"
         exit 1

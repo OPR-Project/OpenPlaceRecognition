@@ -5,14 +5,15 @@ from typing import Dict, List, Literal, Optional, Tuple, Union
 
 import cv2
 import gdown
-import matplotlib.pyplot as plt
+import MinkowskiEngine as ME
 import numpy as np
 import pandas as pd
 import torch
+from loguru import logger
+from omegaconf import OmegaConf
 from pandas import DataFrame
 from torch import Tensor
 from torch.utils.data import Dataset
-import MinkowskiEngine as ME
 
 from opr.datasets.augmentations import (
     DefaultCloudSetTransform,
@@ -20,6 +21,14 @@ from opr.datasets.augmentations import (
     DefaultImageTransform,
     DefaultSemanticTransform,
 )
+from opr.datasets.projection import Projector
+from opr.datasets.soc_utils import (
+    get_points_labels_by_mask,
+    instance_masks_to_objects,
+    pack_objects,
+    semantic_mask_to_instances,
+)
+from opr.datasets.vis import VisData
 
 
 class ITLPCampus(Dataset):
@@ -48,11 +57,20 @@ class ITLPCampus(Dataset):
     load_text_descriptions: bool
     load_text_labels: bool
     load_aruco_labels: bool
+    load_soc: bool
     indoor: bool
+    cam_config: dict
+    cam_cfg: OmegaConf
+    top_k_soc: int
+    max_distance_soc: float
+    anno: OmegaConf
+    subset: Literal["train", "val", "test"]
+    vis_dir: str = "./vis/"
 
     def __init__(
         self,
         dataset_root: Union[str, Path],
+        subset: Literal["train", "val", "test"],
         csv_file: str = "track.csv",
         sensors: Union[str, Tuple[str, ...]] = ("front_cam", "lidar"),
         mink_quantization_size: Optional[float] = 0.5,
@@ -67,6 +85,12 @@ class ITLPCampus(Dataset):
         negative_threshold: float = 50.0,
         image_transform = DefaultImageTransform(resize=(320, 192), train=False),
         semantic_transform = DefaultSemanticTransform(resize=(320, 192), train=False)
+        load_soc: bool = False,
+        top_k_soc: int = 10,
+        max_distance_soc: float = 50.0,
+        cam_cfg: OmegaConf = None,
+        anno: OmegaConf = None,
+        vis_dir: str = "./vis/",
     ) -> None:
         """ITLP Campus dataset implementation.
 
@@ -89,10 +113,11 @@ class ITLPCampus(Dataset):
             FileNotFoundError: If there is no csv file for given subset (track).
         """
         super().__init__()
-
         self.dataset_root = Path(dataset_root)
         if not self.dataset_root.exists():
             raise FileNotFoundError(f"Given dataset_root={self.dataset_root} doesn't exist")
+
+        self.subset = subset
 
         subset_csv = self.dataset_root / csv_file
         self.dataset_df = pd.read_csv(subset_csv)
@@ -104,6 +129,21 @@ class ITLPCampus(Dataset):
         self._pointcloud_quantization_size = mink_quantization_size
         self._max_point_distance = max_point_distance
         self.load_semantics = load_semantics
+        self.load_soc = load_soc
+        self.top_k_soc = top_k_soc
+        self.max_distance_soc = max_distance_soc
+        self.anno = anno
+        self.special_classes = [
+            self.anno.staff_classes.index(special) for special in self.anno.special_classes
+        ]
+
+        self.vis = VisData(self.anno.staff_classes, vis_dir)
+        if self.load_soc:
+            if cam_cfg is None:
+                raise ValueError("cam_cfg must be specified if load_soc=True")
+
+            self.front_cam_proj = Projector(cam_cfg.front_cam)
+            self.back_cam_proj = Projector(cam_cfg.back_cam)
 
         self.load_text_descriptions = load_text_descriptions
         if self.load_text_descriptions:
@@ -131,11 +171,13 @@ class ITLPCampus(Dataset):
         if self.load_aruco_labels:
             if "front_cam" in self.sensors:
                 self.front_cam_aruco_labels_df = pd.read_csv(
-                    self.dataset_root / self.aruco_labels_subdir / "front_cam_aruco_labels.csv", sep="\t"
+                    self.dataset_root / self.aruco_labels_subdir / "front_cam_aruco_labels.csv",
+                    sep="\t",
                 )
             if "back_cam" in self.sensors:
                 self.back_cam_aruco_labels_df = pd.read_csv(
-                    self.dataset_root / self.aruco_labels_subdir / "back_cam_aruco_labels.csv", sep="\t"
+                    self.dataset_root / self.aruco_labels_subdir / "back_cam_aruco_labels.csv",
+                    sep="\t",
                 )
 
         self.indoor = indoor
@@ -173,27 +215,146 @@ class ITLPCampus(Dataset):
         self.back_matrix = np.array([[910.4178466796875, 0.0, 648.44140625, 0.0, 910.4166870117188, 354.0118408203125, 0.0, 0.0, 1.0]]).reshape((3,3))
         self.back_dist = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
 
+    def _load_image(self, cam: str, idx: int, track: str, floor: str, transform: bool = True) -> Tensor:
+        image_ts = int(self.dataset_df[f"{cam}_ts"].iloc[idx])
+        im_filepath = self.dataset_root / track / floor / self.images_subdir / cam / f"{image_ts}.png"
+        im = cv2.imread(str(im_filepath))
+        im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+        if transform:
+            im = self.image_transform(im)
+        return im
+
+    def _load_semantic_mask(
+        self, cam: str, idx: int, track: str, floor: str, transform: bool = True
+    ) -> Tensor:
+        mask_ts = int(self.dataset_df[f"{cam}_ts"].iloc[idx])
+        im_filepath = self.dataset_root / track / floor / self.semantic_subdir / cam / f"{mask_ts}.png"
+        im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
+        if transform:
+            im = self.semantic_transform(im)
+        return im
+
+    def _load_text_labels(self, cam: str, idx: int) -> Tensor:
+        image_ts = int(self.dataset_df[f"{cam}_ts"].iloc[idx])
+        if cam == "front_cam":
+            text_labels_df = self.front_cam_text_labels_df[
+                self.front_cam_text_labels_df["path"] == f"{image_ts}.png"
+            ]
+        elif cam == "back_cam":
+            text_labels_df = self.back_cam_text_labels_df[
+                self.back_cam_text_labels_df["path"] == f"{image_ts}.png"
+            ]
+        else:
+            raise ValueError(f"Unknown camera: {cam!r}")
+        return text_labels_df
+
+    def _load_text_descriptions(self, cam: str, idx: int) -> Tensor:
+        image_ts = int(self.dataset_df[f"{cam}_ts"].iloc[idx])
+        if cam == "front_cam":
+            text_description_df = self.front_cam_text_descriptions_df[
+                self.front_cam_text_descriptions_df["path"] == f"{image_ts}.png"
+            ]
+        elif cam == "back_cam":
+            text_description_df = self.back_cam_text_descriptions_df[
+                self.back_cam_text_descriptions_df["path"] == f"{image_ts}.png"
+            ]
+        else:
+            raise ValueError(f"Unknown camera: {cam!r}")
+        return text_description_df
+
+    def _load_aruco_labels(self, cam: str, idx: int) -> Tensor:
+        image_ts = int(self.dataset_df[f"{cam}_ts"].iloc[idx])
+        if cam == "front_cam":
+            aruco_labels_df = self.front_cam_aruco_labels_df[
+                self.front_cam_aruco_labels_df["image_name"] == f"{image_ts}.png"
+            ]
+        elif cam == "back_cam":
+            aruco_labels_df = self.back_cam_aruco_labels_df[
+                self.back_cam_aruco_labels_df["image_name"] == f"{image_ts}.png"
+            ]
+        else:
+            raise ValueError(f"Unknown camera: {cam!r}")
+        return aruco_labels_df
+
+    def _get_soc(self, idx: int, track: str, floor: str) -> Tensor:
+        img_front = self._load_image("front_cam", idx, track, floor, transform=False)  # TODO remove
+        img_back = self._load_image("back_cam", idx, track, floor, transform=False)  # TODO remove
+        mask_front = self._load_semantic_mask("front_cam", idx, track, floor, transform=False)
+        mask_back = self._load_semantic_mask("back_cam", idx, track, floor, transform=False)
+        lidar_scan = self._load_pc(idx, track, floor, tensor=False)
+        self.vis.get_colored_mask(img_front, mask_front, tag="front")
+        self.vis.get_colored_mask(img_back, mask_back, tag="back")
+
+        coords_front, _, in_image_front = self.front_cam_proj(lidar_scan)
+        coords_back, _, in_image_back = self.back_cam_proj(lidar_scan)
+
+        point_labels = np.zeros(len(lidar_scan), dtype=np.uint8)
+        point_labels[in_image_front] = get_points_labels_by_mask(coords_front, mask_front)
+        point_labels[in_image_back] = get_points_labels_by_mask(coords_back, mask_back)
+
+        self.vis.draw_points_on_image(img_front, coords_front, point_labels[in_image_front], tag="front")
+        self.vis.draw_points_on_image(img_back, coords_back, point_labels[in_image_back], tag="back")
+
+        instances_front = semantic_mask_to_instances(
+            mask_front,
+            area_threshold=10,
+            labels_whitelist=self.special_classes,
+        )
+        instances_back = semantic_mask_to_instances(
+            mask_back,
+            area_threshold=10,
+            labels_whitelist=self.special_classes,
+        )
+
+        objects_front = instance_masks_to_objects(
+            instances_front,
+            coords_front,
+            point_labels[in_image_front],
+            lidar_scan[in_image_front],
+        )
+        objects_back = instance_masks_to_objects(
+            instances_back,
+            coords_back,
+            point_labels[in_image_back],
+            lidar_scan[in_image_back],
+        )
+        objects = {**objects_front, **objects_back}
+        packed_objects = pack_objects(objects, self.top_k_soc, self.max_distance_soc, self.special_classes)
+
+        objects_tensor = torch.from_numpy(packed_objects).float()
+        logger.warning(f"objects_tensor.shape: {objects_tensor.shape}")
+        logger.warning(f"Nonzero elements: {torch.nonzero(objects_tensor).shape}")
+
+        self.vis.draw_instances(
+            img_front,
+            mask_front,
+            classes=self.anno.special_classes,
+            area_threshold=10,
+            tag="front",
+        )
+        self.vis.draw_instances(
+            img_back,
+            mask_back,
+            classes=self.anno.special_classes,
+            area_threshold=10,
+            tag="back",
+        )
+        input()
+        return objects_tensor
+
     def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
         data: Dict[str, Union[int, Tensor]] = {"idx": torch.tensor(idx)}
-        row = self.dataset_df.iloc[idx]
         data["pose"] = torch.tensor(
             self.dataset_df.iloc[idx][["tx", "ty", "tz", "qx", "qy", "qz", "qw"]].to_numpy(dtype=np.float32)
         )
         floor = self._get_floor_subdir(idx)
         track = self._get_track_subdir(idx)
+
         if "front_cam" in self.sensors:
-            image_ts = int(self.dataset_df["front_cam_ts"].iloc[idx])
-            im_filepath = self.dataset_root / track / floor / self.images_subdir / "front_cam" / f"{image_ts}.png"
-            im = cv2.imread(str(im_filepath))
-            im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-            im = self.image_transform(im)
+            im = self._load_image("front_cam", idx, track, floor)
             data["image_front_cam"] = im
             if self.load_semantics:
-                im_filepath = (
-                    self.dataset_root / track / floor / self.semantic_subdir / "front_cam" / f"{image_ts}.png"
-                )  # image id is equal to semantic mask id~
-                im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
-                im = self.semantic_transform(im)
+                im = self._load_semantic_mask("front_cam", idx, track, floor)
                 data["mask_front_cam"] = im
 
                 if self.exclude_dynamic_classes and self.indoor:
@@ -201,33 +362,20 @@ class ITLPCampus(Dataset):
                         data["image_front_cam"] = torch.where(data["mask_front_cam"] == index, 0, data["image_front_cam"])
 
             if self.load_text_labels:
-                text_labels_df = self.front_cam_text_labels_df[
-                    self.front_cam_text_labels_df["path"] == f"{image_ts}.png"
-                ]
-                data["text_labels_front_cam_df"] = text_labels_df
+                text_labels = self._load_text_labels("front_cam", idx)
+                data["text_labels_front_cam_df"] = text_labels
             if self.load_text_descriptions:
-                text_description_df = self.front_cam_text_descriptions_df[
-                    self.front_cam_text_descriptions_df["path"] == f"{image_ts}.png"
-                ]
-                data["text_description_front_cam_df"] = text_description_df
+                text_desc = self._load_text_descriptions("front_cam", idx)
+                data["text_description_front_cam_df"] = text_desc
             if self.load_aruco_labels:
-                aruco_labels_df = self.front_cam_aruco_labels_df[
-                    self.front_cam_aruco_labels_df["image_name"] == f"{image_ts}.png"
-                ]
-                data["aruco_labels_front_cam_df"] = aruco_labels_df
+                aruco = self._load_aruco_labels("front_cam", idx)
+                data["aruco_labels_front_cam_df"] = aruco
+
         if "back_cam" in self.sensors:
-            image_ts = int(self.dataset_df["back_cam_ts"].iloc[idx])
-            im_filepath = self.dataset_root / track / floor / self.images_subdir / "back_cam" / f"{image_ts}.png"
-            im = cv2.imread(str(im_filepath))
-            im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-            im = self.image_transform(im)
+            im = self._load_image("back_cam", idx, track, floor)
             data["image_back_cam"] = im
             if self.load_semantics:
-                im_filepath = (
-                    self.dataset_root / track / floor / self.semantic_subdir / "back_cam" / f"{image_ts}.png"
-                )  # image id is equal to semantic mask id~
-                im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
-                im = self.semantic_transform(im)
+                im = self._load_semantic_mask("back_cam", idx, track, floor)
                 data["mask_back_cam"] = im
 
                 if self.exclude_dynamic_classes and self.indoor:
@@ -235,24 +383,16 @@ class ITLPCampus(Dataset):
                         data["image_back_cam"] = torch.where(data["mask_back_cam"] == index, 0, data["image_back_cam"])
 
             if self.load_text_labels:
-                text_labels_df = self.back_cam_text_labels_df[
-                    self.back_cam_text_labels_df["path"] == f"{image_ts}.png"
-                ]
-                data["text_labels_back_cam_df"] = text_labels_df
+                text_labels = self._load_text_labels("back_cam", idx)
+                data["text_labels_back_cam_df"] = text_labels
             if self.load_text_descriptions:
-                text_description_df = self.back_cam_text_descriptions_df[
-                    self.back_cam_text_descriptions_df["path"] == f"{image_ts}.png"
-                ]
-                data["text_description_back_cam_df"] = text_description_df
+                text_desc = self._load_text_descriptions("back_cam", idx)
+                data["text_description_back_cam_df"] = text_desc
             if self.load_aruco_labels:
-                aruco_labels_df = self.back_cam_aruco_labels_df[
-                    self.back_cam_aruco_labels_df["image_name"] == f"{image_ts}.png"
-                ]
-                data["aruco_labels_back_cam_df"] = aruco_labels_df
+                aruco = self._load_aruco_labels("back_cam", idx)
+                data["aruco_labels_back_cam_df"] = aruco
         if "lidar" in self.sensors:
-            lidar_ts = int(self.dataset_df["lidar_ts"].iloc[idx])
-            pc_filepath = self.dataset_root / track / floor / self.clouds_subdir / f"{lidar_ts}.bin"
-            pc = self._load_pc(pc_filepath)
+            pc = self._load_pc(idx, track, floor)
 
             if self.exclude_dynamic_classes and self.indoor:
                 if "back_cam" in self.sensors:
@@ -265,6 +405,10 @@ class ITLPCampus(Dataset):
             pc = torch.tensor(pc, dtype=torch.float32)
             data["pointcloud_lidar_coords"] = pc
             data["pointcloud_lidar_feats"] = torch.ones_like(pc[:, :1])
+
+        if self.load_soc:
+            soc = self._get_soc(idx, track, floor)
+            data["soc"] = soc
         return data
     
     def _remove_dynamic_points(self, pointcloud: np.ndarray, semantic_map: np.ndarray, lidar2sensor: np.ndarray,
@@ -314,11 +458,13 @@ class ITLPCampus(Dataset):
 
     def _get_track_subdir(self, idx: int) -> str:
         if "track" in self.dataset_df.columns:
-            return self.dataset_df['track'].iloc[idx]
+            return self.dataset_df["track"].iloc[idx]
         else:
             return ""
 
-    def _load_pc(self, filepath: Union[str, Path]) -> Tensor:
+    def _load_pc(self, idx: int, track: str, floor: str, tensor: bool = True) -> Tensor:
+        lidar_ts = int(self.dataset_df["lidar_ts"].iloc[idx])
+        filepath = self.dataset_root / track / floor / self.clouds_subdir / f"{lidar_ts}.bin"
         pc = np.fromfile(filepath, dtype=np.float32).reshape((-1, 4))[:, :-1]
         in_range_idx = np.all(
             np.logical_and(-100 <= pc, pc <= 100),  # select points in range [-100, 100] meters
@@ -327,6 +473,8 @@ class ITLPCampus(Dataset):
         pc = pc[in_range_idx]
         if self._max_point_distance is not None:
             pc = pc[np.linalg.norm(pc, axis=1) < self._max_point_distance]
+        if tensor:
+            pc = torch.tensor(pc, dtype=torch.float32)
         return pc
 
     def _collate_data_dict(self, data_list: List[Dict[str, Tensor]]) -> Dict[str, Tensor]:
@@ -349,11 +497,18 @@ class ITLPCampus(Dataset):
                 if self.pointcloud_set_transform is not None:
                     # Apply the same transformation on all dataset elements
                     coords_tensor = self.pointcloud_set_transform(coords_tensor)
-                coords_list = torch.split(coords_tensor.squeeze(0), split_size_or_sections=n_points, dim=0)
+                coords_list = torch.split(
+                    coords_tensor.squeeze(0),
+                    split_size_or_sections=n_points,
+                    dim=0,
+                )
                 quantized_coords_list = []
                 quantized_feats_list = []
                 for coords, feats in zip(coords_list, feats_list):
-                    quantized_coords, quantized_feats = ME.utils.sparse_quantize(
+                    (
+                        quantized_coords,
+                        quantized_feats,
+                    ) = ME.utils.sparse_quantize(
                         coordinates=coords,
                         features=feats,
                         quantization_size=self._pointcloud_quantization_size,
@@ -397,7 +552,8 @@ class ITLPCampus(Dataset):
                 that satisfy the negative threshold.
         """
         xyz = torch.tensor(
-            self.dataset_df[["tx", "ty", "tz"]].to_numpy(dtype=np.float32), dtype=torch.float32
+            self.dataset_df[["tx", "ty", "tz"]].to_numpy(dtype=np.float32),
+            dtype=torch.float32,
         )
         distances = torch.cdist(xyz, xyz)
 
@@ -423,7 +579,8 @@ class ITLPCampus(Dataset):
                 for each element in the dataset.
         """
         xyz = torch.tensor(
-            self.dataset_df[["tx", "ty", "tz"]].to_numpy(dtype=np.float32), dtype=torch.float32
+            self.dataset_df[["tx", "ty", "tz"]].to_numpy(dtype=np.float32),
+            dtype=torch.float32,
         )
         distances = torch.cdist(xyz, xyz)
 

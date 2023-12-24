@@ -1,0 +1,16 @@
+_target_: opr.datasets.itlp.ITLPCampus
+defaults:
+ - _self_
+ - cam_cfg: husky
+ - anno: ade20k
+
+
+dataset_root: /home/docker_opr/Datasets/MIPT_campus/indoor/
+csv_file: "dataset.csv"
+sensors: []
+load_semantics: False
+load_soc: True
+top_k_soc: 10
+max_distance_soc: 50.0
+indoor: True
+vis_dir: "/home/docker_opr/Datasets/MIPT_campus/indoor/vis"
