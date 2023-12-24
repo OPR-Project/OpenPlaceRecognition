@@ -4,7 +4,8 @@ from typing import Optional
 import cv2
 import numpy as np
 import seaborn as sns
-from loguru import logger
+
+# from loguru import logger
 
 
 def semantic_mask_to_instances(
@@ -27,7 +28,7 @@ def semantic_mask_to_instances(
         instances (dict): dict of instances with keys as instance labels and values as instance masks.
     """
     instances = {}
-    logger.debug(f"Labels whitelist: {labels_whitelist}")
+    # logger.debug(f"Labels whitelist: {labels_whitelist}")
     for label in labels_whitelist:
         instances[label] = []
         binary_mask = (mask == label).astype(np.uint8)
@@ -67,8 +68,9 @@ def instance_masks_to_objects(
     """
     objects = {}
     for label in instance_masks:
-        for mask_id, _ in enumerate(instance_masks[label]):
-            objects[(label, mask_id)] = {"points": []}
+        for mask_id, mask in enumerate(instance_masks[label]):
+            _, _, w, h = cv2.boundingRect(mask.astype(np.uint8))
+            objects[(label, mask_id)] = {"points": [], "width": w, "height": h}
 
     for img_point, label, point_3d in zip(points_2d.T, point_labels, points_3d):  # points.T
         if label not in instance_masks:
@@ -77,8 +79,8 @@ def instance_masks_to_objects(
             if mask[img_point[1], img_point[0]]:
                 objects[(label, mask_id)]["points"].append(point_3d)
                 continue
-        if label in instance_masks:
-            logger.debug(f"Point {img_point} with label {label} not in any mask")
+        # if label in instance_masks:
+        # logger.debug(f"Point {img_point} with label {label} not in any mask")
 
     for obj in objects:
         objects[obj]["points"] = np.array(objects[obj]["points"]).T
@@ -171,3 +173,73 @@ def pack_objects(objects: dict, top_k: int, max_distance: float, special_classes
     packed_objects = np.array(packed_objects)
 
     return packed_objects
+
+
+def euclidean_to_cylindrical(points: np.ndarray, to_2d: bool = False) -> np.ndarray:
+    """Convert euclidean coordinates to cylindrical.
+
+    Args:
+        points (np.ndarray): array of 3D coordinates with shape (n, 3).
+        to_2d (bool, optional): whether to return 2D cylindrical coordinates. Defaults to False.
+
+    Returns:
+        points (np.ndarray): array of cylindrical coordinates with shape (n, 3) or (n, 2) if to_2d is True.
+    """
+    points = np.atleast_2d(points)  # Ensure points are in a 2D array
+    x, y, z = points[:, 0], points[:, 1], points[:, 2]
+    r = np.sqrt(x**2 + y**2)
+    theta = np.arctan2(y, x)
+    if to_2d:
+        return np.column_stack((r, theta))
+    else:
+        return np.column_stack((r, theta, z))
+
+
+def cylindrical_to_euclidean(points: np.ndarray) -> np.ndarray:
+    """Convert cylindrical coordinates to euclidean.
+
+    Args:
+        points (np.ndarray): array of cylindrical coordinates with shape (n, 3).
+
+    Returns:
+        points (np.ndarray): array of euclidean coordinates with shape (n, 3).
+    """
+    points = np.atleast_2d(points)  # Ensure points are in a 2D array
+    r, theta, z = points[:, 0], points[:, 1], points[:, 2]
+    x = r * np.cos(theta)
+    y = r * np.sin(theta)
+    return np.column_stack((x, y, z))
+
+
+def euclidean_to_spherical(points: np.ndarray) -> np.ndarray:
+    """Convert euclidean coordinates to spherical.
+
+    Args:
+        points (np.ndarray): array of 3D coordinates with shape (n, 3).
+
+    Returns:
+        points (np.ndarray): array of spherical coordinates with shape (n, 3).
+    """
+    points = np.atleast_2d(points)  # Ensure points are in a 2D array
+    x, y, z = points[:, 0], points[:, 1], points[:, 2]
+    rho = np.sqrt(x**2 + y**2 + z**2)
+    theta = np.arccos(z / rho)  # polar angle
+    phi = np.arctan2(y, x)  # azimuthal angle
+    return np.column_stack((rho, theta, phi))
+
+
+def spherical_to_euclidean(points: np.ndarray) -> np.ndarray:
+    """Convert spherical coordinates to euclidean.
+
+    Args:
+        points (np.ndarray): array of spherical coordinates with shape (n, 3).
+
+    Returns:
+        points (np.ndarray): array of euclidean coordinates with shape (n, 3).
+    """
+    points = np.atleast_2d(points)  # Ensure points are in a 2D array
+    rho, theta, phi = points[:, 0], points[:, 1], points[:, 2]
+    x = rho * np.sin(theta) * np.cos(phi)
+    y = rho * np.sin(theta) * np.sin(phi)
+    z = rho * np.cos(theta)
+    return np.column_stack((x, y, z))

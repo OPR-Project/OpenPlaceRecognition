@@ -12,27 +12,45 @@ from quaternion import as_rotation_matrix
 class Projector:
     """Class for projecting pointcloud to camera image plane."""
 
-    def __init__(self, cam_cfg: OmegaConf) -> None:
+    def __init__(self, cam_cfg: OmegaConf, lidar_cfg: OmegaConf) -> None:
         """Initialize projector.
 
         Args:
             cam_cfg (OmegaConf): camera configuration
+            lidar_cfg (OmegaConf): lidar configuration
         """
         self.proj_matrix = np.array(cam_cfg.left.rect.P)
         self.cam_res = cam_cfg.left.resolution
-        self.lidar2cam_q = np.quaternion(*cam_cfg.left.lidar2cam.q)  # w, x, y, z
-        self.lidar2cam_t = np.asarray(cam_cfg.left.lidar2cam.t)
-        self.lidar2cam_T = self.build_matrix(
-            *self.lidar2cam_t, self.lidar2cam_q
-        )  # left_cam
+        self.lidar2cam_T = self._get_lidar2cam_matrix(cam_cfg, lidar_cfg)
+
+    def _get_lidar2cam_matrix(self, cam_cfg: OmegaConf, lidar_cfg: OmegaConf) -> np.ndarray:
+        """Get lidar2cam matrix.
+
+        Args:
+            cam_cfg (OmegaConf): camera configuration
+            lidar_cfg (OmegaConf): lidar configuration
+
+        Returns:
+            np.ndarray: lidar2cam matrix
+        """
+        baselink2cam_q = np.quaternion(*cam_cfg.left.baselink2cam.q)  # w, x, y, z
+        baselink2cam_t = np.asarray(cam_cfg.left.baselink2cam.t)
+        baselink2cam_T = self.build_matrix(*baselink2cam_t, baselink2cam_q)  # left_cam
+
+        baselink2lidar_q = np.quaternion(*lidar_cfg.baselink2lidar.q)  # w, x, y, z
+        baselink2lidar_t = np.asarray(lidar_cfg.baselink2lidar.t)
+        baselink2lidar_T = self.build_matrix(*baselink2lidar_t, baselink2lidar_q)
+
+        # lidar2baselink_T = np.linalg.inv(baselink2lidar_T)
+        cam2baselink_T = np.linalg.inv(baselink2cam_T)
+        lidar2cam_T = cam2baselink_T @ baselink2lidar_T
+        return lidar2cam_T
 
     def __call__(
         self,
         points: np.ndarray,
         return_mask: Optional[bool] = True,
-    ) -> Union[
-        Tuple[np.ndarray, np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]
-    ]:
+    ) -> Union[Tuple[np.ndarray, np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
         """Project pointcloud to camera image plane.
 
         Args:
@@ -50,9 +68,7 @@ class Projector:
         self,
         points: np.ndarray,
         return_mask: Optional[bool] = True,
-    ) -> Union[
-        Tuple[np.ndarray, np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]
-    ]:
+    ) -> Union[Tuple[np.ndarray, np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
         """Project pointcloud to camera image plane.
 
         Args:

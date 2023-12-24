@@ -28,7 +28,7 @@ from opr.datasets.soc_utils import (
     pack_objects,
     semantic_mask_to_instances,
 )
-from opr.datasets.vis import VisData
+from opr.datasets.vis import VisData, VisSocWandb
 
 
 class ITLPCampus(Dataset):
@@ -60,12 +60,15 @@ class ITLPCampus(Dataset):
     load_soc: bool
     indoor: bool
     cam_config: dict
-    cam_cfg: OmegaConf
+    sensors_cfg: OmegaConf
     top_k_soc: int
+    soc_coords_type: Literal["cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"] = "cylindrical_3d"
     max_distance_soc: float
     anno: OmegaConf
     subset: Literal["train", "val", "test"]
     vis_dir: str = "./vis/"
+    train_split: list = None
+    test_split: list = None
 
     def __init__(
         self,
@@ -86,20 +89,28 @@ class ITLPCampus(Dataset):
         image_transform = DefaultImageTransform(resize=(320, 192), train=False),
         semantic_transform = DefaultSemanticTransform(resize=(320, 192), train=False)
         load_soc: bool = False,
-        top_k_soc: int = 10,
+        top_k_soc: int = 5,
+        soc_coords_type: Literal[
+            "cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"
+        ] = "cylindrical_3d",
         max_distance_soc: float = 50.0,
-        cam_cfg: OmegaConf = None,
+        sensors_cfg: OmegaConf = None,
         anno: OmegaConf = None,
         vis_dir: str = "./vis/",
+        train_split: list = None,
+        test_split: list = None,
     ) -> None:
         """ITLP Campus dataset implementation.
 
         Args:
             dataset_root (Union[str, Path]): Path to the dataset track root directory.
+            subset (Literal["train", "val", "test"]): Dataset subset to load.
             csv_file (str): Name of the csv file with dataset information. Defaults to "track.csv".
             sensors (Union[str, Tuple[str, ...]]): List of sensors for which the data should be loaded.
                 Defaults to ("front_cam", "lidar").
             mink_quantization_size (Optional[float]): The quantization size for point clouds. Defaults to 0.5.
+            max_point_distance (Optional[float]): The maximum distance of points from the origin to be
+                considered. Defaults to None.
             load_semantics (bool): Wether to load semantic masks for camera images. Defaults to False.
             load_text_descriptions (bool): Wether to load text descriptions for camera images.
                 Defaults to False.
@@ -107,10 +118,28 @@ class ITLPCampus(Dataset):
             load_aruco_labels (bool): Wether to load detected aruco labels for camera images.
                 Defaults to False.
             indoor (bool): Wether to load indoor or outdoor dataset track. Defaults to False.
+            positive_threshold (float): The maximum UTM distance between two elements
+                for them to be considered positive. Defaults to 10.0.
+            negative_threshold (float): The maximum UTM distance between two elements
+                for them to be considered non-negative. Defaults to 50.0.
+            load_soc (bool): Wether to load scene object context for each element in the dataset.
+                Defaults to False.
+            top_k_soc (int): The maximum number of objects to consider in scene object context.
+                Defaults to 5.
+            soc_coords_type (Literal["cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"]):
+                The type of coordinates to use for scene object context. Defaults to "cylindrical_3d".
+            max_distance_soc (float): The maximum distance between origin and object to consider in scene
+                object context. Defaults to 50.0.
+            sensors_cfg (OmegaConf): OmegaConf configuration for sensors. Defaults to None.
+            anno (OmegaConf): OmegaConf configuration for annotations. Defaults to None.
+            vis_dir (str): Directory to save visualization images. Defaults to "./vis/".
+            train_split (list): List of train split floor names. Defaults to None.
+            test_split (list): List of test split floor names. Defaults to None.
 
         Raises:
             FileNotFoundError: If dataset_root doesn't exist.
             FileNotFoundError: If there is no csv file for given subset (track).
+            ValueError: If subset is not one of "train", "val" or "test".
         """
         super().__init__()
         self.dataset_root = Path(dataset_root)
@@ -121,9 +150,15 @@ class ITLPCampus(Dataset):
 
         subset_csv = self.dataset_root / csv_file
         self.dataset_df = pd.read_csv(subset_csv)
+        if subset == "train":
+            self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(train_split)]
+        elif subset == "test" or subset == "val":
+            self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(test_split)]
+        else:
+            raise ValueError(f"Unknown subset: {subset!r}")
 
         if isinstance(sensors, str):
-            sensors = tuple([sensors])
+            sensors = tuple(sensors)
         self.sensors = sensors
 
         self._pointcloud_quantization_size = mink_quantization_size
@@ -131,19 +166,27 @@ class ITLPCampus(Dataset):
         self.load_semantics = load_semantics
         self.load_soc = load_soc
         self.top_k_soc = top_k_soc
+        self.soc_coords_type = soc_coords_type
+        if self.soc_coords_type not in ("cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"):
+            raise ValueError(f"Unknown soc_coords_type: {soc_coords_type!r}")
         self.max_distance_soc = max_distance_soc
         self.anno = anno
         self.special_classes = [
             self.anno.staff_classes.index(special) for special in self.anno.special_classes
         ]
 
-        self.vis = VisData(self.anno.staff_classes, vis_dir)
+        if vis_dir is not None:
+            self.vis = VisData(self.anno.staff_classes, vis_dir)
+            self.wandb = False
+        else:
+            self.vis = VisSocWandb(self.anno.staff_classes, self.anno.special_classes)
+            self.wandb = True
         if self.load_soc:
-            if cam_cfg is None:
+            if sensors_cfg is None:
                 raise ValueError("cam_cfg must be specified if load_soc=True")
 
-            self.front_cam_proj = Projector(cam_cfg.front_cam)
-            self.back_cam_proj = Projector(cam_cfg.back_cam)
+            self.front_cam_proj = Projector(sensors_cfg.front_cam, sensors_cfg.lidar)
+            self.back_cam_proj = Projector(sensors_cfg.back_cam, sensors_cfg.lidar)
 
         self.load_text_descriptions = load_text_descriptions
         if self.load_text_descriptions:
@@ -282,8 +325,14 @@ class ITLPCampus(Dataset):
         mask_front = self._load_semantic_mask("front_cam", idx, track, floor, transform=False)
         mask_back = self._load_semantic_mask("back_cam", idx, track, floor, transform=False)
         lidar_scan = self._load_pc(idx, track, floor, tensor=False)
-        self.vis.get_colored_mask(img_front, mask_front, tag="front")
-        self.vis.get_colored_mask(img_back, mask_back, tag="back")
+
+        if idx % 100 == 0:
+            if self.wandb:
+                self.vis.log_colored_mask(img_front, mask_front, tag="front")
+                self.vis.log_colored_mask(img_back, mask_back, tag="back")
+            else:
+                self.vis.get_colored_mask(img_front, mask_front, tag="front")
+                self.vis.get_colored_mask(img_back, mask_back, tag="back")
 
         coords_front, _, in_image_front = self.front_cam_proj(lidar_scan)
         coords_back, _, in_image_back = self.back_cam_proj(lidar_scan)
@@ -292,8 +341,17 @@ class ITLPCampus(Dataset):
         point_labels[in_image_front] = get_points_labels_by_mask(coords_front, mask_front)
         point_labels[in_image_back] = get_points_labels_by_mask(coords_back, mask_back)
 
-        self.vis.draw_points_on_image(img_front, coords_front, point_labels[in_image_front], tag="front")
-        self.vis.draw_points_on_image(img_back, coords_back, point_labels[in_image_back], tag="back")
+        if idx % 100 == 0:
+            if self.wandb:
+                self.vis.log_points_on_image(
+                    img_front, coords_front, point_labels[in_image_front], tag="front"
+                )
+                self.vis.log_points_on_image(img_back, coords_back, point_labels[in_image_back], tag="back")
+            else:
+                self.vis.draw_points_on_image(
+                    img_front, coords_front, point_labels[in_image_front], tag="front"
+                )
+                self.vis.draw_points_on_image(img_back, coords_back, point_labels[in_image_back], tag="back")
 
         instances_front = semantic_mask_to_instances(
             mask_front,
@@ -318,28 +376,79 @@ class ITLPCampus(Dataset):
             point_labels[in_image_back],
             lidar_scan[in_image_back],
         )
+        if idx % 100 == 0:
+            if self.wandb:
+                self.vis.log_instances(
+                    img_front,
+                    tag="front",
+                    objects=objects_front,
+                    top_k=self.top_k_soc,
+                    max_distance=self.max_distance_soc,
+                )
+                self.vis.log_instances(
+                    img_back,
+                    tag="back",
+                    objects=objects_front,
+                    top_k=self.top_k_soc,
+                    max_distance=self.max_distance_soc,
+                )
+            else:
+                self.vis.draw_instances(
+                    img_front,
+                    mask_front,
+                    classes=self.anno.special_classes,
+                    area_threshold=10,
+                    tag="front",
+                )
+                self.vis.draw_instances(
+                    img_back,
+                    mask_back,
+                    classes=self.anno.special_classes,
+                    area_threshold=10,
+                    tag="back",
+                )
+
         objects = {**objects_front, **objects_back}
         packed_objects = pack_objects(objects, self.top_k_soc, self.max_distance_soc, self.special_classes)
+
+        if self.soc_coords_type == "cylindrical_3d":
+            packed_objects = np.concatenate(
+                (
+                    np.linalg.norm(packed_objects, axis=-1, keepdims=True),
+                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[..., None],
+                    packed_objects[..., 2:],
+                ),
+                axis=-1,
+            )
+        elif self.soc_coords_type == "cylindrical_2d":
+            packed_objects = np.concatenate(
+                (
+                    np.linalg.norm(packed_objects[..., :2], axis=-1, keepdims=True),
+                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[..., None],
+                    packed_objects[..., 2:],
+                ),
+                axis=-1,
+            )
+        elif self.soc_coords_type == "euclidean":
+            pass
+        elif self.soc_coords_type == "spherical":
+            packed_objects = np.concatenate(
+                (
+                    np.linalg.norm(packed_objects, axis=-1, keepdims=True),
+                    np.arccos(
+                        packed_objects[..., 2] / np.linalg.norm(packed_objects, axis=-1, keepdims=True)
+                    ),
+                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[..., None],
+                ),
+                axis=-1,
+            )
+        else:
+            raise ValueError(f"Unknown soc_coords_type: {self.soc_coords_type!r}")
 
         objects_tensor = torch.from_numpy(packed_objects).float()
         logger.warning(f"objects_tensor.shape: {objects_tensor.shape}")
         logger.warning(f"Nonzero elements: {torch.nonzero(objects_tensor).shape}")
 
-        self.vis.draw_instances(
-            img_front,
-            mask_front,
-            classes=self.anno.special_classes,
-            area_threshold=10,
-            tag="front",
-        )
-        self.vis.draw_instances(
-            img_back,
-            mask_back,
-            classes=self.anno.special_classes,
-            area_threshold=10,
-            tag="back",
-        )
-        input()
         return objects_tensor
 
     def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
@@ -615,6 +724,11 @@ class ITLPCampus(Dataset):
 
     @staticmethod
     def download_data(out_dir: Union[Path, str]) -> None:
+        """Download ITLP-Campus dataset tracks.
+
+        Args:
+            out_dir (Union[Path, str]): Output directory for downloaded tracks.
+        """
         outdoor_tracks_dict = {
             "00_2023-02-10": "17HVoPmM7iR1f2Aj8H9GYzOqieCKwjh96",
             "01_2023-02-21": "1mezN1c8-3ylZrub9_lnGlJzipr90K63O",

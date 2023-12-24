@@ -9,7 +9,9 @@ import matplotlib.colors as mplc
 import matplotlib.figure as mplfigure
 import numpy as np
 import plotly.graph_objects as go
-from loguru import logger
+import wandb
+
+# from loguru import logger
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from opr.datasets.soc_utils import generate_color_sequence
@@ -237,18 +239,18 @@ class VisData:
                 stats,
                 centroid,
             ) = cv2.connectedComponentsWithStats(binary_mask, connectivity=8)
-            logger.debug(f"Label: {self.staff_classes[int(label)]}")
-            logger.debug(f"Total labels: {totalLabels}")
-            logger.debug(f"Label ids: {label_ids}")
-            logger.debug(f"Label ids uniq: {np.unique(label_ids)}")
-            logger.debug(f"Stats: {stats}")
+            # logger.debug(f"Label: {self.staff_classes[int(label)]}")
+            # logger.debug(f"Total labels: {totalLabels}")
+            # logger.debug(f"Label ids: {label_ids}")
+            # logger.debug(f"Label ids uniq: {np.unique(label_ids)}")
+            # logger.debug(f"Stats: {stats}")
 
             components = []
             for label_id in range(1, totalLabels):
                 area = stats[label_id, cv2.CC_STAT_AREA]
                 if area > area_threshold:
                     components.append(label_ids == label_id)
-                    logger.debug(f"Area: {area}")
+                    # logger.debug(f"Area: {area}")
 
             instances[label] = components
 
@@ -377,3 +379,160 @@ class VisImage:
         img_rgba = buffer.reshape(height, width, 4)
         rgb, alpha = np.split(img_rgba, [3], axis=2)
         return rgb.astype("uint8")
+
+
+class VisSocWandb:
+    """Visualisation utils for SOC dataset."""
+
+    def __init__(self, staff_classes: list, special_classes: list) -> None:
+        """Initialize visualisation utils.
+
+        Args:
+        staff_classes (list): list of staff classes.
+        special_classes (list): list of special classes.
+        """
+        self.staff_classes = staff_classes
+        self.special_classes = special_classes
+
+    def log_colored_mask(self, img: np.ndarray, mask: np.ndarray, tag: str = "tag") -> None:
+        """Log colored mask to wandb as overlayed image.
+
+        Args:
+            img (np.ndarray): image in opencv format.
+            mask (np.ndarray): semantic mask in opencv  image format (ndarray)
+            tag (str, optional): tag for name image. Defaults to "tag".
+
+        Returns:
+            None
+        """
+        class_labels = dict(enumerate(self.staff_classes))
+        special_labels = dict(enumerate(self.special_classes))
+
+        mask_img = wandb.Image(
+            cv2.cvtColor(img, cv2.COLOR_BGR2RGB),
+            masks={
+                "ground_truth": {"mask_data": mask, "class_labels": class_labels},
+                "special_classes": {
+                    "mask_data": mask,
+                    "class_labels": special_labels,
+                },
+                # ...
+            },
+        )
+        wandb.log({f"colored_mask_{tag}": mask_img})
+
+    def log_points_on_image(
+        self, img: np.ndarray, points: np.ndarray, labels: np.ndarray, tag: str = "tag"
+    ) -> None:
+        """Log projected points to wandb as overlayed image.
+
+        Args:
+            img (np.ndarray): image in opencv format.
+            points (np.ndarray): array of 2D coordinates of projected points with shape (n, 2).
+            Coordinates should match with cam_resolution.
+            labels (np.ndarray): point labels taken from the mask.
+            tag (str, optional): tag for name image. Defaults to "tag".
+
+        Returns:
+            None
+        """
+        class_labels = dict(enumerate(self.staff_classes))
+        special_labels = dict(enumerate(self.special_classes))
+
+        # draw points
+        proj_img = cv2.cvtColor(img.copy(), cv2.COLOR_BGR2RGB)
+        for point, label in zip(points.T, labels):  # points.T
+            c = [
+                int(round(255 * x)) for x in self.staff_colors[int(label)]
+            ]  # (int(color[0]), int(color[1]), int(color[2]))
+            proj_img = cv2.circle(proj_img, point, radius=2, color=c, thickness=cv2.FILLED)
+
+        proj_img = wandb.Image(
+            proj_img,
+            masks={
+                "ground_truth": {"mask_data": points, "class_labels": class_labels},
+                "special_classes": {
+                    "mask_data": points,
+                    "class_labels": special_labels,
+                },
+                # ...
+            },
+        )
+        wandb.log({f"projection_{tag}": proj_img})
+
+    def log_instances(
+        self,
+        img: np.ndarray,
+        tag: str = "tag",
+        objects: dict = None,
+        top_k: int = 10,
+        max_distance: float = 0.5,
+    ) -> None:
+        """Draw instance labels extracted from semantic mask and log to wandb.
+
+        Instances are defined as connected components of the same class.
+        Connected components found using opencv connectedComponentsWithStats opencv algorithm
+        in class-wise manner.
+
+        Args:
+            img (np.ndarray): image in opencv format.
+            tag (str, optional): tag for name image. Defaults to "tag".
+            objects (dict, optional): objects extracted from instances. Defaults to None.
+            top_k (int, optional): maximum number of instances of one class to consider. Defaults to 10.
+            max_distance (float, optional): maximum distance to instance to be considered. Defaults to 0.5.
+
+        Returns:
+            None
+        """
+        class_id_to_label = dict(enumerate(self.staff_classes))
+        checksum = [top_k] * len(self.special_classes)
+        considered = {"box_data": [], "class_labels": class_id_to_label}
+        over_top_k = {"box_data": [], "class_labels": class_id_to_label}
+        over_distance = {"box_data": [], "class_labels": class_id_to_label}
+        for key, obj in objects.items():
+            if "centroid" not in obj:
+                continue
+            dist = np.linalg.norm(obj["centroid"])
+            w, h = obj["width"], obj["height"]
+            if dist > max_distance:
+                over_distance["box_data"].append(
+                    {
+                        "position": {"middle": obj["centroid"], "width": w, "height": h},
+                        "domain": "pixel",
+                        "class_id": key[0],
+                        "box_caption": class_id_to_label[key[0]],
+                        "scores": {"dist": dist},
+                    }
+                )
+            elif checksum[self.special_classes.index(self.staff_classes[key[0]])] > 0:
+                considered["box_data"].append(
+                    {
+                        "position": {"middle": obj["centroid"], "width": w, "height": h},
+                        "domain": "pixel",
+                        "class_id": key[0],
+                        "box_caption": class_id_to_label[key[0]],
+                        "scores": {"dist": dist},
+                    }
+                )
+                checksum[self.special_classes.index(self.staff_classes[key[0]])] -= 1
+            else:
+                over_top_k["box_data"].append(
+                    {
+                        "position": {"middle": obj["centroid"], "width": w, "height": h},
+                        "domain": "pixel",
+                        "class_id": key[0],
+                        "box_caption": class_id_to_label[key[0]],
+                        "scores": {"dist": dist},
+                    }
+                )
+
+        img = wandb.Image(
+            cv2.cvtColor(img.copy(), cv2.COLOR_BGR2RGB),
+            boxes={
+                "instances_considered": considered,
+                "instances_over_top_K": over_top_k,
+                "instances_over_distance": over_distance,
+            },
+        )
+
+        wandb.log({f"3d_instaces_on_scene_{tag}": img})

@@ -163,7 +163,6 @@ special_classes:
   - painting
   - sofa
   - shelf
-  - mirror
   - rug
   - armchair
   - seat
@@ -225,5 +224,5 @@ special_classes:
   - clock
   - flag
 
-num_special: 73
+num_special: 72
 num_classes: 150
