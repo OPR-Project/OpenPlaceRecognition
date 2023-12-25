@@ -1,4 +1,5 @@
 """Custom ITLP-Campus dataset implementations."""
+import math
 from pathlib import Path
 from typing import Dict, List, Literal, Optional, Tuple, Union
 
@@ -57,12 +58,15 @@ class ITLPCampus(Dataset):
         mink_quantization_size: Optional[float] = 0.5,
         max_point_distance: Optional[float] = None,
         load_semantics: bool = False,
+        exclude_dynamic_classes: bool = False,
         load_text_descriptions: bool = False,
         load_text_labels: bool = False,
         load_aruco_labels: bool = False,
         indoor: bool = False,
         positive_threshold: float = 10.0,
         negative_threshold: float = 50.0,
+        image_transform = DefaultImageTransform(resize=(320, 192), train=False),
+        semantic_transform = DefaultSemanticTransform(resize=(320, 192), train=False)
     ) -> None:
         """ITLP Campus dataset implementation.
 
@@ -147,10 +151,27 @@ class ITLPCampus(Dataset):
         )
         self._positives_mask, self._negatives_mask = self._build_masks(positive_threshold, negative_threshold)
 
-        self.image_transform = DefaultImageTransform(resize=(320, 192), train=False)
-        self.semantic_transform = DefaultSemanticTransform(resize=(320, 192), train=False)
+        self.image_transform = image_transform
+        self.semantic_transform = semantic_transform
         self.pointcloud_transform = DefaultCloudTransform(train=False)
         self.pointcloud_set_transform = DefaultCloudSetTransform(train=False)
+
+        self._ade20k_dynamic_idx = [12]
+        self.exclude_dynamic_classes = exclude_dynamic_classes
+
+        self.lidar2front = np.array([[ 0.01509615, -0.99976457, -0.01558544,  0.04632156],
+                                    [ 0.00871086,  0.01571812, -0.99983852, -0.13278588],
+                                    [ 0.9998481,   0.01495794,  0.0089461,  -0.06092749],
+                                    [ 0.      ,    0.  ,        0.    ,      1.        ]])
+        self.lidar2back = np.array([[-1.50409674e-02,  9.99886421e-01,  9.55906151e-04,  1.82703304e-02],
+                                    [-1.30440106e-02,  7.59716299e-04, -9.99914635e-01, -1.41787545e-01],
+                                    [-9.99801792e-01, -1.50521522e-02,  1.30311022e-02, -6.72336358e-02],
+                                    [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]])
+        
+        self.front_matrix = np.array([[683.6199340820312, 0.0, 615.1160278320312, 0.0, 683.6199340820312, 345.32354736328125, 0.0, 0.0, 1.0]]).reshape((3,3))
+        self.front_dist = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
+        self.back_matrix = np.array([[910.4178466796875, 0.0, 648.44140625, 0.0, 910.4166870117188, 354.0118408203125, 0.0, 0.0, 1.0]]).reshape((3,3))
+        self.back_dist = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
 
     def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
         data: Dict[str, Union[int, Tensor]] = {"idx": torch.tensor(idx)}
@@ -174,6 +195,11 @@ class ITLPCampus(Dataset):
                 im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
                 im = self.semantic_transform(im)
                 data["mask_front_cam"] = im
+
+                if self.exclude_dynamic_classes and self.indoor:
+                    for index in self._ade20k_dynamic_idx:
+                        data["image_front_cam"] = torch.where(data["mask_front_cam"] == index, 0, data["image_front_cam"])
+
             if self.load_text_labels:
                 text_labels_df = self.front_cam_text_labels_df[
                     self.front_cam_text_labels_df["path"] == f"{image_ts}.png"
@@ -203,6 +229,11 @@ class ITLPCampus(Dataset):
                 im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
                 im = self.semantic_transform(im)
                 data["mask_back_cam"] = im
+
+                if self.exclude_dynamic_classes and self.indoor:
+                    for index in self._ade20k_dynamic_idx:
+                        data["image_back_cam"] = torch.where(data["mask_back_cam"] == index, 0, data["image_back_cam"])
+
             if self.load_text_labels:
                 text_labels_df = self.back_cam_text_labels_df[
                     self.back_cam_text_labels_df["path"] == f"{image_ts}.png"
@@ -222,9 +253,55 @@ class ITLPCampus(Dataset):
             lidar_ts = int(self.dataset_df["lidar_ts"].iloc[idx])
             pc_filepath = self.dataset_root / track / floor / self.clouds_subdir / f"{lidar_ts}.bin"
             pc = self._load_pc(pc_filepath)
+
+            if self.exclude_dynamic_classes and self.indoor:
+                if "back_cam" in self.sensors:
+                    pc = self._remove_dynamic_points(pc, data["mask_back_cam"].numpy().transpose(1, 2, 0),
+                                                     self.lidar2back, self.back_matrix, self.back_dist)
+                if "front_cam" in self.sensors:
+                    pc = self._remove_dynamic_points(pc, data["mask_front_cam"].numpy().transpose(1, 2, 0),
+                                                     self.lidar2front, self.front_matrix, self.front_dist)
+
+            pc = torch.tensor(pc, dtype=torch.float32)
             data["pointcloud_lidar_coords"] = pc
             data["pointcloud_lidar_feats"] = torch.ones_like(pc[:, :1])
         return data
+    
+    def _remove_dynamic_points(self, pointcloud: np.ndarray, semantic_map: np.ndarray, lidar2sensor: np.ndarray,
+                               sensor_intrinsics: np.ndarray, sensor_dist: np.ndarray) -> np.ndarray:
+        pc_values = np.concatenate([pointcloud, np.ones((pointcloud.shape[0], 1))],axis=1).T
+        camera_values = lidar2sensor @ pc_values
+        camera_values = np.transpose(camera_values)[:, :3]
+
+        points_2d, _ = cv2.projectPoints(camera_values, 
+                                         np.zeros((3, 1), np.float32), np.zeros((3, 1), np.float32), 
+                                         sensor_intrinsics, 
+                                         sensor_dist)
+        points_2d = points_2d[:, 0, :]
+
+        classes = set(np.unique(semantic_map))
+        dynamic_classes = set(self._ade20k_dynamic_idx)
+        if classes.intersection(dynamic_classes):
+            valid = (~np.isnan(points_2d[:,0])) & (~np.isnan(points_2d[:,1]))
+            in_bounds_x = (points_2d[:,0] >= 0) & (points_2d[:,0] < 1280)
+            in_bounds_y = (points_2d[:,1] >= 0) & (points_2d[:,1] < 720)
+            look_forward = (camera_values[:, 2] > 0)
+            mask = valid & in_bounds_x & in_bounds_y & look_forward
+
+            indices = np.where(mask)[0]
+            mask_for_points = np.full((points_2d.shape[0], 3), True)
+
+            dynamic_idx = np.array(self._ade20k_dynamic_idx)
+            semantic_values = semantic_map[np.floor(points_2d[indices, 1]).astype(int), np.floor(points_2d[indices, 0]).astype(int)]
+
+            matching_indices = np.where(np.isin(semantic_values, dynamic_idx))
+
+            mask_for_points = np.full((points_2d.shape[0], 3), True)
+            mask_for_points[indices[matching_indices[0]]] = np.array([False, False, False])
+
+            return pointcloud[mask_for_points].reshape((-1, 3))
+        else:
+            return pointcloud
 
     def __len__(self) -> int:  # noqa: D105
         return len(self.dataset_df)
@@ -250,8 +327,7 @@ class ITLPCampus(Dataset):
         pc = pc[in_range_idx]
         if self._max_point_distance is not None:
             pc = pc[np.linalg.norm(pc, axis=1) < self._max_point_distance]
-        pc_tensor = torch.tensor(pc, dtype=torch.float32)
-        return pc_tensor
+        return pc
 
     def _collate_data_dict(self, data_list: List[Dict[str, Tensor]]) -> Dict[str, Tensor]:
         result: Dict[str, Tensor] = {}
