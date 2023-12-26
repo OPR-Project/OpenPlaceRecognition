@@ -13,7 +13,7 @@ get_real_path(){
 
 ARCH=`uname -m`
 if [ $ARCH == "x86_64" ]; then
-    if command -v nvcc &> /dev/null; then
+    if command -v nvidia-smi &> /dev/null; then
         DEVICE=cuda
         ARGS="--ipc host --gpus all"
     else
@@ -50,7 +50,8 @@ docker run -it -d --rm \
     --net host \
     -v $PROJECT_ROOT_DIR:/home/docker_opr/OpenPlaceRecognition:rw \
     -v $DATASETS_DIR:/home/docker_opr/Datasets:rw \
-    open-place-recognition:$DEVICE-$USER
+    creatorofuniverses/opr:dev
+    # open-place-recognition:$DEVICE-$USER
 
 docker exec --user root \
     ${USER}_opr bash -c "/etc/init.d/ssh start"

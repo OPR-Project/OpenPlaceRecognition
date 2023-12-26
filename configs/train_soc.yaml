@@ -8,13 +8,13 @@ defaults:
   - scheduler: multi_step
 
 wandb:
-  disabled: true
+  disabled: false
   project: OPR_MODEL_ZOO
 
 debug: false
 device: cuda
 seed: 3121999
-num_workers: 4
+num_workers: 10
 
 exp_name: "dev_soc"
 

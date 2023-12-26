@@ -15,6 +15,7 @@ from torch import nn
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+from loguru import logger
 
 from opr.testing import get_recalls
 from opr.utils import (
@@ -60,7 +61,7 @@ class UnimodalPlaceRecognitionTrainer:
         Raises:
             ValueError: If CUDA device is set but not available.
         """
-        self.logger = logging.getLogger(self.__class__.__name__)
+        # logger = logging.getLogger(self.__class__.__name__)
 
         self.model = model
         self.loss_fn = loss_fn
@@ -104,7 +105,7 @@ class UnimodalPlaceRecognitionTrainer:
         """
         for epoch in range(epochs):
             self._stats = {"train": {}}
-            self.logger.info(f"=====> Epoch: {epoch+1:3d}/{epochs}:")
+            logger.info(f"=====> Epoch: {epoch+1:3d}/{epochs}:")
 
             # === Train-Val stage ===
             self._loop_epoch(train_dataloader, val_dataloader)
@@ -122,7 +123,7 @@ class UnimodalPlaceRecognitionTrainer:
                 self.batch_expansion_threshold is not None
                 and self._stats["train"]["non_zero_rate"] < self.batch_expansion_threshold
             ):
-                self.logger.info(
+                logger.info(
                     f"Non-zero rate is below threshold: {self._stats['train']['non_zero_rate']:.03f} < "
                     f"{self.batch_expansion_threshold}."
                 )
@@ -150,7 +151,7 @@ class UnimodalPlaceRecognitionTrainer:
                 wandb.save(str(self.checkpoints_dir / "last.pth"))
 
             if "test" in self._stats and self._stats["test"]["mean_recall_at_1"] > self.best_recall_at_1:
-                self.logger.info("Recall@1 improved!")
+                logger.info("Recall@1 improved!")
                 torch.save(checkpoint_dict, self.checkpoints_dir / "best.pth")
                 self.best_recall_at_1 = self._stats["test"]["mean_recall_at_1"]
                 if self.wandb_log:
@@ -163,7 +164,7 @@ class UnimodalPlaceRecognitionTrainer:
             dataloader (DataLoader): The data loader for the test set.
             distance_threshold (float): The distance threshold for a correct match. Defaults to 25.0.
         """
-        self.logger.info("=> Test stage:")
+        logger.info("=> Test stage:")
         start_t = time()
         self.model.eval()
         with torch.no_grad():
@@ -184,8 +185,11 @@ class UnimodalPlaceRecognitionTrainer:
             databases.append(group.index.to_list())
             selected_queries = group[group["in_query"]]
             queries.append(selected_queries.index.to_list())
+        
+        
+        logger.debug(f"Test embeddings: {test_embeddings.shape}")
 
-        utms = torch.tensor(test_df[["northing", "easting"]].to_numpy())
+        utms = torch.tensor(test_df[["tx", "ty"]].to_numpy())
         dist_fn = LpDistance(normalize_embeddings=False)
         dist_utms = dist_fn(utms).numpy()
 
@@ -217,10 +221,10 @@ class UnimodalPlaceRecognitionTrainer:
         mean_top1_distance = top1_distances.sum(axis=(0, 1)).squeeze() / len(ij_permutations)
         elapsed_t = time() - start_t
         minutes, seconds = divmod(int(elapsed_t), 60)
-        self.logger.info(f"Test time: {int(minutes):02d}:{int(seconds):02d}")
-        self.logger.info(f"Mean Recall@N:\n{mean_recall_at_n}")
-        self.logger.info(f"Mean Recall@1% = {mean_recall_at_one_percent}")
-        self.logger.info(f"Mean top-1 distance = {mean_top1_distance}")
+        logger.info(f"Test time: {int(minutes):02d}:{int(seconds):02d}")
+        logger.info(f"Mean Recall@N:\n{mean_recall_at_n}")
+        logger.info(f"Mean Recall@1% = {mean_recall_at_one_percent}")
+        logger.info(f"Mean top-1 distance = {mean_top1_distance}")
         self._stats["test"]["mean_recall_at_1"] = mean_recall_at_n[0]
         self._stats["test"]["mean_recall_at_3"] = mean_recall_at_n[2]
         self._stats["test"]["mean_recall_at_5"] = mean_recall_at_n[4]
@@ -233,7 +237,7 @@ class UnimodalPlaceRecognitionTrainer:
         if val_dataloader:
             dataloaders["val"] = val_dataloader
         for stage, dataloader in dataloaders.items():
-            self.logger.info(f"=> {stage.capitalize()} stage:")
+            logger.info(f"=> {stage.capitalize()} stage:")
             start_t = time()
             self.model.train(stage == "train")
             accumulated_stats = {}
@@ -266,6 +270,6 @@ class UnimodalPlaceRecognitionTrainer:
             epoch_stats = compute_epoch_stats_mean(accumulated_stats)
             elapsed_t = time() - start_t
             minutes, seconds = divmod(int(elapsed_t), 60)
-            self.logger.info(f"{stage.capitalize()} time: {int(minutes):02d}:{int(seconds):02d}")
-            self.logger.info(f"{stage.capitalize()} stats: {epoch_stats}")
+            logger.info(f"{stage.capitalize()} time: {int(minutes):02d}:{int(seconds):02d}")
+            logger.info(f"{stage.capitalize()} stats: {epoch_stats}")
             self._stats[stage] = epoch_stats

@@ -69,8 +69,8 @@ def instance_masks_to_objects(
     objects = {}
     for label in instance_masks:
         for mask_id, mask in enumerate(instance_masks[label]):
-            _, _, w, h = cv2.boundingRect(mask.astype(np.uint8))
-            objects[(label, mask_id)] = {"points": [], "width": w, "height": h}
+            x, y, w, h = cv2.boundingRect(mask.astype(np.uint8))
+            objects[(label, mask_id)] = {"points": [], "x": x, "y": y, "width": w, "height": h}
 
     for img_point, label, point_3d in zip(points_2d.T, point_labels, points_3d):  # points.T
         if label not in instance_masks:

@@ -11,7 +11,8 @@ import numpy as np
 import plotly.graph_objects as go
 import wandb
 
-# from loguru import logger
+
+from loguru import logger
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from opr.datasets.soc_utils import generate_color_sequence
@@ -393,6 +394,7 @@ class VisSocWandb:
         """
         self.staff_classes = staff_classes
         self.special_classes = special_classes
+        self.staff_colors = generate_color_sequence(len(staff_classes)//3, "Spectral")*3
 
     def log_colored_mask(self, img: np.ndarray, mask: np.ndarray, tag: str = "tag") -> None:
         """Log colored mask to wandb as overlayed image.
@@ -409,11 +411,11 @@ class VisSocWandb:
         special_labels = dict(enumerate(self.special_classes))
 
         mask_img = wandb.Image(
-            cv2.cvtColor(img, cv2.COLOR_BGR2RGB),
+            img, #cv2.cvtColor(img, cv2.COLOR_BGR2RGB),
             masks={
-                "ground_truth": {"mask_data": mask, "class_labels": class_labels},
+                "ground_truth": {"mask_data": mask.astype(int), "class_labels": class_labels},
                 "special_classes": {
-                    "mask_data": mask,
+                    "mask_data": mask.astype(int),
                     "class_labels": special_labels,
                 },
                 # ...
@@ -440,7 +442,7 @@ class VisSocWandb:
         special_labels = dict(enumerate(self.special_classes))
 
         # draw points
-        proj_img = cv2.cvtColor(img.copy(), cv2.COLOR_BGR2RGB)
+        proj_img = img.copy() # cv2.cvtColor(img.copy(), cv2.COLOR_BGR2RGB)
         for point, label in zip(points.T, labels):  # points.T
             c = [
                 int(round(255 * x)) for x in self.staff_colors[int(label)]
@@ -448,15 +450,7 @@ class VisSocWandb:
             proj_img = cv2.circle(proj_img, point, radius=2, color=c, thickness=cv2.FILLED)
 
         proj_img = wandb.Image(
-            proj_img,
-            masks={
-                "ground_truth": {"mask_data": points, "class_labels": class_labels},
-                "special_classes": {
-                    "mask_data": points,
-                    "class_labels": special_labels,
-                },
-                # ...
-            },
+            proj_img
         )
         wandb.log({f"projection_{tag}": proj_img})
 
@@ -493,41 +487,42 @@ class VisSocWandb:
             if "centroid" not in obj:
                 continue
             dist = np.linalg.norm(obj["centroid"])
-            w, h = obj["width"], obj["height"]
+            x, y, w, h = int(round(obj["x"])), int(round(obj["y"])), int(round(obj["width"])), int(round(obj["height"]))
+
             if dist > max_distance:
                 over_distance["box_data"].append(
                     {
-                        "position": {"middle": obj["centroid"], "width": w, "height": h},
+                        "position": {"minX": x, "maxX": x + w, "minY": y, "maxY": y + w},
                         "domain": "pixel",
                         "class_id": key[0],
                         "box_caption": class_id_to_label[key[0]],
-                        "scores": {"dist": dist},
+                        "scores": {"dist": int(dist)},
                     }
                 )
             elif checksum[self.special_classes.index(self.staff_classes[key[0]])] > 0:
                 considered["box_data"].append(
                     {
-                        "position": {"middle": obj["centroid"], "width": w, "height": h},
+                        "position": {"minX": x, "maxX": x + w, "minY": y, "maxY": y + w},
                         "domain": "pixel",
                         "class_id": key[0],
                         "box_caption": class_id_to_label[key[0]],
-                        "scores": {"dist": dist},
+                        "scores": {"dist": int(dist)},
                     }
                 )
                 checksum[self.special_classes.index(self.staff_classes[key[0]])] -= 1
             else:
                 over_top_k["box_data"].append(
                     {
-                        "position": {"middle": obj["centroid"], "width": w, "height": h},
+                        "position": {"minX": x, "maxX": x + w, "minY": y, "maxY": y + w},
                         "domain": "pixel",
                         "class_id": key[0],
                         "box_caption": class_id_to_label[key[0]],
-                        "scores": {"dist": dist},
+                        "scores": {"dist": int(dist)},
                     }
                 )
 
         img = wandb.Image(
-            cv2.cvtColor(img.copy(), cv2.COLOR_BGR2RGB),
+            img, #cv2.cvtColor(img.copy(), cv2.COLOR_BGR2RGB),
             boxes={
                 "instances_considered": considered,
                 "instances_over_top_K": over_top_k,

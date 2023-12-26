@@ -85,7 +85,7 @@ class Projector:
 
         """
         if points.shape[0] != 3:
-            logger.debug(f"Transposing pointcloud {points.shape} -> {points.T.shape}")
+            # logger.debug(f"Transposing pointcloud {points.shape} -> {points.T.shape}")
             points = points.T
 
         points = np.vstack((points, np.ones((1, points.shape[1]))))

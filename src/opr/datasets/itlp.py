@@ -152,10 +152,15 @@ class ITLPCampus(Dataset):
         self.dataset_df = pd.read_csv(subset_csv)
         if subset == "train":
             self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(train_split)]
+            self.dataset_df.reset_index()
         elif subset == "test" or subset == "val":
             self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(test_split)]
+            self.dataset_df.reset_index()
         else:
             raise ValueError(f"Unknown subset: {subset!r}")
+
+        if self.subset == "test":
+            self.dataset_df["in_query"] = True
 
         if isinstance(sensors, str):
             sensors = tuple(sensors)
@@ -325,8 +330,16 @@ class ITLPCampus(Dataset):
         mask_front = self._load_semantic_mask("front_cam", idx, track, floor, transform=False)
         mask_back = self._load_semantic_mask("back_cam", idx, track, floor, transform=False)
         lidar_scan = self._load_pc(idx, track, floor, tensor=False)
+        worker_info = torch.utils.data.get_worker_info()
+        # If using multiple workers, the worker_info will not be None
+        if worker_info is not None:
+            # Get the worker ID
+            worker_id = worker_info.id
+        else:
+            # If no worker info, it's being called in the main process
+            worker_id = -1
 
-        if idx % 100 == 0:
+        if idx % 100 == 0 and worker_id < 1:
             if self.wandb:
                 self.vis.log_colored_mask(img_front, mask_front, tag="front")
                 self.vis.log_colored_mask(img_back, mask_back, tag="back")
@@ -341,7 +354,7 @@ class ITLPCampus(Dataset):
         point_labels[in_image_front] = get_points_labels_by_mask(coords_front, mask_front)
         point_labels[in_image_back] = get_points_labels_by_mask(coords_back, mask_back)
 
-        if idx % 100 == 0:
+        if idx % 100 == 0 and worker_id < 1:
             if self.wandb:
                 self.vis.log_points_on_image(
                     img_front, coords_front, point_labels[in_image_front], tag="front"
@@ -376,7 +389,7 @@ class ITLPCampus(Dataset):
             point_labels[in_image_back],
             lidar_scan[in_image_back],
         )
-        if idx % 100 == 0:
+        if idx % 100 == 0 and worker_id < 1:
             if self.wandb:
                 self.vis.log_instances(
                     img_front,
@@ -446,8 +459,8 @@ class ITLPCampus(Dataset):
             raise ValueError(f"Unknown soc_coords_type: {self.soc_coords_type!r}")
 
         objects_tensor = torch.from_numpy(packed_objects).float()
-        logger.warning(f"objects_tensor.shape: {objects_tensor.shape}")
-        logger.warning(f"Nonzero elements: {torch.nonzero(objects_tensor).shape}")
+        # logger.warning(f"objects_tensor.shape: {objects_tensor.shape}")
+        # logger.warning(f"Nonzero elements: {torch.nonzero(objects_tensor).shape}")
 
         return objects_tensor
 
@@ -598,6 +611,8 @@ class ITLPCampus(Dataset):
                 result[f"images_{data_key[6:]}"] = torch.stack([e[data_key] for e in data_list])
             elif data_key.startswith("mask_"):
                 result[f"masks_{data_key[5:]}"] = torch.stack([e[data_key] for e in data_list])
+            elif data_key == "soc":
+                result["soc"] = torch.stack([e["soc"] for e in data_list], dim=0)
             elif data_key == "pointcloud_lidar_coords":
                 coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
                 feats_list = [e["pointcloud_lidar_feats"] for e in data_list]
