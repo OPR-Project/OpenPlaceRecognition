@@ -19,3 +19,5 @@ wandb
 loguru
 numpy-quaternion
 seaborn
+clearml
+mlp-mixer-pytorch

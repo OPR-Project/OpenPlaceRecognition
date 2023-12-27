@@ -152,10 +152,10 @@ class ITLPCampus(Dataset):
         self.dataset_df = pd.read_csv(subset_csv)
         if subset == "train":
             self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(train_split)]
-            self.dataset_df.reset_index()
+            self.dataset_df.reset_index(inplace=True)
         elif subset == "test" or subset == "val":
             self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(test_split)]
-            self.dataset_df.reset_index()
+            self.dataset_df.reset_index(inplace=True)
         else:
             raise ValueError(f"Unknown subset: {subset!r}")
 
@@ -433,6 +433,11 @@ class ITLPCampus(Dataset):
                 ),
                 axis=-1,
             )
+            if self.subset == "train":
+                # logger.debug(f"Packed objects shape: {packed_objects.shape}")
+                packed_objects = self.augment_coords_with_rotation(packed_objects, angle_range=(-np.pi, np.pi))
+                # logger.debug(f"Packed objects shape: {packed_objects.shape}")
+                packed_objects = self.augment_coords_with_normal(packed_objects, std=(0.2, 0.2, 0.2))
         elif self.soc_coords_type == "cylindrical_2d":
             packed_objects = np.concatenate(
                 (
@@ -463,6 +468,54 @@ class ITLPCampus(Dataset):
         # logger.warning(f"Nonzero elements: {torch.nonzero(objects_tensor).shape}")
 
         return objects_tensor
+
+    def augment_coords_with_rotation(self, coords, angle_range=(-np.pi, np.pi)):
+        # Generate a random angle for rotation within the specified range
+        random_angle = np.random.uniform(low=angle_range[0], high =angle_range[1])
+        
+        # Add the random angle to the θ coordinate of each triplet
+        coords[:, :, 1] = (coords[:, :, 1] + random_angle) % (2 * np.pi)
+        
+        # Adjust angles to be in the range (-pi, pi)
+        coords[:, :, 1] = (coords[:, :, 1] + np.pi) % (2 * np.pi) - np.pi
+        
+        return coords
+
+    def augment_coords_with_range_normal(self, coords, mean=0, std=1):
+        # Generate random values from a normal distribution
+        N, K = coords.shape[:2]
+        random_deltas = np.random.normal(mean, std, size=(N, K, 1))
+
+        # Add the random values to the r coordinate of each triplet
+        coords[:, :, 0] += random_deltas[:, :, 0]
+
+        # Ensure that the range (r) stays positive - you can't have negative radius
+        coords[:, :, 0] = np.maximum(coords[:, :, 0], 0)
+
+        return coords
+    
+    def augment_coords_with_z_normal(self, coords, mean=0, std=1):
+        N, K = coords.shape[:2]
+        # Generate random values from a normal distribution
+        random_deltas = np.random.normal(mean, std, size=(N, K, 1))
+
+        # Add the random values to the z (height) coordinate of each triplet
+        coords[:, :, 2] += random_deltas[:, :, 0]
+
+
+        return coords
+    
+    def augment_coords_with_normal(self, coords, mean=(0., 0., 0.), std=(1., 1., 1.)):
+        # Generate random values from a normal distribution
+        N, K = coords.shape[:2]
+        for i, (m, s) in enumerate(zip(mean, std)):
+            random_deltas = np.random.normal(m, s, size=(N, K, 1))
+            coords[:, :, i] += random_deltas[:, :, 0]
+
+        coords[:, :, 0] = np.maximum(coords[:, :, 0], 0)
+        coords[:, :, 1] = (coords[:, :, 1] + np.pi) % (2 * np.pi) - np.pi
+
+        return coords
 
     def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
         data: Dict[str, Union[int, Tensor]] = {"idx": torch.tensor(idx)}

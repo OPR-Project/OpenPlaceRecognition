@@ -16,6 +16,7 @@ from torch.optim import Optimizer
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from loguru import logger
+from clearml import Task
 
 from opr.testing import get_recalls
 from opr.utils import (
@@ -26,6 +27,13 @@ from opr.utils import (
 )
 
 c_f.COLLECT_STATS = True
+# Task.current_task().get_logger().report_scalar(
+#                         k,
+#                         f"{dataset_name}_{iou_type}",
+#                         value=v,
+#                         iteration=cur_iter,
+#                     )
+
 
 
 # TODO: Think about naming
@@ -67,6 +75,8 @@ class UnimodalPlaceRecognitionTrainer:
         self.loss_fn = loss_fn
         self.optimizer = optimizer
         self.scheduler = scheduler
+        self.task = Task.init(project_name='OPR/evie', task_name='mixer_full_aug_plus', auto_resource_monitoring=False)
+        self.logger = self.task.get_logger()
 
         self.checkpoints_dir = Path(checkpoints_dir)
         self.batch_expansion_threshold = batch_expansion_threshold
@@ -108,7 +118,7 @@ class UnimodalPlaceRecognitionTrainer:
             logger.info(f"=====> Epoch: {epoch+1:3d}/{epochs}:")
 
             # === Train-Val stage ===
-            self._loop_epoch(train_dataloader, val_dataloader)
+            self._loop_epoch(train_dataloader, val_dataloader, epoch)
             self._stats["train"]["batch_size"] = train_dataloader.batch_sampler.batch_size
             if val_dataloader:
                 self._stats["val"]["batch_size"] = val_dataloader.batch_sampler.batch_size
@@ -132,7 +142,7 @@ class UnimodalPlaceRecognitionTrainer:
             # === Test stage ===
             if test_dataloader and epoch % test_every_n_epochs == 0:
                 self._stats["test"] = {}
-                self.test(test_dataloader)
+                self.test(test_dataloader, epoch=epoch)
 
             # === Checkpointing ===
             checkpoint_dict = {
@@ -157,7 +167,7 @@ class UnimodalPlaceRecognitionTrainer:
                 if self.wandb_log:
                     wandb.save(str(self.checkpoints_dir / "best.pth"))
 
-    def test(self, dataloader: DataLoader, distance_threshold: float = 25.0) -> None:
+    def test(self, dataloader: DataLoader, distance_threshold: float = 25.0, epoch:int=0) -> None:
         """Evaluates the model on the test set.
 
         Args:
@@ -231,8 +241,15 @@ class UnimodalPlaceRecognitionTrainer:
         self._stats["test"]["mean_recall_at_10"] = mean_recall_at_n[9]
         self._stats["test"]["mean_recall_at_1%"] = mean_recall_at_one_percent
         self._stats["test"]["mean_top1_distance"] = mean_top1_distance
+        for k, v in self._stats["test"].items():
+                self.logger.report_scalar(
+                        k,
+                        "test",
+                        value=v,
+                        iteration=epoch,
+                    )
 
-    def _loop_epoch(self, train_dataloader: DataLoader, val_dataloader: Optional[DataLoader] = None) -> None:
+    def _loop_epoch(self, train_dataloader: DataLoader, val_dataloader: Optional[DataLoader] = None, epoch:int=0) -> None:
         dataloaders = {"train": train_dataloader}
         if val_dataloader:
             dataloaders["val"] = val_dataloader
@@ -272,4 +289,11 @@ class UnimodalPlaceRecognitionTrainer:
             minutes, seconds = divmod(int(elapsed_t), 60)
             logger.info(f"{stage.capitalize()} time: {int(minutes):02d}:{int(seconds):02d}")
             logger.info(f"{stage.capitalize()} stats: {epoch_stats}")
+            for k, v in epoch_stats.items():
+                self.logger.report_scalar(
+                        k,
+                        f"{stage}",
+                        value=v,
+                        iteration=epoch,
+                    )
             self._stats[stage] = epoch_stats

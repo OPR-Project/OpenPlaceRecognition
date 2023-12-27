@@ -2,7 +2,7 @@ defaults:
   - _self_
   - dataset: itlp
   - sampler: batch_sampler
-  - model: place_recognition/soc_mlp
+  - model: place_recognition/soc_mixer
   - loss: batch_hard_triplet_margin
   - optimizer: adam
   - scheduler: multi_step
@@ -14,7 +14,7 @@ wandb:
 debug: false
 device: cuda
 seed: 3121999
-num_workers: 10
+num_workers: 4
 
 exp_name: "dev_soc"
 

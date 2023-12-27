@@ -1,5 +1,5 @@
 _target_: opr.models.place_recognition.soc.SOCMLP
 
-num_classes: ${dataset.anno.num_special} # 73 for ade20k
+num_classes: ${dataset.anno.num_special} # 72 for ade20k
 num_objects: ${dataset.top_k_soc}
 embeddings_size: 256
