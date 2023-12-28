@@ -68,7 +68,10 @@ def init_model(
     """
     model = model.to(device)
     if weights_path is not None:
-        model.load_state_dict(torch.load(weights_path, map_location=device))
+        weights = torch.load(weights_path, map_location=device)
+        if "model_state_dict" in weights:
+            weights = weights["model_state_dict"]
+        model.load_state_dict(weights)
     return model.eval()
 
 

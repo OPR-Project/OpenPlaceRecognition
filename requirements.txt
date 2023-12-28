@@ -16,3 +16,7 @@ requests>=2.31.0
 scipy
 tqdm
 wandb
+loguru
+numpy-quaternion
+seaborn
+mlp-mixer-pytorch

@@ -9,9 +9,11 @@
   - [MinkowskiEngine repository](https://github.com/NVIDIA/MinkowskiEngine)
   - [faiss repository](https://github.com/facebookresearch/faiss)
 
-- Another option is to use the suggested Dockerfile. The following commands should be used to build, start and enter the container:
+- Another option is to use the suggested Dockerfile. There are two options: build the container locally or get it from Docker Hub. The build process is time-consuming, so we recommend using the second option.
 
-  1. Build the image
+The following commands should be used to build or pull, start and enter the container:
+
+  1. Build the image *(if you want use pre-builded image, just skip this step)*
 
       ```bash
       bash docker/build.sh
