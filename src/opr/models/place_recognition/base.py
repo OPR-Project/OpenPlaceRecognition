@@ -122,6 +122,7 @@ class LateFusionModel(nn.Module):
         image_module: Optional[ImageModel] = None,
         semantic_module: Optional[SemanticModel] = None,
         cloud_module: Optional[CloudModel] = None,
+        soc_module: Optional[nn.Module] = None,
         fusion_module: Optional[nn.Module] = None,
     ) -> None:
         """Meta-model for multimodal Place Recognition architectures with late fusion.
@@ -130,6 +131,7 @@ class LateFusionModel(nn.Module):
             image_module (ImageModule, optional): Image modality branch. Defaults to None.
             semantic_module (SemanticModel, optional): Semantic modality branch. Defaults to None.
             cloud_module (CloudModule, optional): Cloud modality branch. Defaults to None.
+            soc_module (nn.Module, optional): Module to fuse different modalities.
             fusion_module (FusionModule, optional): Module to fuse different modalities.
                 If None, will be set to opr.modules.Concat(). Defaults to None.
         """
@@ -138,6 +140,7 @@ class LateFusionModel(nn.Module):
         self.image_module = image_module
         self.semantic_module = semantic_module
         self.cloud_module = cloud_module
+        self.soc_module = soc_module
         if fusion_module:
             self.fusion_module = fusion_module
         else:
@@ -154,6 +157,9 @@ class LateFusionModel(nn.Module):
 
         if self.cloud_module is not None:
             out_dict["cloud"] = self.cloud_module(batch)["final_descriptor"]
+
+        if self.soc_module is not None:
+            out_dict["soc"] = self.soc_module(batch)["final_descriptor"]
 
         out_dict["final_descriptor"] = self.fusion_module(out_dict)
 
