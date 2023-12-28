@@ -162,7 +162,7 @@ class UnimodalPlaceRecognitionTrainer:
                 if self.wandb_log:
                     wandb.save(str(self.checkpoints_dir / "best.pth"))
 
-    def test(self, dataloader: DataLoader, distance_threshold: float = 25.0, epoch: int = 0) -> None:
+    def test(self, dataloader: DataLoader, distance_threshold: float = 25.0) -> None:
         """Evaluates the model on the test set.
 
         Args:
@@ -236,9 +236,7 @@ class UnimodalPlaceRecognitionTrainer:
         self._stats["test"]["mean_recall_at_1%"] = mean_recall_at_one_percent
         self._stats["test"]["mean_top1_distance"] = mean_top1_distance
 
-    def _loop_epoch(
-        self, train_dataloader: DataLoader, val_dataloader: Optional[DataLoader] = None, epoch: int = 0
-    ) -> None:
+    def _loop_epoch(self, train_dataloader: DataLoader, val_dataloader: Optional[DataLoader] = None) -> None:
         dataloaders = {"train": train_dataloader}
         if val_dataloader:
             dataloaders["val"] = val_dataloader
