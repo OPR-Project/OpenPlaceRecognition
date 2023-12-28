@@ -91,8 +91,8 @@ class SequencePointcloudRegistrationPipeline(PointcloudRegistrationPipeline):
 
     def _transform_points(self, points: Tensor, transform: Tensor) -> Tensor:
         points_hom = torch.cat((points, torch.ones((points.shape[0], 1), device=points.device)), dim=1)
-        print(type(points_hom), type(transform))
-        print(points_hom.dtype, transform.dtype)
+        # print(type(points_hom), type(transform))
+        # print(points_hom.dtype, transform.dtype)
         points_transformed_hom = points_hom @ transform
         points_transformed = points_transformed_hom[:, :3] / points_transformed_hom[:, 3].unsqueeze(-1)
         return points_transformed
