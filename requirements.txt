@@ -1,6 +1,7 @@
 albumentations
 dvc[gdrive]
 einops
+fuzzywuzzy
 gdown
 hydra-core>=1.2
 ipdb
@@ -11,11 +12,14 @@ open3d
 opencv-python
 pandas
 plotly>=5.14.1
+python-Levenshtein
 pytorch_metric_learning
 requests>=2.31.0
 scipy
 tqdm
 wandb
+python-Levenshtein
+fuzzywuzzy
 loguru
 numpy-quaternion
 seaborn
