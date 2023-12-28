@@ -121,7 +121,7 @@ class TextLabelsPlaceRecognitionPipeline(PlaceRecognitionPipeline):
         return best_match_id, best_match_annos, highest_similarity
 
     def infer(
-        self, input_data: Dict[str, Tensor], query_labels: List[str], text_similarity_thresh: int = 50
+        self, input_data: Dict[str, Tensor], query_labels: List[str], text_similarity_thresh: int = 50, print_info: bool = False
     ) -> Dict[str, np.ndarray]:
         """Single sample inference.
 
@@ -160,13 +160,19 @@ class TextLabelsPlaceRecognitionPipeline(PlaceRecognitionPipeline):
             descriptor = self.model(input_data)["final_descriptor"].cpu().numpy()
 
         if highest_similarity > text_similarity_thresh:
-            pred_i = self.database_df[self.database_df["timestamp"] == int(best_match_id)].index[0]
-            print("Using text labels")
-            print(f"best_match_annos: {best_match_annos}, highest_similarity: {highest_similarity}")
+            search_df = self.database_df.reset_index() # в исходном датафрейме скипнуты индексы
+            # pred_i = self.database_df[self.database_df["timestamp"] == int(best_match_id)].index[0]
+            pred_i = search_df[search_df["timestamp"] == int(best_match_id)].index[0]
+            if print_info:
+                print("Using text labels")
+                print(f"pred_i: {pred_i}, best_match_id: {best_match_id}")
+                print(f"best_match_annos: {best_match_annos}, highest_similarity: {highest_similarity}")
         else:
             _, pred_i = self.database_index.search(descriptor, 1)
             pred_i = pred_i[0][0]
-            print("Using image descriptors")
+            if print_info:
+                print(f"pred_i: {pred_i}")
+                print("Using image descriptors")
 
         pred_pose = self.database_df.iloc[pred_i][["tx", "ty", "tz", "qx", "qy", "qz", "qw"]].to_numpy(
             dtype=float
