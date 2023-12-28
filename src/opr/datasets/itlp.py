@@ -85,7 +85,7 @@ class ITLPCampus(Dataset):
         positive_threshold: float = 10.0,
         negative_threshold: float = 50.0,
         image_transform = DefaultImageTransform(resize=(320, 192), train=False),
-        semantic_transform = DefaultSemanticTransform(resize=(320, 192), train=False)
+        semantic_transform = DefaultSemanticTransform(resize=(320, 192), train=False),
         load_soc: bool = False,
         top_k_soc: int = 5,
         soc_coords_type: Literal[
@@ -248,7 +248,7 @@ class ITLPCampus(Dataset):
                                     [-1.30440106e-02,  7.59716299e-04, -9.99914635e-01, -1.41787545e-01],
                                     [-9.99801792e-01, -1.50521522e-02,  1.30311022e-02, -6.72336358e-02],
                                     [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]])
-        
+
         self.front_matrix = np.array([[683.6199340820312, 0.0, 615.1160278320312, 0.0, 683.6199340820312, 345.32354736328125, 0.0, 0.0, 1.0]]).reshape((3,3))
         self.front_dist = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
         self.back_matrix = np.array([[910.4178466796875, 0.0, 648.44140625, 0.0, 910.4166870117188, 354.0118408203125, 0.0, 0.0, 1.0]]).reshape((3,3))
@@ -515,16 +515,16 @@ class ITLPCampus(Dataset):
             soc = self._get_soc(idx, track, floor)
             data["soc"] = soc
         return data
-    
+
     def _remove_dynamic_points(self, pointcloud: np.ndarray, semantic_map: np.ndarray, lidar2sensor: np.ndarray,
                                sensor_intrinsics: np.ndarray, sensor_dist: np.ndarray) -> np.ndarray:
         pc_values = np.concatenate([pointcloud, np.ones((pointcloud.shape[0], 1))],axis=1).T
         camera_values = lidar2sensor @ pc_values
         camera_values = np.transpose(camera_values)[:, :3]
 
-        points_2d, _ = cv2.projectPoints(camera_values, 
-                                         np.zeros((3, 1), np.float32), np.zeros((3, 1), np.float32), 
-                                         sensor_intrinsics, 
+        points_2d, _ = cv2.projectPoints(camera_values,
+                                         np.zeros((3, 1), np.float32), np.zeros((3, 1), np.float32),
+                                         sensor_intrinsics,
                                          sensor_dist)
         points_2d = points_2d[:, 0, :]
 
