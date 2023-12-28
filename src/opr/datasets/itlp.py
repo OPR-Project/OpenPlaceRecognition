@@ -1,5 +1,4 @@
 """Custom ITLP-Campus dataset implementations."""
-import math
 from pathlib import Path
 from typing import Dict, List, Literal, Optional, Tuple, Union
 
@@ -60,7 +59,9 @@ class ITLPCampus(Dataset):
     cam_config: dict
     sensors_cfg: OmegaConf
     top_k_soc: int
-    soc_coords_type: Literal["cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"] = "cylindrical_3d"
+    soc_coords_type: Literal[
+        "cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"
+    ] = "cylindrical_3d"
     max_distance_soc: float
     anno: OmegaConf
     subset: Literal["train", "val", "test"]
@@ -84,8 +85,8 @@ class ITLPCampus(Dataset):
         indoor: bool = False,
         positive_threshold: float = 10.0,
         negative_threshold: float = 50.0,
-        image_transform = DefaultImageTransform(resize=(320, 192), train=False),
-        semantic_transform = DefaultSemanticTransform(resize=(320, 192), train=False)
+        image_transform=DefaultImageTransform(resize=(320, 192), train=False),
+        semantic_transform=DefaultSemanticTransform(resize=(320, 192), train=False),
         load_soc: bool = False,
         top_k_soc: int = 5,
         soc_coords_type: Literal[
@@ -141,14 +142,18 @@ class ITLPCampus(Dataset):
         super().__init__()
         self.dataset_root = Path(dataset_root)
         if not self.dataset_root.exists():
-            raise FileNotFoundError(f"Given dataset_root={self.dataset_root} doesn't exist")
+            raise FileNotFoundError(
+                f"Given dataset_root={self.dataset_root} doesn't exist"
+            )
 
         self.subset = subset
 
         subset_csv = self.dataset_root / csv_file
         self.dataset_df = pd.read_csv(subset_csv)
         if subset == "train":
-            self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(train_split)]
+            self.dataset_df = self.dataset_df[
+                self.dataset_df["floor"].isin(train_split)
+            ]
             self.dataset_df.reset_index(inplace=True)
         elif subset == "test" or subset == "val":
             self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(test_split)]
@@ -169,12 +174,18 @@ class ITLPCampus(Dataset):
         self.load_soc = load_soc
         self.top_k_soc = top_k_soc
         self.soc_coords_type = soc_coords_type
-        if self.soc_coords_type not in ("cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"):
+        if self.soc_coords_type not in (
+            "cylindrical_3d",
+            "cylindrical_2d",
+            "euclidean",
+            "spherical",
+        ):
             raise ValueError(f"Unknown soc_coords_type: {soc_coords_type!r}")
         self.max_distance_soc = max_distance_soc
         self.anno = anno
         self.special_classes = [
-            self.anno.staff_classes.index(special) for special in self.anno.special_classes
+            self.anno.staff_classes.index(special)
+            for special in self.anno.special_classes
         ]
 
         if self.load_soc:
@@ -188,34 +199,46 @@ class ITLPCampus(Dataset):
         if self.load_text_descriptions:
             if "front_cam" in self.sensors:
                 self.front_cam_text_descriptions_df = pd.read_csv(
-                    self.dataset_root / self.text_descriptions_subdir / "front_cam_text.csv"
+                    self.dataset_root
+                    / self.text_descriptions_subdir
+                    / "front_cam_text.csv"
                 )
             if "back_cam" in self.sensors:
                 self.back_cam_text_descriptions_df = pd.read_csv(
-                    self.dataset_root / self.text_descriptions_subdir / "back_cam_text.csv"
+                    self.dataset_root
+                    / self.text_descriptions_subdir
+                    / "back_cam_text.csv"
                 )
 
         self.load_text_labels = load_text_labels
         if self.load_text_labels:
             if "front_cam" in self.sensors:
                 self.front_cam_text_labels_df = pd.read_csv(
-                    self.dataset_root / self.text_labels_subdir / "front_cam_text_labels.csv"
+                    self.dataset_root
+                    / self.text_labels_subdir
+                    / "front_cam_text_labels.csv"
                 )
             if "back_cam" in self.sensors:
                 self.back_cam_text_labels_df = pd.read_csv(
-                    self.dataset_root / self.text_labels_subdir / "back_cam_text_labels.csv"
+                    self.dataset_root
+                    / self.text_labels_subdir
+                    / "back_cam_text_labels.csv"
                 )
 
         self.load_aruco_labels = load_aruco_labels
         if self.load_aruco_labels:
             if "front_cam" in self.sensors:
                 self.front_cam_aruco_labels_df = pd.read_csv(
-                    self.dataset_root / self.aruco_labels_subdir / "front_cam_aruco_labels.csv",
+                    self.dataset_root
+                    / self.aruco_labels_subdir
+                    / "front_cam_aruco_labels.csv",
                     sep="\t",
                 )
             if "back_cam" in self.sensors:
                 self.back_cam_aruco_labels_df = pd.read_csv(
-                    self.dataset_root / self.aruco_labels_subdir / "back_cam_aruco_labels.csv",
+                    self.dataset_root
+                    / self.aruco_labels_subdir
+                    / "back_cam_aruco_labels.csv",
                     sep="\t",
                 )
 
@@ -223,14 +246,20 @@ class ITLPCampus(Dataset):
 
         # omg so wet 💦💦💦
         if positive_threshold < 0.0:
-            raise ValueError(f"positive_threshold must be non-negative, but {positive_threshold!r} given.")
+            raise ValueError(
+                f"positive_threshold must be non-negative, but {positive_threshold!r} given."
+            )
         if negative_threshold < 0.0:
-            raise ValueError(f"negative_threshold must be non-negative, but {negative_threshold!r} given.")
+            raise ValueError(
+                f"negative_threshold must be non-negative, but {negative_threshold!r} given."
+            )
 
         self._positives_index, self._nonnegative_index = self._build_indexes(
             positive_threshold, negative_threshold
         )
-        self._positives_mask, self._negatives_mask = self._build_masks(positive_threshold, negative_threshold)
+        self._positives_mask, self._negatives_mask = self._build_masks(
+            positive_threshold, negative_threshold
+        )
 
         self.image_transform = image_transform
         self.semantic_transform = semantic_transform
@@ -240,23 +269,68 @@ class ITLPCampus(Dataset):
         self._ade20k_dynamic_idx = [12]
         self.exclude_dynamic_classes = exclude_dynamic_classes
 
-        self.lidar2front = np.array([[ 0.01509615, -0.99976457, -0.01558544,  0.04632156],
-                                    [ 0.00871086,  0.01571812, -0.99983852, -0.13278588],
-                                    [ 0.9998481,   0.01495794,  0.0089461,  -0.06092749],
-                                    [ 0.      ,    0.  ,        0.    ,      1.        ]])
-        self.lidar2back = np.array([[-1.50409674e-02,  9.99886421e-01,  9.55906151e-04,  1.82703304e-02],
-                                    [-1.30440106e-02,  7.59716299e-04, -9.99914635e-01, -1.41787545e-01],
-                                    [-9.99801792e-01, -1.50521522e-02,  1.30311022e-02, -6.72336358e-02],
-                                    [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,  1.00000000e+00]])
-        
-        self.front_matrix = np.array([[683.6199340820312, 0.0, 615.1160278320312, 0.0, 683.6199340820312, 345.32354736328125, 0.0, 0.0, 1.0]]).reshape((3,3))
+        self.lidar2front = np.array(
+            [
+                [0.01509615, -0.99976457, -0.01558544, 0.04632156],
+                [0.00871086, 0.01571812, -0.99983852, -0.13278588],
+                [0.9998481, 0.01495794, 0.0089461, -0.06092749],
+                [0.0, 0.0, 0.0, 1.0],
+            ]
+        )
+        self.lidar2back = np.array(
+            [
+                [-1.50409674e-02, 9.99886421e-01, 9.55906151e-04, 1.82703304e-02],
+                [-1.30440106e-02, 7.59716299e-04, -9.99914635e-01, -1.41787545e-01],
+                [-9.99801792e-01, -1.50521522e-02, 1.30311022e-02, -6.72336358e-02],
+                [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
+            ]
+        )
+
+        self.front_matrix = np.array(
+            [
+                [
+                    683.6199340820312,
+                    0.0,
+                    615.1160278320312,
+                    0.0,
+                    683.6199340820312,
+                    345.32354736328125,
+                    0.0,
+                    0.0,
+                    1.0,
+                ]
+            ]
+        ).reshape((3, 3))
         self.front_dist = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
-        self.back_matrix = np.array([[910.4178466796875, 0.0, 648.44140625, 0.0, 910.4166870117188, 354.0118408203125, 0.0, 0.0, 1.0]]).reshape((3,3))
+        self.back_matrix = np.array(
+            [
+                [
+                    910.4178466796875,
+                    0.0,
+                    648.44140625,
+                    0.0,
+                    910.4166870117188,
+                    354.0118408203125,
+                    0.0,
+                    0.0,
+                    1.0,
+                ]
+            ]
+        ).reshape((3, 3))
         self.back_dist = np.array([0.0, 0.0, 0.0, 0.0, 0.0])
 
-    def _load_image(self, cam: str, idx: int, track: str, floor: str, transform: bool = True) -> Tensor:
+    def _load_image(
+        self, cam: str, idx: int, track: str, floor: str, transform: bool = True
+    ) -> Tensor:
         image_ts = int(self.dataset_df[f"{cam}_ts"].iloc[idx])
-        im_filepath = self.dataset_root / track / floor / self.images_subdir / cam / f"{image_ts}.png"
+        im_filepath = (
+            self.dataset_root
+            / track
+            / floor
+            / self.images_subdir
+            / cam
+            / f"{image_ts}.png"
+        )
         im = cv2.imread(str(im_filepath))
         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
         if transform:
@@ -267,7 +341,14 @@ class ITLPCampus(Dataset):
         self, cam: str, idx: int, track: str, floor: str, transform: bool = True
     ) -> Tensor:
         mask_ts = int(self.dataset_df[f"{cam}_ts"].iloc[idx])
-        im_filepath = self.dataset_root / track / floor / self.semantic_subdir / cam / f"{mask_ts}.png"
+        im_filepath = (
+            self.dataset_root
+            / track
+            / floor
+            / self.semantic_subdir
+            / cam
+            / f"{mask_ts}.png"
+        )
         im = cv2.imread(str(im_filepath), cv2.IMREAD_UNCHANGED)
         if transform:
             im = self.semantic_transform(im)
@@ -316,15 +397,21 @@ class ITLPCampus(Dataset):
         return aruco_labels_df
 
     def _get_soc(self, idx: int, track: str, floor: str) -> Tensor:
-        mask_front = self._load_semantic_mask("front_cam", idx, track, floor, transform=False)
-        mask_back = self._load_semantic_mask("back_cam", idx, track, floor, transform=False)
+        mask_front = self._load_semantic_mask(
+            "front_cam", idx, track, floor, transform=False
+        )
+        mask_back = self._load_semantic_mask(
+            "back_cam", idx, track, floor, transform=False
+        )
         lidar_scan = self._load_pc(idx, track, floor, tensor=False)
 
         coords_front, _, in_image_front = self.front_cam_proj(lidar_scan)
         coords_back, _, in_image_back = self.back_cam_proj(lidar_scan)
 
         point_labels = np.zeros(len(lidar_scan), dtype=np.uint8)
-        point_labels[in_image_front] = get_points_labels_by_mask(coords_front, mask_front)
+        point_labels[in_image_front] = get_points_labels_by_mask(
+            coords_front, mask_front
+        )
         point_labels[in_image_back] = get_points_labels_by_mask(coords_back, mask_back)
 
         instances_front = semantic_mask_to_instances(
@@ -352,13 +439,17 @@ class ITLPCampus(Dataset):
         )
 
         objects = {**objects_front, **objects_back}
-        packed_objects = pack_objects(objects, self.top_k_soc, self.max_distance_soc, self.special_classes)
+        packed_objects = pack_objects(
+            objects, self.top_k_soc, self.max_distance_soc, self.special_classes
+        )
 
         if self.soc_coords_type == "cylindrical_3d":
             packed_objects = np.concatenate(
                 (
                     np.linalg.norm(packed_objects, axis=-1, keepdims=True),
-                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[..., None],
+                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[
+                        ..., None
+                    ],
                     packed_objects[..., 2:],
                 ),
                 axis=-1,
@@ -367,12 +458,16 @@ class ITLPCampus(Dataset):
                 packed_objects = self.augment_coords_with_rotation(
                     packed_objects, angle_range=(-np.pi, np.pi)
                 )
-                packed_objects = self.augment_coords_with_normal(packed_objects, std=(0.2, 0.2, 0.2))
+                packed_objects = self.augment_coords_with_normal(
+                    packed_objects, std=(0.2, 0.2, 0.2)
+                )
         elif self.soc_coords_type == "cylindrical_2d":
             packed_objects = np.concatenate(
                 (
                     np.linalg.norm(packed_objects[..., :2], axis=-1, keepdims=True),
-                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[..., None],
+                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[
+                        ..., None
+                    ],
                     packed_objects[..., 2:],
                 ),
                 axis=-1,
@@ -384,9 +479,12 @@ class ITLPCampus(Dataset):
                 (
                     np.linalg.norm(packed_objects, axis=-1, keepdims=True),
                     np.arccos(
-                        packed_objects[..., 2] / np.linalg.norm(packed_objects, axis=-1, keepdims=True)
+                        packed_objects[..., 2]
+                        / np.linalg.norm(packed_objects, axis=-1, keepdims=True)
                     ),
-                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[..., None],
+                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[
+                        ..., None
+                    ],
                 ),
                 axis=-1,
             )
@@ -450,7 +548,9 @@ class ITLPCampus(Dataset):
     def __getitem__(self, idx: int) -> Dict[str, Union[int, Tensor]]:  # noqa: D105
         data: Dict[str, Union[int, Tensor]] = {"idx": torch.tensor(idx)}
         data["pose"] = torch.tensor(
-            self.dataset_df.iloc[idx][["tx", "ty", "tz", "qx", "qy", "qz", "qw"]].to_numpy(dtype=np.float32)
+            self.dataset_df.iloc[idx][
+                ["tx", "ty", "tz", "qx", "qy", "qz", "qw"]
+            ].to_numpy(dtype=np.float32)
         )
         floor = self._get_floor_subdir(idx)
         track = self._get_track_subdir(idx)
@@ -464,7 +564,9 @@ class ITLPCampus(Dataset):
 
                 if self.exclude_dynamic_classes and self.indoor:
                     for index in self._ade20k_dynamic_idx:
-                        data["image_front_cam"] = torch.where(data["mask_front_cam"] == index, 0, data["image_front_cam"])
+                        data["image_front_cam"] = torch.where(
+                            data["mask_front_cam"] == index, 0, data["image_front_cam"]
+                        )
 
             if self.load_text_labels:
                 text_labels = self._load_text_labels("front_cam", idx)
@@ -485,7 +587,9 @@ class ITLPCampus(Dataset):
 
                 if self.exclude_dynamic_classes and self.indoor:
                     for index in self._ade20k_dynamic_idx:
-                        data["image_back_cam"] = torch.where(data["mask_back_cam"] == index, 0, data["image_back_cam"])
+                        data["image_back_cam"] = torch.where(
+                            data["mask_back_cam"] == index, 0, data["image_back_cam"]
+                        )
 
             if self.load_text_labels:
                 text_labels = self._load_text_labels("back_cam", idx)
@@ -501,11 +605,21 @@ class ITLPCampus(Dataset):
 
             if self.exclude_dynamic_classes and self.indoor:
                 if "back_cam" in self.sensors:
-                    pc = self._remove_dynamic_points(pc, data["mask_back_cam"].numpy().transpose(1, 2, 0),
-                                                     self.lidar2back, self.back_matrix, self.back_dist)
+                    pc = self._remove_dynamic_points(
+                        pc,
+                        data["mask_back_cam"].numpy().transpose(1, 2, 0),
+                        self.lidar2back,
+                        self.back_matrix,
+                        self.back_dist,
+                    )
                 if "front_cam" in self.sensors:
-                    pc = self._remove_dynamic_points(pc, data["mask_front_cam"].numpy().transpose(1, 2, 0),
-                                                     self.lidar2front, self.front_matrix, self.front_dist)
+                    pc = self._remove_dynamic_points(
+                        pc,
+                        data["mask_front_cam"].numpy().transpose(1, 2, 0),
+                        self.lidar2front,
+                        self.front_matrix,
+                        self.front_dist,
+                    )
 
             pc = torch.tensor(pc, dtype=torch.float32)
             data["pointcloud_lidar_coords"] = pc
@@ -515,38 +629,54 @@ class ITLPCampus(Dataset):
             soc = self._get_soc(idx, track, floor)
             data["soc"] = soc
         return data
-    
-    def _remove_dynamic_points(self, pointcloud: np.ndarray, semantic_map: np.ndarray, lidar2sensor: np.ndarray,
-                               sensor_intrinsics: np.ndarray, sensor_dist: np.ndarray) -> np.ndarray:
-        pc_values = np.concatenate([pointcloud, np.ones((pointcloud.shape[0], 1))],axis=1).T
+
+    def _remove_dynamic_points(
+        self,
+        pointcloud: np.ndarray,
+        semantic_map: np.ndarray,
+        lidar2sensor: np.ndarray,
+        sensor_intrinsics: np.ndarray,
+        sensor_dist: np.ndarray,
+    ) -> np.ndarray:
+        pc_values = np.concatenate(
+            [pointcloud, np.ones((pointcloud.shape[0], 1))], axis=1
+        ).T
         camera_values = lidar2sensor @ pc_values
         camera_values = np.transpose(camera_values)[:, :3]
 
-        points_2d, _ = cv2.projectPoints(camera_values, 
-                                         np.zeros((3, 1), np.float32), np.zeros((3, 1), np.float32), 
-                                         sensor_intrinsics, 
-                                         sensor_dist)
+        points_2d, _ = cv2.projectPoints(
+            camera_values,
+            np.zeros((3, 1), np.float32),
+            np.zeros((3, 1), np.float32),
+            sensor_intrinsics,
+            sensor_dist,
+        )
         points_2d = points_2d[:, 0, :]
 
         classes = set(np.unique(semantic_map))
         dynamic_classes = set(self._ade20k_dynamic_idx)
         if classes.intersection(dynamic_classes):
-            valid = (~np.isnan(points_2d[:,0])) & (~np.isnan(points_2d[:,1]))
-            in_bounds_x = (points_2d[:,0] >= 0) & (points_2d[:,0] < 1280)
-            in_bounds_y = (points_2d[:,1] >= 0) & (points_2d[:,1] < 720)
-            look_forward = (camera_values[:, 2] > 0)
+            valid = (~np.isnan(points_2d[:, 0])) & (~np.isnan(points_2d[:, 1]))
+            in_bounds_x = (points_2d[:, 0] >= 0) & (points_2d[:, 0] < 1280)
+            in_bounds_y = (points_2d[:, 1] >= 0) & (points_2d[:, 1] < 720)
+            look_forward = camera_values[:, 2] > 0
             mask = valid & in_bounds_x & in_bounds_y & look_forward
 
             indices = np.where(mask)[0]
             mask_for_points = np.full((points_2d.shape[0], 3), True)
 
             dynamic_idx = np.array(self._ade20k_dynamic_idx)
-            semantic_values = semantic_map[np.floor(points_2d[indices, 1]).astype(int), np.floor(points_2d[indices, 0]).astype(int)]
+            semantic_values = semantic_map[
+                np.floor(points_2d[indices, 1]).astype(int),
+                np.floor(points_2d[indices, 0]).astype(int),
+            ]
 
             matching_indices = np.where(np.isin(semantic_values, dynamic_idx))
 
             mask_for_points = np.full((points_2d.shape[0], 3), True)
-            mask_for_points[indices[matching_indices[0]]] = np.array([False, False, False])
+            mask_for_points[indices[matching_indices[0]]] = np.array(
+                [False, False, False]
+            )
 
             return pointcloud[mask_for_points].reshape((-1, 3))
         else:
@@ -569,10 +699,14 @@ class ITLPCampus(Dataset):
 
     def _load_pc(self, idx: int, track: str, floor: str, tensor: bool = True) -> Tensor:
         lidar_ts = int(self.dataset_df["lidar_ts"].iloc[idx])
-        filepath = self.dataset_root / track / floor / self.clouds_subdir / f"{lidar_ts}.bin"
+        filepath = (
+            self.dataset_root / track / floor / self.clouds_subdir / f"{lidar_ts}.bin"
+        )
         pc = np.fromfile(filepath, dtype=np.float32).reshape((-1, 4))[:, :-1]
         in_range_idx = np.all(
-            np.logical_and(-100 <= pc, pc <= 100),  # select points in range [-100, 100] meters
+            np.logical_and(
+                -100 <= pc, pc <= 100
+            ),  # select points in range [-100, 100] meters
             axis=1,
         )
         pc = pc[in_range_idx]
@@ -582,7 +716,9 @@ class ITLPCampus(Dataset):
             pc = torch.tensor(pc, dtype=torch.float32)
         return pc
 
-    def _collate_data_dict(self, data_list: List[Dict[str, Tensor]]) -> Dict[str, Tensor]:
+    def _collate_data_dict(
+        self, data_list: List[Dict[str, Tensor]]
+    ) -> Dict[str, Tensor]:
         result: Dict[str, Tensor] = {}
         result["idxs"] = torch.stack([e["idx"] for e in data_list], dim=0)
         for data_key in data_list[0].keys():
@@ -591,16 +727,22 @@ class ITLPCampus(Dataset):
             elif data_key == "pose":
                 result["poses"] = torch.stack([e["pose"] for e in data_list], dim=0)
             elif data_key.startswith("image_"):
-                result[f"images_{data_key[6:]}"] = torch.stack([e[data_key] for e in data_list])
+                result[f"images_{data_key[6:]}"] = torch.stack(
+                    [e[data_key] for e in data_list]
+                )
             elif data_key.startswith("mask_"):
-                result[f"masks_{data_key[5:]}"] = torch.stack([e[data_key] for e in data_list])
+                result[f"masks_{data_key[5:]}"] = torch.stack(
+                    [e[data_key] for e in data_list]
+                )
             elif data_key == "soc":
                 result["soc"] = torch.stack([e["soc"] for e in data_list], dim=0)
             elif data_key == "pointcloud_lidar_coords":
                 coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
                 feats_list = [e["pointcloud_lidar_feats"] for e in data_list]
                 n_points = [int(e.shape[0]) for e in coords_list]
-                coords_tensor = torch.cat(coords_list, dim=0).unsqueeze(0)  # (1,batch_size*n_points,3)
+                coords_tensor = torch.cat(coords_list, dim=0).unsqueeze(
+                    0
+                )  # (1,batch_size*n_points,3)
                 if self.pointcloud_set_transform is not None:
                     # Apply the same transformation on all dataset elements
                     coords_tensor = self.pointcloud_set_transform(coords_tensor)
@@ -623,7 +765,9 @@ class ITLPCampus(Dataset):
                     quantized_coords_list.append(quantized_coords)
                     quantized_feats_list.append(quantized_feats)
 
-                result["pointclouds_lidar_coords"] = ME.utils.batched_coordinates(quantized_coords_list)
+                result["pointclouds_lidar_coords"] = ME.utils.batched_coordinates(
+                    quantized_coords_list
+                )
                 result["pointclouds_lidar_feats"] = torch.cat(quantized_feats_list)
             elif data_key == "pointcloud_lidar_feats":
                 continue
@@ -643,7 +787,9 @@ class ITLPCampus(Dataset):
         return self._collate_data_dict(data_list)
 
     # omg so wet 💦💦💦
-    def _build_masks(self, positive_threshold: float, negative_threshold: float) -> Tuple[Tensor, Tensor]:
+    def _build_masks(
+        self, positive_threshold: float, negative_threshold: float
+    ) -> Tuple[Tensor, Tensor]:
         """Build boolean masks for dataset elements that satisfy a UTM distance threshold condition.
 
         Args:
@@ -695,8 +841,12 @@ class ITLPCampus(Dataset):
         nonnegatives_mask = distances < negative_threshold
 
         # Convert the boolean masks to index tensors
-        positive_indices = [torch.nonzero(row).squeeze(dim=-1) for row in positives_mask]
-        nonnegative_indices = [torch.nonzero(row).squeeze(dim=-1) for row in nonnegatives_mask]
+        positive_indices = [
+            torch.nonzero(row).squeeze(dim=-1) for row in positives_mask
+        ]
+        nonnegative_indices = [
+            torch.nonzero(row).squeeze(dim=-1) for row in nonnegatives_mask
+        ]
 
         return positive_indices, nonnegative_indices
 
