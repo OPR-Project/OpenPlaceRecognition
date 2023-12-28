@@ -9,7 +9,6 @@ import MinkowskiEngine as ME
 import numpy as np
 import pandas as pd
 import torch
-from loguru import logger
 from omegaconf import OmegaConf
 from pandas import DataFrame
 from torch import Tensor
@@ -28,7 +27,6 @@ from opr.datasets.soc_utils import (
     pack_objects,
     semantic_mask_to_instances,
 )
-from opr.datasets.vis import VisData, VisSocWandb
 
 
 class ITLPCampus(Dataset):
@@ -96,7 +94,6 @@ class ITLPCampus(Dataset):
         max_distance_soc: float = 50.0,
         sensors_cfg: OmegaConf = None,
         anno: OmegaConf = None,
-        vis_dir: str = "./vis/",
         train_split: list = None,
         test_split: list = None,
     ) -> None:
@@ -180,12 +177,6 @@ class ITLPCampus(Dataset):
             self.anno.staff_classes.index(special) for special in self.anno.special_classes
         ]
 
-        if vis_dir is not None:
-            self.vis = VisData(self.anno.staff_classes, vis_dir)
-            self.wandb = False
-        else:
-            self.vis = VisSocWandb(self.anno.staff_classes, self.anno.special_classes)
-            self.wandb = True
         if self.load_soc:
             if sensors_cfg is None:
                 raise ValueError("cam_cfg must be specified if load_soc=True")
@@ -325,27 +316,9 @@ class ITLPCampus(Dataset):
         return aruco_labels_df
 
     def _get_soc(self, idx: int, track: str, floor: str) -> Tensor:
-        img_front = self._load_image("front_cam", idx, track, floor, transform=False)  # TODO remove
-        img_back = self._load_image("back_cam", idx, track, floor, transform=False)  # TODO remove
         mask_front = self._load_semantic_mask("front_cam", idx, track, floor, transform=False)
         mask_back = self._load_semantic_mask("back_cam", idx, track, floor, transform=False)
         lidar_scan = self._load_pc(idx, track, floor, tensor=False)
-        worker_info = torch.utils.data.get_worker_info()
-        # If using multiple workers, the worker_info will not be None
-        if worker_info is not None:
-            # Get the worker ID
-            worker_id = worker_info.id
-        else:
-            # If no worker info, it's being called in the main process
-            worker_id = -1
-
-        if idx % 100 == 0 and worker_id < 1:
-            if self.wandb:
-                self.vis.log_colored_mask(img_front, mask_front, tag="front")
-                self.vis.log_colored_mask(img_back, mask_back, tag="back")
-            else:
-                self.vis.get_colored_mask(img_front, mask_front, tag="front")
-                self.vis.get_colored_mask(img_back, mask_back, tag="back")
 
         coords_front, _, in_image_front = self.front_cam_proj(lidar_scan)
         coords_back, _, in_image_back = self.back_cam_proj(lidar_scan)
@@ -353,18 +326,6 @@ class ITLPCampus(Dataset):
         point_labels = np.zeros(len(lidar_scan), dtype=np.uint8)
         point_labels[in_image_front] = get_points_labels_by_mask(coords_front, mask_front)
         point_labels[in_image_back] = get_points_labels_by_mask(coords_back, mask_back)
-
-        if idx % 100 == 0 and worker_id < 1:
-            if self.wandb:
-                self.vis.log_points_on_image(
-                    img_front, coords_front, point_labels[in_image_front], tag="front"
-                )
-                self.vis.log_points_on_image(img_back, coords_back, point_labels[in_image_back], tag="back")
-            else:
-                self.vis.draw_points_on_image(
-                    img_front, coords_front, point_labels[in_image_front], tag="front"
-                )
-                self.vis.draw_points_on_image(img_back, coords_back, point_labels[in_image_back], tag="back")
 
         instances_front = semantic_mask_to_instances(
             mask_front,
@@ -389,37 +350,6 @@ class ITLPCampus(Dataset):
             point_labels[in_image_back],
             lidar_scan[in_image_back],
         )
-        if idx % 100 == 0 and worker_id < 1:
-            if self.wandb:
-                self.vis.log_instances(
-                    img_front,
-                    tag="front",
-                    objects=objects_front,
-                    top_k=self.top_k_soc,
-                    max_distance=self.max_distance_soc,
-                )
-                self.vis.log_instances(
-                    img_back,
-                    tag="back",
-                    objects=objects_front,
-                    top_k=self.top_k_soc,
-                    max_distance=self.max_distance_soc,
-                )
-            else:
-                self.vis.draw_instances(
-                    img_front,
-                    mask_front,
-                    classes=self.anno.special_classes,
-                    area_threshold=10,
-                    tag="front",
-                )
-                self.vis.draw_instances(
-                    img_back,
-                    mask_back,
-                    classes=self.anno.special_classes,
-                    area_threshold=10,
-                    tag="back",
-                )
 
         objects = {**objects_front, **objects_back}
         packed_objects = pack_objects(objects, self.top_k_soc, self.max_distance_soc, self.special_classes)
@@ -434,9 +364,9 @@ class ITLPCampus(Dataset):
                 axis=-1,
             )
             if self.subset == "train":
-                # logger.debug(f"Packed objects shape: {packed_objects.shape}")
-                packed_objects = self.augment_coords_with_rotation(packed_objects, angle_range=(-np.pi, np.pi))
-                # logger.debug(f"Packed objects shape: {packed_objects.shape}")
+                packed_objects = self.augment_coords_with_rotation(
+                    packed_objects, angle_range=(-np.pi, np.pi)
+                )
                 packed_objects = self.augment_coords_with_normal(packed_objects, std=(0.2, 0.2, 0.2))
         elif self.soc_coords_type == "cylindrical_2d":
             packed_objects = np.concatenate(
@@ -464,48 +394,48 @@ class ITLPCampus(Dataset):
             raise ValueError(f"Unknown soc_coords_type: {self.soc_coords_type!r}")
 
         objects_tensor = torch.from_numpy(packed_objects).float()
-        # logger.warning(f"objects_tensor.shape: {objects_tensor.shape}")
-        # logger.warning(f"Nonzero elements: {torch.nonzero(objects_tensor).shape}")
 
         return objects_tensor
 
-    def augment_coords_with_rotation(self, coords, angle_range=(-np.pi, np.pi)):
+    def augment_coords_with_rotation(
+        self, coords: np.ndarray, angle_range: Tuple = (-np.pi, np.pi)
+    ) -> np.ndarray:
+        """Augment the coordinates with a random rotation - all objects are rotated by the same, random uniformly distributed angle.
+
+        Args:
+            coords (np.ndarray): The coordinates to be augmented.
+            angle_range (Tuple, optional): The range of the random rotation angle. Defaults to (-np.pi, np.pi).
+
+        Returns:
+            np.ndarray: The augmented coordinates.
+        """
         # Generate a random angle for rotation within the specified range
-        random_angle = np.random.uniform(low=angle_range[0], high =angle_range[1])
-        
+        random_angle = np.random.uniform(low=angle_range[0], high=angle_range[1])
+
         # Add the random angle to the θ coordinate of each triplet
         coords[:, :, 1] = (coords[:, :, 1] + random_angle) % (2 * np.pi)
-        
+
         # Adjust angles to be in the range (-pi, pi)
         coords[:, :, 1] = (coords[:, :, 1] + np.pi) % (2 * np.pi) - np.pi
-        
-        return coords
-
-    def augment_coords_with_range_normal(self, coords, mean=0, std=1):
-        # Generate random values from a normal distribution
-        N, K = coords.shape[:2]
-        random_deltas = np.random.normal(mean, std, size=(N, K, 1))
-
-        # Add the random values to the r coordinate of each triplet
-        coords[:, :, 0] += random_deltas[:, :, 0]
-
-        # Ensure that the range (r) stays positive - you can't have negative radius
-        coords[:, :, 0] = np.maximum(coords[:, :, 0], 0)
 
         return coords
-    
-    def augment_coords_with_z_normal(self, coords, mean=0, std=1):
-        N, K = coords.shape[:2]
-        # Generate random values from a normal distribution
-        random_deltas = np.random.normal(mean, std, size=(N, K, 1))
 
-        # Add the random values to the z (height) coordinate of each triplet
-        coords[:, :, 2] += random_deltas[:, :, 0]
+    def augment_coords_with_normal(
+        self,
+        coords: np.ndarray,
+        mean: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        std: Tuple[float, float, float] = (1.0, 1.0, 1.0),
+    ) -> np.ndarray:
+        """Augment the coordinates with a random normal distribution.
 
+        Args:
+            coords (np.ndarray): The coordinates to be augmented.
+            mean (Tuple[float, float, float], optional): The mean of the normal distribution. Defaults to (0.0, 0.0, 0.0).
+            std (Tuple[float, float, float], optional): The standard deviation of the normal distribution. Defaults to (1.0, 1.0, 1.0).
 
-        return coords
-    
-    def augment_coords_with_normal(self, coords, mean=(0., 0., 0.), std=(1., 1., 1.)):
+        Returns:
+            np.ndarray: The augmented coordinates.
+        """
         # Generate random values from a normal distribution
         N, K = coords.shape[:2]
         for i, (m, s) in enumerate(zip(mean, std)):

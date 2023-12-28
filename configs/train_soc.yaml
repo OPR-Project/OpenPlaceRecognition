@@ -8,7 +8,7 @@ defaults:
   - scheduler: multi_step
 
 wandb:
-  disabled: false
+  disabled: true
   project: OPR_MODEL_ZOO
 
 debug: false
