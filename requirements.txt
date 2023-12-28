@@ -18,3 +18,9 @@ requests>=2.31.0
 scipy
 tqdm
 wandb
+python-Levenshtein
+fuzzywuzzy
+loguru
+numpy-quaternion
+seaborn
+mlp-mixer-pytorch

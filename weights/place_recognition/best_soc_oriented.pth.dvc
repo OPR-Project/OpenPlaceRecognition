@@ -1,0 +1,5 @@
+outs:
+- md5: e5cd64ba8e8f5ab0281b8c586bc729de
+  size: 2735265
+  hash: md5
+  path: best_soc_oriented.pth

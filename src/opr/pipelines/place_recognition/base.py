@@ -78,6 +78,8 @@ class PlaceRecognitionPipeline:
                     self.device
                 )
                 out_dict["pointclouds_lidar_feats"] = quantized_feats.to(self.device)
+            elif key == "soc":
+                out_dict["soc"] = input_data[key].unsqueeze(0).to(self.device)
         return out_dict
 
     def infer(self, input_data: Dict[str, Tensor]) -> Dict[str, np.ndarray]:

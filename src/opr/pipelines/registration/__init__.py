@@ -1,2 +1,6 @@
 """Registration pipelines."""
-from .pointcloud import PointcloudRegistrationPipeline
+from .pointcloud import (
+    PointcloudRegistrationPipeline,
+    RansacGlobalRegistrationPipeline,
+    SequencePointcloudRegistrationPipeline,
+)

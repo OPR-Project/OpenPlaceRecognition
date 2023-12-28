@@ -1,0 +1,22 @@
+defaults:
+  - _self_
+  - dataset: itlp
+  - sampler: batch_sampler
+  - model: place_recognition/soc_mixer
+  - loss: batch_hard_triplet_margin
+  - optimizer: adam
+  - scheduler: multi_step
+
+wandb:
+  disabled: true
+  project: OPR_MODEL_ZOO
+
+debug: false
+device: cuda
+seed: 3121999
+num_workers: 4
+
+exp_name: "dev_soc"
+
+epochs: 80
+batch_expansion_threshold: 0.7
