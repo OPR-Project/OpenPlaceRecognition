@@ -113,7 +113,7 @@ class UnimodalPlaceRecognitionTrainer:
             logger.info(f"=====> Epoch: {epoch+1:3d}/{epochs}:")
 
             # === Train-Val stage ===
-            self._loop_epoch(train_dataloader, val_dataloader, epoch)
+            self._loop_epoch(train_dataloader, val_dataloader)
             self._stats["train"]["batch_size"] = train_dataloader.batch_sampler.batch_size
             if val_dataloader:
                 self._stats["val"]["batch_size"] = val_dataloader.batch_sampler.batch_size
@@ -137,7 +137,7 @@ class UnimodalPlaceRecognitionTrainer:
             # === Test stage ===
             if test_dataloader and epoch % test_every_n_epochs == 0:
                 self._stats["test"] = {}
-                self.test(test_dataloader, epoch=epoch)
+                self.test(test_dataloader)
 
             # === Checkpointing ===
             checkpoint_dict = {
