@@ -1,6 +1,5 @@
 """Pointcloud Place Recognition trainer."""
 import itertools
-import logging
 from os import PathLike
 from pathlib import Path
 from time import time
@@ -9,14 +8,13 @@ from typing import Any, Dict, Optional, Union
 import numpy as np
 import torch
 import wandb
+from loguru import logger
 from pytorch_metric_learning.distances import LpDistance
 from pytorch_metric_learning.utils import common_functions as c_f
 from torch import nn
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from loguru import logger
-from clearml import Task
 
 from opr.testing import get_recalls
 from opr.utils import (
@@ -33,7 +31,6 @@ c_f.COLLECT_STATS = True
 #                         value=v,
 #                         iteration=cur_iter,
 #                     )
-
 
 
 # TODO: Think about naming
@@ -75,8 +72,6 @@ class UnimodalPlaceRecognitionTrainer:
         self.loss_fn = loss_fn
         self.optimizer = optimizer
         self.scheduler = scheduler
-        self.task = Task.init(project_name='OPR/evie', task_name='mixer_full_aug_plus', auto_resource_monitoring=False)
-        self.logger = self.task.get_logger()
 
         self.checkpoints_dir = Path(checkpoints_dir)
         self.batch_expansion_threshold = batch_expansion_threshold
@@ -167,7 +162,7 @@ class UnimodalPlaceRecognitionTrainer:
                 if self.wandb_log:
                     wandb.save(str(self.checkpoints_dir / "best.pth"))
 
-    def test(self, dataloader: DataLoader, distance_threshold: float = 25.0, epoch:int=0) -> None:
+    def test(self, dataloader: DataLoader, distance_threshold: float = 25.0, epoch: int = 0) -> None:
         """Evaluates the model on the test set.
 
         Args:
@@ -195,8 +190,7 @@ class UnimodalPlaceRecognitionTrainer:
             databases.append(group.index.to_list())
             selected_queries = group[group["in_query"]]
             queries.append(selected_queries.index.to_list())
-        
-        
+
         logger.debug(f"Test embeddings: {test_embeddings.shape}")
 
         utms = torch.tensor(test_df[["tx", "ty"]].to_numpy())
@@ -241,15 +235,10 @@ class UnimodalPlaceRecognitionTrainer:
         self._stats["test"]["mean_recall_at_10"] = mean_recall_at_n[9]
         self._stats["test"]["mean_recall_at_1%"] = mean_recall_at_one_percent
         self._stats["test"]["mean_top1_distance"] = mean_top1_distance
-        for k, v in self._stats["test"].items():
-                self.logger.report_scalar(
-                        k,
-                        "test",
-                        value=v,
-                        iteration=epoch,
-                    )
 
-    def _loop_epoch(self, train_dataloader: DataLoader, val_dataloader: Optional[DataLoader] = None, epoch:int=0) -> None:
+    def _loop_epoch(
+        self, train_dataloader: DataLoader, val_dataloader: Optional[DataLoader] = None, epoch: int = 0
+    ) -> None:
         dataloaders = {"train": train_dataloader}
         if val_dataloader:
             dataloaders["val"] = val_dataloader
@@ -289,11 +278,4 @@ class UnimodalPlaceRecognitionTrainer:
             minutes, seconds = divmod(int(elapsed_t), 60)
             logger.info(f"{stage.capitalize()} time: {int(minutes):02d}:{int(seconds):02d}")
             logger.info(f"{stage.capitalize()} stats: {epoch_stats}")
-            for k, v in epoch_stats.items():
-                self.logger.report_scalar(
-                        k,
-                        f"{stage}",
-                        value=v,
-                        iteration=epoch,
-                    )
             self._stats[stage] = epoch_stats
