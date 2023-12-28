@@ -1,3 +1,6 @@
 [submodule "third_party/GeoTransformer"]
 	path = third_party/GeoTransformer
 	url = https://github.com/alexmelekhin/GeoTransformer.git
+[submodule "third_party/AdelaiDepth"]
+	path = third_party/AdelaiDepth
+	url = https://github.com/aim-uofa/AdelaiDepth
