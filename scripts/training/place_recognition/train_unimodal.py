@@ -1,5 +1,4 @@
 """Script to train a single-modal Place Recognition model."""
-import logging
 import pprint
 import sys
 from datetime import datetime
@@ -9,18 +8,17 @@ from typing import Dict, Literal
 import hydra
 import wandb
 from hydra.utils import instantiate
+from loguru import logger
 from omegaconf import DictConfig, OmegaConf
-from torch.utils.data import DataLoader
-
 from opr.datasets.dataloader_factory import make_dataloaders
 from opr.trainers.place_recognition import UnimodalPlaceRecognitionTrainer
 from opr.utils import set_seed
+from torch.utils.data import DataLoader
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 
-logger = logging.getLogger(__name__)
 
-
+@logger.catch
 @hydra.main(config_path="../../../configs", config_name="train_unimodal", version_base=None)
 def main(cfg: DictConfig) -> None:
     """Training code.

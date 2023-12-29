@@ -1,0 +1,5 @@
+outs:
+- md5: 7dded3ed8a18d6be95287bec54c24341
+  size: 2735265
+  hash: md5
+  path: best_soc_75.pth

@@ -9,7 +9,7 @@ if [ $ARCH != "x86_64" ]; then
     exit 1
 fi
 
-if command -v nvidia-smi &> /dev/null; then
+if command -v nvcc &> /dev/null; then
     echo "Detected ${orange}CUDA${reset_color} hardware"
     DOCKERFILE=Dockerfile.cuda
     DEVICE=cuda
@@ -26,4 +26,5 @@ docker build $PROJECT_ROOT_DIR \
     -f $PROJECT_ROOT_DIR/docker/$DOCKERFILE \
     --build-arg UID=$(id -u) \
     --build-arg GID=$(id -g) \
-    -t open-place-recognition:$DEVICE-$USER
+    -t open-place-recognition:$DEVICE-$USER \
+    --network=host

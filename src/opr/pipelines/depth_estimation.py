@@ -8,7 +8,8 @@ from typing import Dict, Optional, Union
 from torchvision.transforms import Resize
 from skimage.transform import resize
 
-class DepthEstimation:
+class DepthEsitmation:
+
     def __init__(self, 
                  camera_matrix: Dict[str, float],
                  lidar_to_camera_transform: np.ndarray,
@@ -21,7 +22,6 @@ class DepthEstimation:
         self.camera_matrix = Namespace(**camera_matrix)
         self.lidar_to_camera_transform = lidar_to_camera_transform
     
-
     def get_depth_with_lidar(self, image: np.ndarray, point_cloud: np.ndarray) -> np.ndarray:
         raw_img_h, raw_img_w = image.shape[0], image.shape[1]
         image = resize(image, (480, 640))
