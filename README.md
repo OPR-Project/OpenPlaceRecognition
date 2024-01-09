@@ -56,13 +56,19 @@ The following commands should be used to build or pull, start and enter the cont
 
 ### How to load the weights
 
-We use [DVC](https://dvc.org/) to manage the weights storage. To download the weights, run the following command (assuming that dvc is already installed):
+You can download the weights from the public [Google Drive folder](https://drive.google.com/drive/folders/1uRiMe2-I9b5Tgv8mIJLkdGaHXccp_UFJ?usp=sharing).
 
-```bash
-dvc pull
-```
+<details>
+  <summary>Developers only</summary>
 
-You will be be asked to authorize the Google Drive access. After that, the weights will be downloaded to the `weights` directory. For more details, see the [DVC documentation](https://dvc.org/doc).
+  We use [DVC](https://dvc.org/) to manage the weights storage. To download the weights, run the following command (assuming that dvc is already installed):
+
+  ```bash
+  dvc pull
+  ```
+
+  You will be be asked to authorize the Google Drive access. After that, the weights will be downloaded to the `weights` directory. For more details, see the [DVC documentation](https://dvc.org/doc).
+</details>
 
 ## Package Structure
 
