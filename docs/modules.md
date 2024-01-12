@@ -96,3 +96,15 @@ db_pc = db_match["pointcloud_lidar_coords"]
 
 estimated_transform = registration_pipe.infer(query_seq, db_pc)
 ```
+
+## 4. ArucoLocalizationPipeline
+
+A module that implements an algorithm for optimizing the position and orientation of a vehicle in space based on an user predefined Aruco Markers and multimodal data using neural network methods.
+
+Sample usage: see ```notebooks/aruco_pipeline.ipynb```
+
+## 5. LocalizationPipeline without dynamic objects
+
+A module that implements an algorithm for optimizing the position and orientation of a vehicle in space based on multimodal data without user predefined dynamic objects using neural network methods.
+
+Sample usage: see ```notebooks/localization_with_dynamic_objects.ipynb```
