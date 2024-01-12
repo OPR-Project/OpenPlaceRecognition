@@ -70,6 +70,10 @@ You can download the weights from the public [Google Drive folder](https://drive
   You will be be asked to authorize the Google Drive access. After that, the weights will be downloaded to the `weights` directory. For more details, see the [DVC documentation](https://dvc.org/doc).
 </details>
 
+## ITLP-Campus dataset
+
+We introduce the ITLP-Campus dataset. The dataset was recorded on the Husky robotics platform on the university campus and consists of tracks recorded at different times of day (day/dusk/night) and different seasons (winter/spring). You can find more detail in the [VitalyyBezuglyj/ITLP-Campus](https://github.com/VitalyyBezuglyj/ITLP-Campus) repository.
+
 ## Package Structure
 
 ### opr.datasets
