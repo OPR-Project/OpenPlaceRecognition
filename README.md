@@ -18,7 +18,7 @@ Detailed description of featured library modules can be found in the [docs/modul
 8. [MultimodalPlaceRecognitionTrainer](./docs/modules.md#8-multimodalplacerecognitiontrainer)
 9. TextLabelsPlaceRecognitionPipeline
 10. DepthEstimation
-11. ITLPCampus
+11. [ITLPCampus](./docs/modules.md#11-itlpcampus)
 
 ## Installation
 

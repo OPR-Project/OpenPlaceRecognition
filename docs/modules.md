@@ -136,3 +136,9 @@ A module that implements an algorithm for optimizing the position and orientatio
 A module that implements a training algorithm for a multimodal neural network model of global localization based on the contrastive learning approach.
 
 **Sample usage:** see [`scripts/training/place_recognition/train_multimodal.py`](../scripts/training/place_recognition/train_multimodal.py) for an example of training a model.
+
+## 11. ITLPCampus
+
+A module that implements interaction with the developed multimodal data set.
+
+**Sample usage:** see [```notebooks/demo_itlp_dataset.ipynb```](../notebooks/demo_itlp_dataset.ipynb)
