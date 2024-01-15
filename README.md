@@ -10,7 +10,7 @@ Detailed description of featured library modules can be found in the [docs/modul
 
 1. [PlaceRecognitionPipeline](./docs/modules.md#1-placerecognitionpipeline)
 2. [SequencePointcloudRegistrationPipeline](./docs/modules.md#2-sequencepointcloudregistrationpipeline)
-3. PlaceRecognitionPipeline with semantics
+3. [PlaceRecognitionPipeline with semantics](./docs/modules.md#3-placerecognitionpipeline-with-semantics)
 4. [ArucoLocalizationPipeline](./docs/modules.md#4-arucolocalizationpipeline)
 5. [LocalizationPipeline without dynamic objects](./docs/modules.md#5-localizationpipeline-without-dynamic-objects)
 6. PlaceRecognitionPipeline with Semantic Object Context

@@ -97,6 +97,28 @@ db_pc = db_match["pointcloud_lidar_coords"]
 estimated_transform = registration_pipe.infer(query_seq, db_pc)
 ```
 
+## 3. PlaceRecognitionPipeline with semantics
+
+A module that implements an algorithm for optimizing the position and orientation of a vehicle in space based on a sequence of multimodal data using neural network methods.
+
+### Sample usage
+
+This method is a modification of the already described [PlaceRecognitionPipeline](#1-placerecognitionpipeline). The main difference is the use of a different configuration of the neural network model and additional loading of semantics in the dataset:
+
+```python
+MODEL_CONFIG_PATH = "../../configs/model/place_recognition/multi-image_multi-semantic_lidar_late-fusion.yaml"  # THIS
+WEIGHTS_PATH = "../../weights/place_recognition/multi-image_multi-semantic_lidar_late-fusion_nclt.pth"  # THIS
+
+query_dataset = ITLPCampus(
+    dataset_root=QUERY_TRACK_DIR,
+    sensors=SENSOR_SUITE,
+    mink_quantization_size=0.5,
+    subset="test",
+    test_split=[1,2,3,4,5],
+    load_semantics=True,  # AND THIS
+)
+```
+
 ## 4. ArucoLocalizationPipeline
 
 A module that implements an algorithm for optimizing the position and orientation of a vehicle in space based on an user predefined Aruco Markers and multimodal data using neural network methods.
