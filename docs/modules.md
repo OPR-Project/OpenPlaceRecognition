@@ -130,3 +130,9 @@ Sample usage: see [```notebooks/aruco_pipeline.ipynb```](../notebooks/aruco_pipe
 A module that implements an algorithm for optimizing the position and orientation of a vehicle in space based on multimodal data without user predefined dynamic objects using neural network methods.
 
 Sample usage: see [```notebooks/localization_with_dynamic_objects.ipynb```](../notebooks/localization_with_dynamic_objects.ipynb)
+
+## 8. MultimodalPlaceRecognitionTrainer
+
+A module that implements a training algorithm for a multimodal neural network model of global localization based on the contrastive learning approach.
+
+**Sample usage:** see [`scripts/training/place_recognition/train_multimodal.py`](../scripts/training/place_recognition/train_multimodal.py) for an example of training a model.

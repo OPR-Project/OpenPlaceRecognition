@@ -15,7 +15,7 @@ Detailed description of featured library modules can be found in the [docs/modul
 5. [LocalizationPipeline without dynamic objects](./docs/modules.md#5-localizationpipeline-without-dynamic-objects)
 6. PlaceRecognitionPipeline with Semantic Object Context
 7. PlaceRecognitionPipeline with semantics and Semantic Object Context
-8. MultimodalPlaceRecognitionTrainer
+8. [MultimodalPlaceRecognitionTrainer](./docs/modules.md#8-multimodalplacerecognitiontrainer)
 9. TextLabelsPlaceRecognitionPipeline
 10. DepthEstimation
 11. ITLPCampus
