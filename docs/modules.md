@@ -143,6 +143,12 @@ A module that implements interaction with the developed multimodal data set.
 
 **Sample usage:** see [```notebooks/demo_itlp_dataset.ipynb```](../notebooks/demo_itlp_dataset.ipynb)
 
+## 12. DepthReconstruction
+
+A module that implements monocular depth reconstruction taking into account a sparse point cloud from the vehicle's lidar.
+
+**Sample usage:** see [```notebooks/test_depth_reconstruction.ipynb```](../notebooks/test_depth_reconstruction.ipynb)
+
 # UML diagram
 
 UML diagram of the modules described above can be found at [`img/uml.pdf`](../img/uml.pdf)
