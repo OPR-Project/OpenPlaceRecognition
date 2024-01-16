@@ -131,11 +131,11 @@ A module that implements an algorithm for optimizing the position and orientatio
 
 **Sample usage:** see [```notebooks/localization_with_dynamic_objects.ipynb```](../notebooks/localization_with_dynamic_objects.ipynb)
 
-## 8. Localization by specific scene elements (Semantic Object Context (SOC) module)
+## 6. Localization by specific scene elements (Semantic Object Context (SOC) module)
 
 A module that implements a neural network algorithm to search a database of places already visited by a car for the most similar records using the car's "semantic object context" - the number and position of certain scene elements (e.g., doors, road signs, traffic signs, and so on).
 
-**Sample usage:** 
+### Sample usage
 
 This module can be used alone or combined with other algorithms.  This can be selected by specifying the model config in the example below (multimodule or simply SOCModule).
 
@@ -175,34 +175,33 @@ sample_query = query_dataset[0]
 output = pipe.infer(sample_query)
 ```
 
-
-## 9. Module for generating global vector representations of multimodal outdoor data
+## 7. Module for generating global vector representations of multimodal outdoor data
 
 A module that implements an algorithm for generating global vector representations of multimodal data invariant to the change of seasons. Invariance is achieved through the use of LiDAR and modalities that rely on semantic information.
 
-**Sample usage:**
+### Sample usage
 
 This module is not intended to be used as a "separate entity", and is implicitly used in all the multimodal modules given. As an example of usage, you can refer to the source code - file [opr/models/place_recognition/base.py](../src/opr/models/place_recognition/base.py).
 
 This file contains a top-level implementation of the proposed principle of forming global vector representations, and you can write your own implementations by its example.
 
-## 10. MultimodalPlaceRecognitionTrainer
+## 8. MultimodalPlaceRecognitionTrainer
 
 A module that implements a training algorithm for a multimodal neural network model of global localization based on the contrastive learning approach.
 
 **Sample usage:** see [`scripts/training/place_recognition/train_multimodal.py`](../scripts/training/place_recognition/train_multimodal.py) for an example of training a model.
+
+## 10. DepthReconstruction
+
+A module that implements monocular depth reconstruction taking into account a sparse point cloud from the vehicle's lidar.
+
+**Sample usage:** see [```notebooks/test_depth_reconstruction.ipynb```](../notebooks/test_depth_reconstruction.ipynb)
 
 ## 11. ITLPCampus
 
 A module that implements interaction with the developed multimodal data set.
 
 **Sample usage:** see [```notebooks/demo_itlp_dataset.ipynb```](../notebooks/demo_itlp_dataset.ipynb)
-
-## 12. DepthReconstruction
-
-A module that implements monocular depth reconstruction taking into account a sparse point cloud from the vehicle's lidar.
-
-**Sample usage:** see [```notebooks/test_depth_reconstruction.ipynb```](../notebooks/test_depth_reconstruction.ipynb)
 
 # UML diagram
 
