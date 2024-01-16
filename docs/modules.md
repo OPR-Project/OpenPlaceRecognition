@@ -131,7 +131,7 @@ A module that implements an algorithm for optimizing the position and orientatio
 
 **Sample usage:** see [```notebooks/localization_with_dynamic_objects.ipynb```](../notebooks/localization_with_dynamic_objects.ipynb)
 
-## 8. MultimodalPlaceRecognitionTrainer
+## 10. MultimodalPlaceRecognitionTrainer
 
 A module that implements a training algorithm for a multimodal neural network model of global localization based on the contrastive learning approach.
 
