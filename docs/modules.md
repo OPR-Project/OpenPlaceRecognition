@@ -131,6 +131,61 @@ A module that implements an algorithm for optimizing the position and orientatio
 
 **Sample usage:** see [```notebooks/localization_with_dynamic_objects.ipynb```](../notebooks/localization_with_dynamic_objects.ipynb)
 
+## 8. Localization by specific scene elements (Semantic Object Context (SOC) module)
+
+A module that implements a neural network algorithm to search a database of places already visited by a car for the most similar records using the car's "semantic object context" - the number and position of certain scene elements (e.g., doors, road signs, traffic signs, and so on).
+
+**Sample usage:** 
+
+This module can be used alone or combined with other algorithms.  This can be selected by specifying the model config in the example below (multimodule or simply SOCModule).
+
+To use it as a standalone module, no modality should be specified in Dataset params, just set the `load_soc: True` flag.
+SOC requires sensor data, but in a different sense than other modules, so we decided not to add the "soc" modality to the list of sensors.
+
+It is also strongly recommended to use the instantiate hydra utility rather than the Dataset constructor itself, due to the complex structure of the config.
+
+```python
+from hydra.utils import instantiate
+from omegaconf import OmegaConf
+from opr.datasets.itlp import ITLPCampus
+from opr.pipelines.place_recognition import PlaceRecognitionPipeline
+
+MODEL_CONFIG_PATH = "/path/to/OpenPlaceRecognition/configs/model/place_recognition/soc_mixer.yaml"
+DATASET_CONFIG_PATH = "/path/to/OpenPlaceRecognition/configs/dataset/itlp.yaml"
+DATABASE_TRACK_DIR = "/path/to/ITLP-Campus-data/indoor/00_2023-10-25-night"
+QUERY_TRACK_DIR = "/path/to/ITLP-Campus-data/indoor/01_2023-11-09-twilight"
+SENSOR_SUITE = [ ] # for using SOC as standalone model
+WEIGHTS_PATH = "/path/to/OpenPlaceRecognition/weights/place_recognition/best_soc_75.pth"
+DEVICE = "cuda"
+
+model_config = OmegaConf.load(MODEL_CONFIG_PATH)
+dataset_config = OmegaConf.load(DATASET_CONFIG_PATH)
+model = instantiate(model_config)
+
+pipe = PlaceRecognitionPipeline(
+    database_dir=DATABASE_TRACK_DIR,
+    model=model,
+    model_weights_path=WEIGHTS_PATH,
+    device=DEVICE,
+)
+
+query_dataset = insantiate(dataset_config, subset="test", dataset_root=QUERY_TRACK_DIR)
+
+sample_query = query_dataset[0]
+output = pipe.infer(sample_query)
+```
+
+
+## 9. Module for generating global vector representations of multimodal outdoor data
+
+A module that implements an algorithm for generating global vector representations of multimodal data invariant to the change of seasons. Invariance is achieved through the use of LiDAR and modalities that rely on semantic information.
+
+**Sample usage:**
+
+This module is not intended to be used as a "separate entity", and is implicitly used in all the multimodal modules given. As an example of usage, you can refer to the source code - file [opr/models/place_recognition/base.py](../src/opr/models/place_recognition/base.py).
+
+This file contains a top-level implementation of the proposed principle of forming global vector representations, and you can write your own implementations by its example.
+
 ## 10. MultimodalPlaceRecognitionTrainer
 
 A module that implements a training algorithm for a multimodal neural network model of global localization based on the contrastive learning approach.
