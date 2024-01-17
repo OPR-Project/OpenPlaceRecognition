@@ -191,6 +191,69 @@ A module that implements a training algorithm for a multimodal neural network mo
 
 **Sample usage:** see [`scripts/training/place_recognition/train_multimodal.py`](../scripts/training/place_recognition/train_multimodal.py) for an example of training a model.
 
+## 9. TextLabelsPlaceRecognitionPipeline
+
+A module that implements a neural network algorithm to search a database of locations already visited by a vehicle for the most similar records using sequences of lidar and camera data, and information about detected text labels in front and back camera images.
+
+```python
+import json
+from hydra.utils import instantiate
+from omegaconf import OmegaConf
+from opr.datasets.itlp import ITLPCampus
+from opr.pipelines.place_recognition import TextLabelsPlaceRecognitionPipeline
+
+QUERY_LABELS_PATH = "/path/to/ITLP-Campus-data/indoor/01_2023-11-09-twilight/text_labels.json" 
+DB_LABELS_PATH = "/path/to/ITLP-Campus-data/indoor/00_2023-10-25-night/text_labels.json"
+
+QUERY_TRACK_DIR = "/path/to/ITLP-Campus-data/indoor/01_2023-11-09-twilight"
+DATABASE_TRACK_DIR = "/path/to/ITLP-Campus-data/indoor/00_2023-10-25-night"
+
+MODEL_CONFIG_PATH = "/path/to/OpenPlaceRecognition/configs/model/place_recognition/minkloc3d.yaml"
+WEIGHTS_PATH = "/path/to/OpenPlaceRecognition/weights/place_recognition/minkloc3d_nclt.pth"
+
+DEVICE = "cuda"
+
+query_dataset = ITLPCampus(
+    dataset_root=QUERY_TRACK_DIR,
+    sensors=["lidar"],
+    mink_quantization_size=0.5,
+    load_semantics=False,
+    indoor=True,
+)
+
+db_dataset = ITLPCampus(
+    dataset_root=DATABASE_TRACK_DIR,
+    sensors=["lidar"],
+    indoor=True,
+)
+
+with open(QUERY_LABELS_PATH, "rb") as f:
+    query_labels = json.load(f)
+    query_labels = json.loads(query_labels)
+
+model_config = OmegaConf.load(MODEL_CONFIG_PATH)
+model = instantiate(model_config)
+
+pipe = TextLabelsPlaceRecognitionPipeline(
+    db_labels_path=DB_LABELS_PATH,
+    database_dir=DATABASE_TRACK_DIR,
+    model=model,
+    model_weights_path=WEIGHTS_PATH,
+    device=DEVICE,
+)
+
+i = 10 # example index of the query sequence
+
+timestamp = list(query_labels.keys())[i]
+query_annos = get_labels_by_id(query_labels, timestamp) # text annotations for query
+
+sample_data = query_dataset[i]
+output = pipe.infer(sample_data, query_annos)
+```
+
+Also, an example of usage can be found in [`notebooks/text_labels_pipeline.ipynb`](../notebooks/text_labels_pipeline.ipynb)
+
+
 ## 10. DepthReconstruction
 
 A module that implements monocular depth reconstruction taking into account a sparse point cloud from the vehicle's lidar.
