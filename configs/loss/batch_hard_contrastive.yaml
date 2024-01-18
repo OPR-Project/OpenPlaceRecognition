@@ -1,0 +1,4 @@
+_target_: opr.losses.BatchHardContrastiveLoss
+
+pos_margin: 0.2
+neg_margin: 0.2
