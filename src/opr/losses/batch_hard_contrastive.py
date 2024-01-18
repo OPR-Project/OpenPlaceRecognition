@@ -46,26 +46,7 @@ class BatchHardContrastiveLoss(nn.Module):
     ) -> Tuple[Tensor, Dict[str, float]]:
         hard_triplets = self.miner_fn(embeddings, positives_mask, negatives_mask)
         miner_stats = self.miner_fn.stats
-
-        # dummy_labels = torch.arange(embeddings.shape[0]).to(embeddings.device)
-        # loss = self.loss_fn(embeddings, dummy_labels, hard_triplets)
-
         loss = self.loss_fn(embeddings, indices_tuple=hard_triplets)
-
-        # print(self.loss_fn.reducer.reducers["pos_loss"])
-        # print(type(self.loss_fn.reducer.reducers["pos_loss"]))
-        # print(self.loss_fn.reducer.__dict__)
-        # print(self.loss_fn.reducer.reducers["pos_loss"].__dict__)
-
-        # print(self.loss_fn.reducer.reducers)
-
-        # print(self.loss_fn.reducer.reducers["pos_loss"])
-        # print("=========================")
-        # print(self.loss_fn.reducer.reducers["pos_loss"].__dict__)
-        # print("=========================")
-        # print(self.loss_fn.reducer.reducers["pos_loss"].pos_loss.item())
-
-        # print(self.loss_fn.reducer.reducers["pos_loss"].num_past_filter)
 
         stats = {
             "loss": loss.item(),
