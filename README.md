@@ -16,7 +16,7 @@ Detailed description of featured library modules can be found in the [docs/modul
 6. [Localization by specific scene elements (Semantic Object Context (SOC) module)](./docs/modules.md#6-localization-by-specific-scene-elements-semantic-object-context-soc-module)
 7. [Module for generating global vector representations of multimodal outdoor data](./docs/modules.md#7-module-for-generating-global-vector-representations-of-multimodal-outdoor-data)
 8. [MultimodalPlaceRecognitionTrainer](./docs/modules.md#8-multimodalplacerecognitiontrainer)
-9. TextLabelsPlaceRecognitionPipeline
+9. [TextLabelsPlaceRecognitionPipeline](./docs/modules.md#9-textlabelsplacerecognitionpipeline)
 10. [DepthReconstruction](./docs/modules.md#10-depthreconstruction)
 11. [ITLPCampus](./docs/modules.md#11-itlpcampus)
 
