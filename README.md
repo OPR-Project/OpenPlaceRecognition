@@ -1,5 +1,25 @@
 # Open Place Recognition library
 
+![Place Recognition overview](./img/PR_overview.png)
+
+_An overview of a typical place recognition pipeline. At first, the input data is encoded into a query descriptor. Then, a K-nearest neighbors search is performed between the query and the database. Finally, the position of the closest database descriptor found is considered as the answer._
+
+### Featured modules
+
+Detailed description of featured library modules can be found in the [docs/modules.md](./docs/modules.md) document.
+
+1. [PlaceRecognitionPipeline](./docs/modules.md#1-placerecognitionpipeline)
+2. [SequencePointcloudRegistrationPipeline](./docs/modules.md#2-sequencepointcloudregistrationpipeline)
+3. [PlaceRecognitionPipeline with semantics](./docs/modules.md#3-placerecognitionpipeline-with-semantics)
+4. [ArucoLocalizationPipeline](./docs/modules.md#4-arucolocalizationpipeline)
+5. [LocalizationPipeline without dynamic objects](./docs/modules.md#5-localizationpipeline-without-dynamic-objects)
+6. [Localization by specific scene elements (Semantic Object Context (SOC) module)](./docs/modules.md#6-localization-by-specific-scene-elements-semantic-object-context-soc-module)
+7. [Module for generating global vector representations of multimodal outdoor data](./docs/modules.md#7-module-for-generating-global-vector-representations-of-multimodal-outdoor-data)
+8. [MultimodalPlaceRecognitionTrainer](./docs/modules.md#8-multimodalplacerecognitiontrainer)
+9. [TextLabelsPlaceRecognitionPipeline](./docs/modules.md#9-textlabelsplacerecognitionpipeline)
+10. [DepthReconstruction](./docs/modules.md#10-depthreconstruction)
+11. [ITLPCampus](./docs/modules.md#11-itlpcampus)
+
 ## Installation
 
 ### Pre-requisites
