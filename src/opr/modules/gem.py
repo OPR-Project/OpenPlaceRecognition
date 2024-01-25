@@ -60,3 +60,10 @@ class GeM(nn.Module):
 
     def _gem(self, x: Tensor, p: nn.Parameter, eps: float) -> Tensor:
         return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1.0 / p).squeeze()
+
+
+class SeqGeM(GeM):
+    """1D GeM pooling layer."""
+
+    def _gem(self, x: Tensor, p: nn.Parameter, eps: float) -> Tensor:
+        return F.avg_pool1d(x.clamp(min=eps).pow(p), x.size(-1)).pow(1.0 / p).squeeze()
