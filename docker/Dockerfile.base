@@ -1,0 +1,88 @@
+FROM nvcr.io/nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
+ARG MAX_JOBS=4
+
+ENV DEBIAN_FRONTEND noninteractive
+
+# Install system dependencies for convinient development inside container
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    curl \
+    git \
+    wget \
+    vim \
+    sudo \
+    tar \
+    unzip \
+    openssh-server \
+    python3-pip \
+    build-essential \
+    ninja-build \
+    cmake \
+    swig \
+    libopenblas-dev \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev\
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev \
+    libxml2-dev \
+    libxmlsec1-dev \
+    libffi-dev \
+    liblzma-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# upgrade cmake
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.26.5/cmake-3.26.5-linux-x86_64.sh && \
+    mkdir /opt/cmake-3.26.5 && \
+    bash cmake-3.26.5-linux-x86_64.sh --skip-license --prefix=/opt/cmake-3.26.5/ && \
+    ln -s /opt/cmake-3.26.5/bin/* /usr/local/bin && \
+    rm cmake-3.26.5-linux-x86_64.sh
+
+# upgrade pip
+ARG PIP_VERSION=23.3.2
+ARG SETUPTOOLS_VERSION=69.0.3
+RUN pip install pip==${PIP_VERSION} setuptools==${SETUPTOOLS_VERSION}
+
+# install pytorch and torchvision
+RUN pip install \
+    torch==2.1.2+cu121 \
+    torchvision==0.16.2+cu121 \
+    --extra-index-url https://download.pytorch.org/whl/cu121
+
+# install MinkowskiEngine
+ARG NINJA_VERSION=1.11.1.1
+RUN pip install ninja==${NINJA_VERSION}
+ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0 7.5 8.0 8.6"
+ENV TORCH_NVCC_FLAGS="-Xfatbin -compress-all"
+ENV CUDA_HOME=/usr/local/cuda-12.1
+RUN git clone --recursive "https://github.com/alexmelekhin/MinkowskiEngine.git" && \
+    cd MinkowskiEngine && \
+    git checkout 6532dc3 && \
+    python3 setup.py install --force_cuda --blas=openblas && \
+    cd .. && \
+    rm -rf MinkowskiEngine
+
+# faiss installation
+RUN git clone https://github.com/facebookresearch/faiss.git && \
+    cd faiss && \
+    git checkout c3b93749 && \
+    cmake -B build . \
+        -Wno-dev \
+        -DFAISS_ENABLE_GPU=ON \
+        -DFAISS_ENABLE_PYTHON=ON \
+        -DBUILD_TESTING=OFF \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCUDAToolkit_ROOT=/usr/local/cuda-12.1 \
+        -DCMAKE_CUDA_ARCHITECTURES="60;61;70;75;80;86" && \
+    make -C build -j${MAX_JOBS} faiss && \
+    make -C build -j${MAX_JOBS} swigfaiss && \
+    cd build/faiss/python && python3 setup.py install && \
+    cd / && \
+    rm -rf faiss
