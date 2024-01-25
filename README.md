@@ -29,27 +29,15 @@ Detailed description of featured library modules can be found in the [docs/modul
   - [MinkowskiEngine repository](https://github.com/NVIDIA/MinkowskiEngine)
   - [faiss repository](https://github.com/facebookresearch/faiss)
 
-- Another option is to use the suggested Dockerfile. There are two options: build the container locally or get it from Docker Hub. The build process is time-consuming, so we recommend using the second option.
+- Another option is to use the docker image. You can read detailed description in the [docker/README.md](./docker/README.md).
+  Quick-start commands to build, start and enter the container:
 
-The following commands should be used to build or pull, start and enter the container:
-
-  1. Build the image *(if you want use pre-builded image, just skip this step)*
-
-      ```bash
-      bash docker/build.sh
-      ```
-
-  2. Start the container with the datasets directory mounted:
-
-      ```bash
-      bash docker/start.sh [DATASETS_DIR]
-      ```
-
-  3. Enter the container (if needed):
-
-      ```bash
-      bash docker/into.sh
-      ```
+  ```bash
+  # from repo root dir
+  bash docker/build_devel.sh
+  bash docker/start.sh [DATASETS_DIR]
+  bash docker/into.sh
+  ```
 
 ### Library installation
 

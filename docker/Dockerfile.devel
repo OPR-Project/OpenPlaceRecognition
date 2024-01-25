@@ -1,0 +1,36 @@
+FROM alexmelekhin/open-place-recognition:base
+
+# to install "dvc[gdrive]" we need to install "distro" package first
+ARG DISTRO_VERSION=1.9.0
+RUN pip install distro==${DISTRO_VERSION}
+
+# install other requirements from requirements.txt
+COPY requirements.txt .
+RUN pip install -r requirements.txt && \
+    rm requirements.txt
+
+# install dev requirements
+COPY requirements-dev.txt .
+RUN pip install -r requirements-dev.txt && \
+    rm requirements-dev.txt
+
+# install notebook requirements
+COPY requirements-notebook.txt .
+RUN pip install -r requirements-notebook.txt && \
+    rm requirements-notebook.txt
+
+# add user and his password
+ENV USER=docker_opr
+ARG UID=1000
+ARG GID=1000
+# default password
+ARG PW=user
+
+RUN useradd -m ${USER} --uid=${UID} && echo "${USER}:${PW}" | chpasswd && adduser ${USER} sudo
+WORKDIR /home/${USER}
+
+# create some directories for mounting volumes
+RUN mkdir OpenPlaceRecognition && chown -R ${UID}:${GID} /home/${USER}
+RUN mkdir Datasets && chown -R ${UID}:${GID} /home/${USER}
+
+USER ${UID}:${GID}
