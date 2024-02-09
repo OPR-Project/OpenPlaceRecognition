@@ -4,6 +4,8 @@ from typing import Dict
 import torch
 from torch import Tensor, nn
 
+from .gem import SeqGeM
+
 
 class Concat(nn.Module):
     """Concatenation module."""
@@ -32,3 +34,23 @@ class Add(nn.Module):
             fusion_global_descriptor = fusion_global_descriptor.unsqueeze(0)
 
         return fusion_global_descriptor
+
+
+class GeMFusion(nn.Module):
+    """GeM fusion module."""
+
+    def __init__(self, p: int = 3, eps: float = 1e-6) -> None:
+        """Generalized-Mean fusion module.
+
+        Args:
+            p (int): Initial value of learnable parameter 'p', see paper for more details. Defaults to 3.
+            eps (float): Negative values will be clamped to `eps` (ReLU). Defaults to 1e-6.
+        """
+        super().__init__()
+        self.gem = SeqGeM(p=p, eps=eps)
+
+    def forward(self, data: Dict[str, Tensor]) -> Tensor:  # noqa: D102
+        data = {key: value for key, value in data.items() if value is not None}
+        descriptors = list(data.values())
+        descriptors = torch.stack(descriptors, dim=len(descriptors[0].shape))
+        return self.gem(descriptors)
