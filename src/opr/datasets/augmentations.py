@@ -90,6 +90,71 @@ class DefaultImageTransform:
         return self.transform(image=img)["image"]
 
 
+class DefaultHM3DImageTransform:
+    """Default image augmentation pipeline."""
+
+    def __init__(self, train: bool = False, resize: tuple[int, int] | None = (288, 160)) -> None:
+        """Default image augmentation pipeline.
+
+        Args:
+            train (bool): If not train, only normalization will be applied. Defaults to False.
+            resize (Tuple[int, int], optional): Target size in (W, H) format. Defaults to None.
+        """
+        if train:
+            transform_list = [
+                A.GaussNoise(p=0.2),
+                A.OneOf(
+                    [
+                        A.MotionBlur(p=0.2),
+                        A.MedianBlur(blur_limit=3, p=0.1),
+                        A.Blur(blur_limit=3, p=0.1),
+                    ],
+                    p=0.2,
+                ),
+                A.OneOf(
+                    [
+                        A.OpticalDistortion(p=0.3),
+                        A.GridDistortion(p=0.1),
+                        A.PiecewiseAffine(p=0.3),
+                    ],
+                    p=0.2,
+                ),
+                A.OneOf(
+                    [
+                        A.CLAHE(clip_limit=2),
+                        A.Sharpen(),
+                        A.Emboss(),
+                    ],
+                    p=0.2,
+                ),
+                A.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1, p=0.2),
+                A.CoarseDropout(max_width=96, max_height=66, min_width=32, min_height=22, max_holes=1, p=0.5),
+                A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+                ToTensorV2(),
+            ]
+        else:
+            transform_list = [
+                A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+                ToTensorV2(),
+            ]
+
+        if resize is not None:
+            transform_list = [A.Resize(height=resize[1], width=resize[0])] + transform_list
+
+        self.transform = A.Compose(transform_list)
+
+    def __call__(self, img: np.ndarray) -> Tensor:
+        """Applies transformations to the given image.
+
+        Args:
+            img (np.ndarray): The image in the cv2 format.
+
+        Returns:
+            Tensor: Augmented PyTorch tensor in the channel-first format.
+        """
+        return self.transform(image=img)["image"]
+
+
 class DefaultSemanticTransform:
     """Default semantic mask augmentation pipeline."""
 
