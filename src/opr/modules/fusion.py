@@ -53,5 +53,4 @@ class GeMFusion(nn.Module):
         data = {key: value for key, value in data.items() if value is not None}
         descriptors = list(data.values())
         descriptors = torch.stack(descriptors, dim=len(descriptors[0].shape))
-        print(descriptors.shape)
         return self.gem(descriptors)
