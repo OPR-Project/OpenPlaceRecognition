@@ -7,6 +7,7 @@ import cv2
 # import MinkowskiEngine as ME  # type: ignore
 import numpy as np
 import torch
+from loguru import logger
 from scipy.spatial.transform import Rotation as R
 from torch import Tensor
 
@@ -59,6 +60,7 @@ class HM3DDataset(BasePlaceRecognitionDataset):
         Raises:
             ValueError: If an invalid data_to_load argument is provided.
         """
+        logger.warning("HM3D dataset is in research phase. The API is subject to change.")
         super().__init__(
             dataset_root,
             subset,
