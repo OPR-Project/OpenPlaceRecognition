@@ -173,9 +173,10 @@ class ITLPCampus(Dataset):
             raise ValueError(f"Unknown soc_coords_type: {soc_coords_type!r}")
         self.max_distance_soc = max_distance_soc
         self.anno = anno
-        self.special_classes = [
-            self.anno.staff_classes.index(special) for special in self.anno.special_classes
-        ]
+        if anno:
+            self.special_classes = [
+                self.anno.staff_classes.index(special) for special in self.anno.special_classes
+            ]
 
         if self.load_soc:
             if sensors_cfg is None:
