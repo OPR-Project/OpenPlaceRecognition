@@ -1,0 +1,6 @@
+_target_: opr.datasets.hm3d.HM3DDataset
+
+dataset_root: ???
+data_to_load: [image_front, image_back]
+positive_threshold: 2.0
+negative_threshold: 10.0
