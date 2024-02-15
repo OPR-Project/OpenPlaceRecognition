@@ -1,6 +1,8 @@
 _target_: opr.datasets.hm3d.HM3DDataset
 
 dataset_root: ???
-data_to_load: [image_front, image_back]
-positive_threshold: 2.0
+data_to_load: [image_front, image_back, pointcloud_lidar]
+positive_threshold: 5.0
 negative_threshold: 10.0
+pointcloud_quantization_size: 0.1
+max_point_distance: 20.0

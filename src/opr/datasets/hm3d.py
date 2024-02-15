@@ -3,8 +3,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import cv2
-
-# import MinkowskiEngine as ME  # type: ignore
+import MinkowskiEngine as ME  # type: ignore
 import numpy as np
 import torch
 from loguru import logger
@@ -37,8 +36,10 @@ class HM3DDataset(BasePlaceRecognitionDataset):
         dataset_root: str | Path,
         subset: Literal["train", "val", "test"],
         data_to_load: str | tuple[str, ...],
-        positive_threshold: float = 2.0,
+        positive_threshold: float = 5.0,
         negative_threshold: float = 10.0,
+        pointcloud_quantization_size: float = 0.1,
+        max_point_distance: float = 20.0,
         image_transform: Any | None = None,
         pointcloud_transform: Any | None = None,
         pointcloud_set_transform: Any | None = None,
@@ -53,6 +54,8 @@ class HM3DDataset(BasePlaceRecognitionDataset):
                 for them to be considered positive. Defaults to 2.0.
             negative_threshold (float): The maximum UTM distance between two elements
                 for them to be considered non-negative. Defaults to 10.0.
+            pointcloud_quantization_size (float): Pointcloud quantization size. Defaults to 0.1.
+            max_point_distance (float): Maximum point distance. Defaults to 20.0.
             image_transform (Any, optional): Image transformation to apply. Defaults to None.
             pointcloud_transform (Any, optional): Pointcloud transformation to apply. Defaults to None.
             pointcloud_set_transform (Any, optional): Pointcloud set transformation to apply. Defaults to None.
@@ -82,40 +85,66 @@ class HM3DDataset(BasePlaceRecognitionDataset):
             self.dataset_root / "hm3d_train" if subset == "train" else self.dataset_root / "hm3d_val"
         )
 
+        self._pointcloud_quantization_size = pointcloud_quantization_size
+        self._max_point_distance = max_point_distance
+
         self.image_transform = image_transform or DefaultHM3DImageTransform(train=(self.subset == "train"))
+        self.pointcloud_transform = None
+        self.pointcloud_set_transform = None
 
     def __len__(self) -> int:  # noqa: D105
         return len(self.dataset_df)
 
+    def _load_image(self, idx: int) -> Tensor:
+        scene_id = int(self.dataset_df.iloc[idx]["scene_id"])
+        frame_id = int(self.dataset_df.iloc[idx]["frame_id"])
+        image_filepath = self.data_path / f"{scene_id}" / f"{frame_id+1}_rgb.png"
+        image = cv2.cvtColor(cv2.imread(str(image_filepath)), cv2.COLOR_BGR2RGB)
+        if self.image_transform:
+            image = self.image_transform(image)
+        return image
+
+    def _load_pointcloud(self, idx: int, back: bool = False) -> Tensor:
+        scene_id = int(self.dataset_df.iloc[idx]["scene_id"])
+        frame_id = int(self.dataset_df.iloc[idx]["frame_id"])
+        pointcloud_filepath = self.data_path / f"{scene_id}" / f"{frame_id+1}_cloud_downsampled.npz"
+        pointcloud = np.load(pointcloud_filepath)["arr_0"]
+        if back:
+            rotation = R.from_euler("z", 180, degrees=True)  # rotate 180 degrees around last axis
+            pointcloud = rotation.apply(pointcloud)
+        pointcloud = torch.tensor(pointcloud, dtype=torch.float32)
+        if self.pointcloud_transform:
+            pointcloud = self.pointcloud_transform(pointcloud)
+        if self._max_point_distance is not None:
+            pointcloud = pointcloud[np.linalg.norm(pointcloud, axis=1) < self._max_point_distance]
+        return pointcloud
+
     def __getitem__(self, idx: int) -> dict[str, Any]:  # noqa: D105
         data = {"idx": torch.tensor(idx, dtype=int)}
         data["utm"] = torch.tensor(self.dataset_df.iloc[idx][["x", "y"]].to_numpy(dtype=np.float64))
-        if "image_front" in self.data_to_load:
-            scene_id = int(self.dataset_df.iloc[idx]["scene_id"])
-            frame_id = int(self.dataset_df.iloc[idx]["frame_id"])
-            image_filepath = self.data_path / f"{scene_id}" / f"{frame_id+1}_rgb.png"
-            image = cv2.cvtColor(cv2.imread(str(image_filepath)), cv2.COLOR_BGR2RGB)
-            if self.image_transform:
-                image = self.image_transform(image)
-            data["image_front"] = image
-        if "image_back" in self.data_to_load:
-            if idx % 4 == 0 or idx % 4 == 1:
-                back_idx = idx + 2
-            else:
-                back_idx = idx - 2
-            scene_id = int(self.dataset_df.iloc[back_idx]["scene_id"])
-            frame_id = int(self.dataset_df.iloc[back_idx]["frame_id"])
-            image_filepath = self.data_path / f"{scene_id}" / f"{frame_id+1}_rgb.png"
-            image = cv2.cvtColor(cv2.imread(str(image_filepath)), cv2.COLOR_BGR2RGB)
-            if self.image_transform:
-                image = self.image_transform(image)
-            data["image_back"] = image
-        if "depth_front" in self.data_to_load:
-            raise NotImplementedError
-        if "depth_back" in self.data_to_load:
-            raise NotImplementedError
-        if "pointcloud_lidar" in self.data_to_load:
-            raise NotImplementedError
+        back_idx = idx + 2 if idx % 4 in [0, 1] else idx - 2
+
+        for data_type in self.data_to_load:
+            if data_type == "image_front":
+                data[data_type] = self._load_image(idx)
+            elif data_type == "image_back":
+                data[data_type] = self._load_image(back_idx)
+            elif data_type == "pointcloud_lidar":
+                data["pointcloud_lidar_coords"] = torch.tensor([], dtype=torch.float32)
+                data["pointcloud_lidar_feats"] = torch.tensor([], dtype=torch.float32)
+                for is_back in [False, True]:
+                    pointcloud = self._load_pointcloud(idx if not is_back else back_idx, back=is_back)
+                    data["pointcloud_lidar_coords"] = torch.cat(
+                        [data["pointcloud_lidar_coords"], pointcloud], dim=0
+                    )
+                    data["pointcloud_lidar_feats"] = torch.cat(
+                        [
+                            data["pointcloud_lidar_feats"],
+                            torch.ones_like(pointcloud[:, :1], dtype=torch.float32),
+                        ]
+                    )
+            elif data_type in ["depth_front", "depth_back"]:
+                raise NotImplementedError
 
         return data
 
@@ -200,30 +229,30 @@ class HM3DDataset(BasePlaceRecognitionDataset):
                 result[f"images_{data_key[6:]}"] = torch.stack([e[data_key] for e in data_list])
             # elif data_key.startswith("mask_"):
             #     result[f"masks_{data_key[5:]}"] = torch.stack([e[data_key] for e in data_list])
-            # elif data_key == "pointcloud_lidar_coords":
-            #     coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
-            #     feats_list = [e["pointcloud_lidar_feats"] for e in data_list]
-            #     n_points = [int(e.shape[0]) for e in coords_list]
-            #     coords_tensor = torch.cat(coords_list, dim=0).unsqueeze(0)  # (1,batch_size*n_points,3)
-            #     if self.pointcloud_set_transform is not None:
-            #         # Apply the same transformation on all dataset elements
-            #         coords_tensor = self.pointcloud_set_transform(coords_tensor)
-            #     coords_list = torch.split(coords_tensor.squeeze(0), split_size_or_sections=n_points, dim=0)
-            #     quantized_coords_list = []
-            #     quantized_feats_list = []
-            #     for coords, feats in zip(coords_list, feats_list):
-            #         quantized_coords, quantized_feats = ME.utils.sparse_quantize(
-            #             coordinates=coords,
-            #             features=feats,
-            #             quantization_size=self._pointcloud_quantization_size,
-            #         )
-            #         quantized_coords_list.append(quantized_coords)
-            #         quantized_feats_list.append(quantized_feats)
+            elif data_key == "pointcloud_lidar_coords":
+                coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
+                feats_list = [e["pointcloud_lidar_feats"] for e in data_list]
+                n_points = [int(e.shape[0]) for e in coords_list]
+                coords_tensor = torch.cat(coords_list, dim=0).unsqueeze(0)  # (1,batch_size*n_points,3)
+                if self.pointcloud_set_transform is not None:
+                    # Apply the same transformation on all dataset elements
+                    coords_tensor = self.pointcloud_set_transform(coords_tensor)
+                coords_list = torch.split(coords_tensor.squeeze(0), split_size_or_sections=n_points, dim=0)
+                quantized_coords_list = []
+                quantized_feats_list = []
+                for coords, feats in zip(coords_list, feats_list):
+                    quantized_coords, quantized_feats = ME.utils.sparse_quantize(
+                        coordinates=coords,
+                        features=feats,
+                        quantization_size=self._pointcloud_quantization_size,
+                    )
+                    quantized_coords_list.append(quantized_coords)
+                    quantized_feats_list.append(quantized_feats)
 
-            #     result["pointclouds_lidar_coords"] = ME.utils.batched_coordinates(quantized_coords_list)
-            #     result["pointclouds_lidar_feats"] = torch.cat(quantized_feats_list)
-            # elif data_key == "pointcloud_lidar_feats":
-            #     continue
+                result["pointclouds_lidar_coords"] = ME.utils.batched_coordinates(quantized_coords_list)
+                result["pointclouds_lidar_feats"] = torch.cat(quantized_feats_list)
+            elif data_key == "pointcloud_lidar_feats":
+                continue
             else:
                 raise ValueError(f"Unknown data key: {data_key!r}")
         return result
