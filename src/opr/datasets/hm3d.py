@@ -174,8 +174,7 @@ class HM3DDataset(BasePlaceRecognitionDataset):
                 that satisfy the positive threshold, while the second mask contains the indices of elements
                 that satisfy the negative threshold.
         """
-        xy = self.dataset_df[["x", "y"]].values.astype("float32")
-        quats = self.dataset_df[["qw", "qx", "qy", "qz"]].values.astype("float32")
+        xy = self.dataset_df[["x", "y"]].to_numpy(dtype=np.float64)
         distances = torch.cdist(torch.tensor(xy), torch.tensor(xy), p=2)
         angle_mask = torch.zeros_like(distances, dtype=torch.bool)
         angle_mask[::2, ::2] = True
@@ -185,7 +184,7 @@ class HM3DDataset(BasePlaceRecognitionDataset):
         logger.debug("Calculating negatives_mask")
         negatives_mask = distances > negative_threshold
 
-        del quats, distances, angle_mask
+        del xy, distances, angle_mask
         gc.collect()
 
         positives_iou_values = torch.load(
