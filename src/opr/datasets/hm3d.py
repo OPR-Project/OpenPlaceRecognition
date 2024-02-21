@@ -106,7 +106,9 @@ class HM3DDataset(BasePlaceRecognitionDataset):
             image = self.image_transform(image)
         return image
 
-    def _load_pointcloud(self, idx: int, back: bool = False) -> Tensor:
+    def _load_pointcloud(
+        self, idx: int, position: Literal["front", "left", "back", "right"] = "front"
+    ) -> Tensor:
         scene_id = str(self.dataset_df.iloc[idx]["scene_id"])
         frame_id = int(self.dataset_df.iloc[idx]["frame_id"])
         dataset = str(self.dataset_df.iloc[idx]["dataset"])
@@ -115,8 +117,14 @@ class HM3DDataset(BasePlaceRecognitionDataset):
             self.dataset_root / f"{dataset}_{subset}" / f"{scene_id}" / f"{frame_id+1}_cloud_downsampled.npz"
         )
         pointcloud = np.load(pointcloud_filepath)["arr_0"]
-        if back:
+        if position == "left":
+            rotation = R.from_euler("z", 90, degrees=True)
+            pointcloud = rotation.apply(pointcloud)
+        elif position == "back":
             rotation = R.from_euler("z", 180, degrees=True)  # rotate 180 degrees around last axis
+            pointcloud = rotation.apply(pointcloud)
+        elif position == "right":
+            rotation = R.from_euler("z", -90, degrees=True)
             pointcloud = rotation.apply(pointcloud)
         pointcloud = torch.tensor(pointcloud, dtype=torch.float32)
         if self.pointcloud_transform:
@@ -125,15 +133,30 @@ class HM3DDataset(BasePlaceRecognitionDataset):
             pointcloud = pointcloud[np.linalg.norm(pointcloud, axis=1) < self._max_point_distance]
         return pointcloud
 
-    def _load_and_concat_pointcloud(self, idx: int, back_idx: int) -> Tensor:
-        both_pc = torch.tensor([], dtype=torch.float32)
-        for is_back in [False, True]:
-            pointcloud = self._load_pointcloud(idx if not is_back else back_idx, back=is_back)
-            both_pc = torch.cat([both_pc, pointcloud], dim=0)
-        return both_pc
+    def _load_and_concat_pointcloud(
+        self,
+        front_idx: int,
+        left_idx: int | None = None,
+        back_idx: int | None = None,
+        right_idx: int | None = None,
+    ) -> Tensor:
+        all_pc = torch.tensor([], dtype=torch.float32)
+        for idx, position in zip(
+            [front_idx, left_idx, back_idx, right_idx], ["front", "left", "back", "right"]
+        ):
+            if idx is not None:
+                pointcloud = self._load_pointcloud(idx, position)
+                all_pc = torch.cat([all_pc, pointcloud], dim=0)
+        return all_pc
+
+    def _get_left_idx(self, idx: int) -> int:
+        return idx + 1 if idx % 4 in [0, 1, 2] else idx - 3
 
     def _get_back_idx(self, idx: int) -> int:
         return idx + 2 if idx % 4 in [0, 1] else idx - 2
+
+    def _get_right_idx(self, idx: int) -> int:
+        return idx - 1 if idx % 4 in [1, 2, 3] else idx + 3
 
     def __getitem__(self, idx: int) -> dict[str, Any]:  # noqa: D105
         data = {"idx": torch.tensor(idx, dtype=int)}
@@ -142,7 +165,9 @@ class HM3DDataset(BasePlaceRecognitionDataset):
             self.dataset_df.iloc[idx][["qw", "qx", "qz", "qy"]].to_numpy(dtype=np.float64)
         ).as_euler("xzy", degrees=True)[-1]
         data["theta"] = torch.tensor(theta, dtype=torch.float64)
+        left_idx = self._get_left_idx(idx)
         back_idx = self._get_back_idx(idx)
+        right_idx = self._get_right_idx(idx)
 
         for data_type in self.data_to_load:
             if data_type == "image_front":
@@ -150,7 +175,9 @@ class HM3DDataset(BasePlaceRecognitionDataset):
             elif data_type == "image_back":
                 data[data_type] = self._load_image(back_idx)
             elif data_type == "pointcloud_lidar":
-                data["pointcloud_lidar_coords"] = self._load_and_concat_pointcloud(idx, back_idx)
+                data["pointcloud_lidar_coords"] = self._load_and_concat_pointcloud(
+                    front_idx=idx, left_idx=left_idx, back_idx=back_idx, right_idx=right_idx
+                )
                 data["pointcloud_lidar_feats"] = torch.ones_like(
                     data["pointcloud_lidar_coords"][:, 0], dtype=torch.float32
                 ).unsqueeze(1)
