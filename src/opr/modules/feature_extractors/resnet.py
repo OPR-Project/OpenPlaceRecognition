@@ -3,6 +3,84 @@ from torch import Tensor, nn
 from torchvision.models import ResNet18_Weights, ResNet50_Weights, resnet18, resnet50
 
 
+class ResNetFeatureExtractor(nn.Module):
+    """ResNet-based image feature extractor."""
+
+    def __init__(
+        self,
+        model: nn.Module,
+        in_channels: int = 3,
+        pretrained: bool = True,
+    ) -> None:
+        """ResNet-based image feature extractor.
+
+        Args:
+            model (nn.Module): ResNet model to use as feature extractor.
+            in_channels (int): Number of input channels. Defaults to 3.
+            pretrained (bool): Whether to load ImageNet-pretrained model. Defaults to True.
+
+        Raises:
+            ValueError: If `in_channels` is not 3 and `pretrained` is True.
+        """
+        super().__init__()
+
+        if in_channels != 3 and pretrained:
+            raise ValueError("Pretrained models are only available for 3-channel images")
+
+        # Last 2 blocks are AdaptiveAvgPool2d and Linear
+        self.resnet_fe = nn.ModuleList(list(model.children())[:-2])
+
+        # change input conv to accept n-channel images
+        if in_channels != 3:
+            self.resnet_fe[0] = nn.Conv2d(
+                in_channels=in_channels,
+                out_channels=self.resnet_fe[0].out_channels,
+                kernel_size=self.resnet_fe[0].kernel_size,
+                stride=self.resnet_fe[0].stride,
+                padding=self.resnet_fe[0].padding,
+                dilation=self.resnet_fe[0].dilation,
+                groups=self.resnet_fe[0].groups,
+                bias=self.resnet_fe[0].bias,
+                padding_mode=self.resnet_fe[0].padding_mode,
+                device=next(self.resnet_fe[0].parameters()).device,
+                dtype=next(self.resnet_fe[0].parameters()).dtype,
+            )
+
+    def forward(self, image: Tensor) -> Tensor:  # noqa: D102
+        x = image
+        for layer in self.resnet_fe:
+            x = layer(x)
+        return x
+
+
+class ResNet18FeatureExtractor(ResNetFeatureExtractor):
+    """ResNet18 image feature extractor."""
+
+    def __init__(self, in_channels: int = 3, pretrained: bool = True) -> None:
+        """ResNet18 image feature extractor.
+
+        Args:
+            in_channels (int): Number of input channels. Defaults to 3.
+            pretrained (bool): Whether to load ImageNet-pretrained model. Defaults to True.
+        """
+        model = resnet18(weights=(ResNet18_Weights.IMAGENET1K_V1 if pretrained else None))
+        super().__init__(model=model, in_channels=in_channels, pretrained=pretrained)
+
+
+class ResNet50FeatureExtractor(ResNetFeatureExtractor):
+    """ResNet50 image feature extractor."""
+
+    def __init__(self, in_channels: int = 3, pretrained: bool = True) -> None:
+        """ResNet50 image feature extractor.
+
+        Args:
+            in_channels (int): Number of input channels. Defaults to 3.
+            pretrained (bool): Whether to load ImageNet-pretrained model. Defaults to True.
+        """
+        model = resnet50(weights=(ResNet50_Weights.IMAGENET1K_V1 if pretrained else None))
+        super().__init__(model=model, in_channels=in_channels, pretrained=pretrained)
+
+
 class ResNetFPNFeatureExtractor(nn.Module):
     """ResNet-based image feature extractor with FPN block.
 
