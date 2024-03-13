@@ -7,3 +7,4 @@ from .resnet import (
     ResNet50FeatureExtractor,
     ResNet50FPNFeatureExtractor,
 )
+from .svtnet import SVTNetFeatureExtractor

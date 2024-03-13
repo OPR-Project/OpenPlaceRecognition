@@ -7,3 +7,4 @@ from .mixvpr import MixVPR
 from .mlp import MLP
 from .netvlad import NetVLAD
 from .self_attention import SelfAttention
+from .svt import ASVT, CSVT
