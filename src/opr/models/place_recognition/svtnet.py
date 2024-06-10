@@ -58,11 +58,11 @@ class SVTNet(CloudModel):
             in_channels, out_channels, conv0_kernel_size, block, asvt, csvt, layers, planes
         )
         if pooling == "gem":
-            pooling = MinkGeM()
+            pooling_head = MinkGeM()
         else:
             raise NotImplementedError("Unknown pooling method: {}".format(pooling))
 
         super().__init__(
             backbone=feature_extractor,
-            head=pooling,
+            head=pooling_head,
         )
