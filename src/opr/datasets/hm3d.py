@@ -1,5 +1,6 @@
 """HM3D dataset implementation."""
 import gc
+import pickle
 from pathlib import Path
 from typing import Any, Literal
 
@@ -201,18 +202,30 @@ class HM3DDataset(BasePlaceRecognitionDataset):
                 that satisfy the positive threshold, while the second mask contains the indices of elements
                 that satisfy the negative threshold.
         """
-        xy = self.dataset_df[["x", "y"]].to_numpy(dtype=np.float64)
-        distances = torch.cdist(torch.tensor(xy), torch.tensor(xy), p=2)
-        angle_mask = torch.zeros_like(distances, dtype=torch.bool)
-        angle_mask[::2, ::2] = True
-        angle_mask[1::2] = ~angle_mask[::2]
-        logger.debug("Calculating positives_mask")
-        positives_mask = (distances > 0) & (distances < positive_threshold) & angle_mask
-        logger.debug("Calculating negatives_mask")
-        negatives_mask = distances > negative_threshold
-
-        del xy, distances, angle_mask
-        gc.collect()
+        if positive_threshold > 5:
+            logger.warning("Positive threshold is too high. Recommended maximum value is 5.")
+        _pos_mask_filepath = (
+            self.dataset_root
+            / f"{'train' if self.subset == 'train' else 'val'}_positives_mask_threshold{int(positive_threshold)}.pt"
+        )
+        _neg_mask_filepath = (
+            self.dataset_root
+            / f"{'train' if self.subset == 'train' else 'val'}_negatives_mask_threshold{int(negative_threshold)}.pt"
+        )
+        if _pos_mask_filepath.exists() and _neg_mask_filepath.exists():
+            logger.debug("Loading masks from file")
+            positives_mask = torch.load(_pos_mask_filepath)
+            negatives_mask = torch.load(_neg_mask_filepath)
+        else:
+            logger.debug("Files with masks not found, calculating from scratch")
+            xy = self.dataset_df[["x", "y"]].to_numpy(dtype=np.float64)
+            distances = torch.cdist(torch.tensor(xy), torch.tensor(xy), p=2)
+            logger.debug("Calculating positives_mask")
+            positives_mask = (distances > 0) & (distances < positive_threshold)
+            logger.debug("Calculating negatives_mask")
+            negatives_mask = distances > negative_threshold
+            del xy, distances
+            gc.collect()
 
         positives_iou_values = torch.load(
             f"{self.dataset_root}/{'train' if self.subset == 'train' else 'val'}_positives_iou.pt"
@@ -234,7 +247,6 @@ class HM3DDataset(BasePlaceRecognitionDataset):
         logger.debug(
             f"Number of non-zero rows in positives_mask: {(positives_mask.sum(dim=1) > 0).sum().item()}"
         )
-
         logger.debug("Returning masks")
         return positives_mask, negatives_mask
 
@@ -254,15 +266,22 @@ class HM3DDataset(BasePlaceRecognitionDataset):
                 of two lists of element indexes that satisfy the UTM distance threshold condition
                 for each element in the dataset.
         """
-        xy = self.dataset_df[["x", "y"]].values.astype("float32")
-        distances = torch.cdist(torch.tensor(xy), torch.tensor(xy), p=2)
-
         positives_mask = self._positives_mask
-        nonnegatives_mask = distances < negative_threshold
-
-        # Convert the boolean masks to index tensors
         positive_indices = [torch.nonzero(row).squeeze(dim=-1) for row in positives_mask]
-        nonnegative_indices = [torch.nonzero(row).squeeze(dim=-1) for row in nonnegatives_mask]
+
+        _nonneg_index_filepath = (
+            self.dataset_root / f"{'train' if self.subset == 'train' else 'val'}_nonnegative_index.pkl"
+        )
+        if _nonneg_index_filepath.exists():
+            logger.debug("Loading nonnegative index from file")
+            with open(_nonneg_index_filepath, "rb") as file:
+                # !!! LOADING PICKLES IS DANGEOURS, USE WITH CAUTION
+                nonnegative_indices = pickle.load(file)  # noqa: S301
+        else:
+            xy = self.dataset_df[["x", "y"]].values.astype("float32")
+            distances = torch.cdist(torch.tensor(xy), torch.tensor(xy), p=2)
+            nonnegatives_mask = distances < negative_threshold
+            nonnegative_indices = [torch.nonzero(row).squeeze(dim=-1) for row in nonnegatives_mask]
 
         return positive_indices, nonnegative_indices
 
