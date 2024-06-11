@@ -8,13 +8,21 @@ Citation:
 Source: https://github.com/ZhenboSong/SVTNet
 Paper: https://arxiv.org/abs/2105.00149
 """
-import MinkowskiEngine as ME
-from MinkowskiEngine.modules.resnet_block import BasicBlock, Bottleneck
+from loguru import logger
 from torch import nn
 
 from opr.modules.eca import MinkECABasicBlock as ECABasicBlock
 from opr.modules.feature_extractors.mink_resnet import MinkResNetBase
 from opr.modules.svt import ASVT, CSVT
+
+try:
+    import MinkowskiEngine as ME  # type: ignore
+    from MinkowskiEngine.modules.resnet_block import BasicBlock, Bottleneck
+
+    minkowski_available = True
+except ImportError:
+    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
+    minkowski_available = False
 
 
 class SVTNetFeatureExtractor(MinkResNetBase):
@@ -49,9 +57,14 @@ class SVTNetFeatureExtractor(MinkResNetBase):
             planes (tuple[int, ...]): Number of channels in each layer. Defaults to (32, 64, 64).
 
         Raises:
+            RuntimeError: If MinkowskiEngine is not installed.
             ValueError: If the number of layers and planes is not the same.
             ValueError: If the number of layers is less than 1.
         """
+        if not minkowski_available:
+            raise RuntimeError(
+                "MinkowskiEngine is not installed. SVTNetFeatureExtractor requires MinkowskiEngine."
+            )
         if not len(layers) == len(planes):
             raise ValueError("The number of layers and planes must be the same.")
         if not 1 <= len(layers):

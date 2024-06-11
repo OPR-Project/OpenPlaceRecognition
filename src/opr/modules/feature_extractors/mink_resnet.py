@@ -8,11 +8,19 @@ Code is adopted from the original repository: https://github.com/jac99/MinkLoc3D
 """
 from typing import Tuple, Type, Union
 
-import MinkowskiEngine as ME
-from MinkowskiEngine.modules.resnet_block import BasicBlock, Bottleneck
+from loguru import logger
 from torch import Tensor, nn
 
 from opr.modules.eca import MinkECABasicBlock as ECABasicBlock
+
+try:
+    import MinkowskiEngine as ME  # type: ignore
+    from MinkowskiEngine.modules.resnet_block import BasicBlock, Bottleneck
+
+    minkowski_available = True
+except ImportError:
+    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
+    minkowski_available = False
 
 
 class MinkResNetBase(nn.Module):
@@ -33,8 +41,11 @@ class MinkResNetBase(nn.Module):
             dimension (int): Number of dimensions. Defaults to 3.
 
         Raises:
+            RuntimeError: If MinkowskiEngine is not installed.
             RuntimeError: If block type is not specified at the moment of initialisation.
         """
+        if not minkowski_available:
+            raise RuntimeError("MinkowskiEngine is not installed. MinkResNetBase requires MinkowskiEngine.")
         super().__init__()
         self.dimension = dimension
         if self.block is None:
@@ -162,10 +173,15 @@ class MinkResNetFPNFeatureExtractor(MinkResNetBase):
             planes (Tuple[int, ...]): Output channel size for each block. Defaults to (64, 128, 64, 32).
 
         Raises:
+            RuntimeError: If MinkowskiEngine is not installed.
             ValueError: If the length of layers and planes are not the same.
             ValueError: If the length of layers is less than 1.
             ValueError: If num_top_down is not between 0 and the numbers of layers.
         """
+        if not minkowski_available:
+            raise RuntimeError(
+                "MinkowskiEngine is not installed. MinkResNetFPNFeatureExtractor requires MinkowskiEngine."
+            )
         if len(layers) != len(planes):
             raise ValueError("layers and planes arguments should be the same length")
         if len(layers) < 1:

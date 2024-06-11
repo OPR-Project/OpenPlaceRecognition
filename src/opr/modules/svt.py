@@ -8,9 +8,17 @@ Citation:
 Source: https://github.com/ZhenboSong/SVTNet
 Paper: https://arxiv.org/abs/2105.00149
 """
-import MinkowskiEngine as ME
 import torch
+from loguru import logger
 from torch import nn
+
+try:
+    import MinkowskiEngine as ME  # type: ignore
+
+    minkowski_available = True
+except ImportError:
+    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
+    minkowski_available = False
 
 
 class ASVT(nn.Module):
@@ -22,7 +30,12 @@ class ASVT(nn.Module):
         Args:
             in_dim (int): Input dimension.
             reduction (int): Reduction ratio. Defaults to 8.
+
+        Raises:
+            RuntimeError: If MinkowskiEngine is not installed.
         """
+        if not minkowski_available:
+            raise RuntimeError("MinkowskiEngine is not installed. ASVT requires MinkowskiEngine.")
         super().__init__()
         self.q_conv = ME.MinkowskiConvolution(in_dim, in_dim // reduction, 1, dimension=3, bias=False)
         self.k_conv = ME.MinkowskiConvolution(in_dim, in_dim // reduction, 1, dimension=3, bias=False)
@@ -74,7 +87,12 @@ class CSVT(nn.Module):
         Args:
             channels (int): Number of input channels.
             num_tokens (int): Number of tokens. Defaults to 16.
+
+        Raises:
+            RuntimeError: If MinkowskiEngine is not installed.
         """
+        if not minkowski_available:
+            raise RuntimeError("MinkowskiEngine is not installed. CSVT requires MinkowskiEngine.")
         super().__init__()
 
         # layers for generate tokens

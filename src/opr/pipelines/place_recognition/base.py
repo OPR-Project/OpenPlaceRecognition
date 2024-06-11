@@ -3,10 +3,10 @@ from os import PathLike
 from pathlib import Path
 from typing import Dict, Optional, Union
 
-import MinkowskiEngine as ME
 import numpy as np
 import pandas as pd
 import torch
+from loguru import logger
 from torch import Tensor, nn
 
 from opr.utils import init_model, parse_device
@@ -18,6 +18,13 @@ except ImportError as import_error:
         "The 'faiss' package is not installed. Please install it manually. "
         "Details: https://github.com/facebookresearch/faiss",
     ) from import_error
+try:
+    import MinkowskiEngine as ME  # type: ignore
+
+    minkowski_available = True
+except ImportError:
+    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
+    minkowski_available = False
 
 
 class PlaceRecognitionPipeline:
@@ -69,6 +76,10 @@ class PlaceRecognitionPipeline:
             elif key.startswith("mask_"):
                 out_dict[f"masks_{key[5:]}"] = input_data[key].unsqueeze(0).to(self.device)
             elif key == "pointcloud_lidar_coords":
+                if not minkowski_available:
+                    raise RuntimeError(
+                        "MinkowskiEngine is not installed. Pointcloud processing requires MinkowskiEngine."
+                    )
                 quantized_coords, quantized_feats = ME.utils.sparse_quantize(
                     coordinates=input_data["pointcloud_lidar_coords"],
                     features=input_data["pointcloud_lidar_feats"],
