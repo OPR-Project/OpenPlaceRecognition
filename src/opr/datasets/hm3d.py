@@ -247,7 +247,6 @@ class HM3DDataset(BasePlaceRecognitionDataset):
         logger.debug(
             f"Number of non-zero rows in positives_mask: {(positives_mask.sum(dim=1) > 0).sum().item()}"
         )
-
         logger.debug("Returning masks")
         return positives_mask, negatives_mask
 

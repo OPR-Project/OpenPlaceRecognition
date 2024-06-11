@@ -80,7 +80,7 @@ You can download the weights from the public [Google Drive folder](https://drive
 
 ## ITLP-Campus dataset
 
-We introduce the ITLP-Campus dataset. The dataset was recorded on the Husky robotics platform on the university campus and consists of tracks recorded at different times of day (day/dusk/night) and different seasons (winter/spring). You can find more detail in the [VitalyyBezuglyj/ITLP-Campus](https://github.com/VitalyyBezuglyj/ITLP-Campus) repository.
+We introduce the ITLP-Campus dataset. The dataset was recorded on the Husky wheeled robotic platform on the university campus and consists of tracks recorded at different times of day (day/dusk/night) and different seasons (winter/spring). You can find more detail in the [VitalyyBezuglyj/ITLP-Campus](https://github.com/VitalyyBezuglyj/ITLP-Campus) repository.
 
 ## Package Structure
 
@@ -241,7 +241,7 @@ More details can be found in the [demo_pipelines.ipynb](./notebooks/demo_pipelin
 ## Featured Projects
 
 - [KirillMouraviev/simple_toposlam_model](https://github.com/KirillMouraviev/simple_toposlam_model) - An implementation of the Topological SLAM method that uses the OPR library.
-- [VitalyyBezuglyj/ITLP-Campus](https://github.com/VitalyyBezuglyj/ITLP-Campus) - ITLP-Camplus dataset tools.
+- [VitalyyBezuglyj/ITLP-Campus](https://github.com/VitalyyBezuglyj/ITLP-Campus) - ITLP-Campus dataset tools.
 
 ## License
 
