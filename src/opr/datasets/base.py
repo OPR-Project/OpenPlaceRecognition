@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 import torch
+from loguru import logger
 from pandas import DataFrame
 from torch import Tensor
 from torch.utils.data import Dataset
@@ -68,6 +69,12 @@ class BasePlaceRecognitionDataset(Dataset):
         self.subset = subset
 
         subset_csv_path = self.dataset_root / f"{subset}.csv"
+        if not subset_csv_path.exists() and subset == "test":
+            logger.warning(
+                f"There is no test.csv file in given dataset_root={self.dataset_root!r}."
+                "Trying to load val.csv instead."
+            )
+            subset_csv_path = self.dataset_root / "val.csv"
         if not subset_csv_path.exists():
             raise FileNotFoundError(
                 f"There is no {subset}.csv file in given dataset_root={self.dataset_root!r}."
@@ -86,10 +93,10 @@ class BasePlaceRecognitionDataset(Dataset):
         if negative_threshold < 0.0:
             raise ValueError(f"negative_threshold must be non-negative, but {negative_threshold!r} given.")
 
+        self._positives_mask, self._negatives_mask = self._build_masks(positive_threshold, negative_threshold)
         self._positives_index, self._nonnegative_index = self._build_indexes(
             positive_threshold, negative_threshold
         )
-        self._positives_mask, self._negatives_mask = self._build_masks(positive_threshold, negative_threshold)
 
         # TODO: images and masks transforms should be performed simualtenously via Albumentations
         self.image_transform = image_transform or DefaultImageTransform(train=(self.subset == "train"))

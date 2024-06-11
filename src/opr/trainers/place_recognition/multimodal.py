@@ -1,23 +1,25 @@
+"""Multimodal Place Recognition Trainer."""
 from time import time
 from typing import Optional
 
 import numpy as np
 import torch
-from opr.trainers.place_recognition.unimodal import (
-    UnimodalPlaceRecognitionTrainer,
-)
-from opr.utils import accumulate_dict, compute_epoch_stats_mean
+from loguru import logger
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
+from opr.trainers.place_recognition.unimodal import UnimodalPlaceRecognitionTrainer
+from opr.utils import accumulate_dict, compute_epoch_stats_mean
+
 
 class MultimodalPlaceRecognitionTrainer(UnimodalPlaceRecognitionTrainer):
-    def __init__(self, modalities_weights, *args, **kwargs):
-        """
-        Initialize the MultimodalTrainer object.
+    """Multimodal Place Recognition Trainer."""
+
+    def __init__(self, modalities_weights: dict[str, float], *args, **kwargs) -> None:  # noqa: ANN002,ANN003
+        """Initialize the MultimodalTrainer object.
 
         Args:
-            modalities_weights (list): A list of weights for each modality.
+            modalities_weights (dict): A dict of weights for each modality.
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
         """
@@ -29,7 +31,7 @@ class MultimodalPlaceRecognitionTrainer(UnimodalPlaceRecognitionTrainer):
         if val_dataloader:
             dataloaders["val"] = val_dataloader
         for stage, dataloader in dataloaders.items():
-            self.logger.info(f"=> {stage.capitalize()} stage:")
+            logger.info(f"=> {stage.capitalize()} stage:")
             start_t = time()
             self.model.train(stage == "train")
             accumulated_stats = {}
@@ -78,6 +80,6 @@ class MultimodalPlaceRecognitionTrainer(UnimodalPlaceRecognitionTrainer):
             epoch_stats = compute_epoch_stats_mean(accumulated_stats)
             elapsed_t = time() - start_t
             minutes, seconds = divmod(int(elapsed_t), 60)
-            self.logger.info(f"{stage.capitalize()} time: {int(minutes):02d}:{int(seconds):02d}")
-            self.logger.info(f"{stage.capitalize()} stats: {epoch_stats}")
+            logger.info(f"{stage.capitalize()} time: {int(minutes):02d}:{int(seconds):02d}")
+            logger.info(f"{stage.capitalize()} stats: {epoch_stats}")
             self._stats[stage] = epoch_stats
