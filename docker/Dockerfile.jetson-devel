@@ -1,0 +1,23 @@
+FROM open-place-recognition-jetson:r35.4.1-cu114-cp310
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    openssh-server \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install opencv-python
+
+# add user and his password
+ENV USER=docker_opr
+ARG UID=1000
+ARG GID=1000
+# default password
+ARG PW=user
+
+RUN useradd -m ${USER} --uid=${UID} -G sudo,audio,video,render && echo "${USER}:${PW}" | chpasswd
+WORKDIR /home/${USER}
+
+# create some directories for mounting volumes
+RUN mkdir OpenPlaceRecognition && chown -R ${UID}:${GID} /home/${USER}
+RUN mkdir Datasets && chown -R ${UID}:${GID} /home/${USER}
+
+USER ${UID}:${GID}
