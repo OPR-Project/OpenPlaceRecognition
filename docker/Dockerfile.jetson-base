@@ -1,0 +1,27 @@
+FROM open-place-recognition-jetson:r35.4.1-cu114-cp310
+ARG MAX_JOBS=4
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    openssh-server \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN ln -s /usr/local/bin/python3 /usr/local/bin/python
+
+# upgrade pip
+ARG PIP_VERSION=23.3.2
+ARG SETUPTOOLS_VERSION=69.0.3
+RUN pip install pip==${PIP_VERSION} setuptools==${SETUPTOOLS_VERSION}
+
+# install MinkowskiEngine
+ARG NINJA_VERSION=1.11.1.1
+RUN pip install ninja==${NINJA_VERSION}
+RUN git clone --recursive "https://github.com/alexmelekhin/MinkowskiEngine.git" && \
+    cd MinkowskiEngine && \
+    git checkout 4b628a7 && \
+    python3 setup.py install --force_cuda --blas=openblas && \
+    cd .. && \
+    rm -rf MinkowskiEngine
+
+RUN pip install opencv-python==4.10.0.84
