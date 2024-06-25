@@ -5,10 +5,10 @@ from typing import Dict, List, Literal, Optional, Tuple, Union
 
 import cv2
 import gdown
-import MinkowskiEngine as ME
 import numpy as np
 import pandas as pd
 import torch
+from loguru import logger
 from omegaconf import OmegaConf
 from pandas import DataFrame
 from torch import Tensor
@@ -27,6 +27,13 @@ from opr.datasets.soc_utils import (
     pack_objects,
     semantic_mask_to_instances,
 )
+
+try:
+    import MinkowskiEngine as ME  # type: ignore
+    minkowski_available = True
+except ImportError:
+    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
+    minkowski_available = False
 
 
 class ITLPCampus(Dataset):
@@ -598,6 +605,8 @@ class ITLPCampus(Dataset):
             elif data_key == "soc":
                 result["soc"] = torch.stack([e["soc"] for e in data_list], dim=0)
             elif data_key == "pointcloud_lidar_coords":
+                if not minkowski_available:
+                    raise RuntimeError("MinkowskiEngine is not installed. Cannot process point clouds.")
                 coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
                 feats_list = [e["pointcloud_lidar_feats"] for e in data_list]
                 n_points = [int(e.shape[0]) for e in coords_list]

@@ -1,0 +1,39 @@
+FROM open-place-recognition-jetson:base-r35.4.1-cu114-cp310
+
+# install other requirements from requirements.txt
+COPY requirements.txt .
+RUN pip install -r requirements.txt && \
+    rm requirements.txt
+
+# install dev requirements
+COPY requirements-dev.txt .
+RUN pip install -r requirements-dev.txt && \
+    rm requirements-dev.txt
+
+# install notebook requirements
+COPY requirements-notebook.txt .
+RUN pip install -r requirements-notebook.txt && \
+    rm requirements-notebook.txt
+
+# add user and his password
+ENV USER=docker_opr
+ARG UID=1000
+ARG GID=1000
+# default password
+ARG PW=user
+
+RUN useradd -m ${USER} --uid=${UID} -G sudo,audio,video,render && echo "${USER}:${PW}" | chpasswd
+WORKDIR /home/${USER}
+
+# create some directories for mounting volumes
+RUN mkdir OpenPlaceRecognition && chown -R ${UID}:${GID} /home/${USER}
+RUN mkdir Datasets && chown -R ${UID}:${GID} /home/${USER}
+
+USER ${UID}:${GID}
+
+# see https://stackoverflow.com/questions/67735216/after-using-pip-i-get-the-error-scikit-learn-has-not-been-built-correctly
+ENV LD_PRELOAD=/usr/local/lib/python3.10/dist-packages/scikit_learn.libs/libgomp-d22c30c5.so.1.0.0
+
+ENV XDG_CACHE_HOME=/home/${USER}/.cache
+ENV TORCH_HOME=${XDG_CACHE_HOME}/torch
+ENV PATH=${PATH}:/home/${USER}/.local/bin

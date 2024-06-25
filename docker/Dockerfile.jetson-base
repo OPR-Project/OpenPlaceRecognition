@@ -1,0 +1,83 @@
+FROM open-place-recognition-jetson:r35.4.1-cu114-cp310
+ARG MAX_JOBS=4
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
+    apt-get update && apt-get upgrade -y && apt-get install -y \
+    openssh-server \
+    g++-11 \
+    unzip \
+    zip \
+    default-jdk \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN ln -s /usr/local/bin/python3 /usr/local/bin/python
+
+# upgrade pip
+ARG PIP_VERSION=23.3.2
+ARG SETUPTOOLS_VERSION=69.0.3
+RUN pip install pip==${PIP_VERSION} setuptools==${SETUPTOOLS_VERSION}
+
+# install tensorrt bindings for python3.10
+# COPY docker/TensorRT /TensorRT
+RUN git clone --branch=release/8.5 https://github.com/NVIDIA/TensorRT.git && \
+    git submodule update --init --recursive
+ENV TRT_OSSPATH=/TensorRT
+ENV EXT_PATH=/external
+RUN mkdir -p ${EXT_PATH} && cd ${EXT_PATH} && \
+    git clone https://github.com/pybind/pybind11.git
+RUN wget https://www.python.org/ftp/python/3.10.14/Python-3.10.14.tar.xz && \
+    tar -xf Python-3.10.14.tar.xz && \
+    mkdir ${EXT_PATH}/python3.10 && \
+    cp -r Python-3.10.14/Include ${EXT_PATH}/python3.10/include && \
+    cp /usr/include/aarch64-linux-gnu/python3.10/pyconfig.h ${EXT_PATH}/python3.10/include/. && \
+    rm -rf Python-3.10.14.tar.xz Python-3.10.14
+RUN cd ${TRT_OSSPATH}/python && \
+    PYTHON_MAJOR_VERSION=3 PYTHON_MINOR_VERSION=10 TARGET_ARCHITECTURE=aarch64 bash build.sh
+RUN cd ${TRT_OSSPATH}/python/build/dist && \
+    pip install tensorrt-*.whl
+
+
+### install MinkowskiEngine
+ARG NINJA_VERSION=1.11.1.1
+RUN pip install ninja==${NINJA_VERSION}
+RUN git clone --recursive "https://github.com/alexmelekhin/MinkowskiEngine.git" && \
+    cd MinkowskiEngine && \
+    git checkout 4b628a7 && \
+    python3 setup.py install --force_cuda --blas=openblas && \
+    cd .. && \
+    rm -rf MinkowskiEngine
+
+RUN pip install \
+    numpy'<2.0.0' \
+    opencv-python==4.10.0.84
+
+### Install Torch-TensorRT. See: https://pytorch.org/TensorRT/getting_started/installation.html#compiling-from-source.
+
+WORKDIR /
+RUN rm -rf /TensorRT
+RUN git clone -b v2.1.0-rc9 https://github.com/pytorch/TensorRT.git
+
+# Install Bazel.
+WORKDIR /TensorRT
+RUN export BAZEL_VERSION=$(cat .bazelversion); \
+    mkdir bazel; \
+    cd bazel; \
+    curl -fSsL -O https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel-${BAZEL_VERSION}-dist.zip; \
+    unzip bazel-${BAZEL_VERSION}-dist.zip
+WORKDIR /TensorRT/bazel
+RUN bash ./compile.sh
+RUN cp output/bazel /usr/local/bin/
+
+# Install the torch_tensorrt package.
+RUN pip install pyyaml
+WORKDIR /TensorRT
+# See: https://github.com/pytorch/TensorRT/issues/2623.
+COPY docker/torch_tensorrt_workspace/WORKSPACE.jp51 /TensorRT/WORKSPACE
+RUN python3 setup.py install --use-cxx11-abi
+
+# install onnx-runtime
+RUN wget https://nvidia.box.com/shared/static/ndh4omnbyx9icnbwsizmivngnjo5kp1b.whl -O onnxruntime_gpu-1.18.0-cp310-cp310-linux_aarch64.whl && \
+    pip install onnxruntime_gpu-1.18.0-cp310-cp310-linux_aarch64.whl && \
+    rm onnxruntime_gpu-1.18.0-cp310-cp310-linux_aarch64.whl
