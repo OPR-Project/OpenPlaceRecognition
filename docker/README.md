@@ -77,7 +77,7 @@ We tested the code with the following environment configuration:
 To build the image run the command:
 
 ```bash
-CUDA_VERSION=11.4 PYTHON_VERSION=3.10 PYTORCH_VERSION=2.1 jetson-containers build --name=open-place-recognition-jetson pytorch torchvision:0.16.2  faiss
+CUDA_VERSION=11.4 PYTHON_VERSION=3.10 TENSORRT_VERSION=8.5 PYTORCH_VERSION=2.1 TORCHVISION_VERSION=0.16.2 jetson-containers build --name=open-place-recognition-jetson tensorrt pytorch torchvision faiss
 ```
 
 If your configuration is the same as described above (jetpack 5 and l4t 35.4.1) the above command will build an image named `open-place-recognition-jetson:r35.4.1-cu114-cp310`.

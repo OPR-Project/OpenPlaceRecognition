@@ -42,6 +42,7 @@ docker run -it -d --rm \
     --privileged \
     --name ${USER}_opr \
     --net host \
+    --shm-size=2g \
     -v $PROJECT_ROOT_DIR:/home/docker_opr/OpenPlaceRecognition:rw \
     -v $DATASETS_DIR:/home/docker_opr/Datasets:rw \
     open-place-recognition-jetson:devel-r35.4.1-cu114-cp310

@@ -30,3 +30,10 @@ RUN mkdir OpenPlaceRecognition && chown -R ${UID}:${GID} /home/${USER}
 RUN mkdir Datasets && chown -R ${UID}:${GID} /home/${USER}
 
 USER ${UID}:${GID}
+
+# see https://stackoverflow.com/questions/67735216/after-using-pip-i-get-the-error-scikit-learn-has-not-been-built-correctly
+ENV LD_PRELOAD=/usr/local/lib/python3.10/dist-packages/scikit_learn.libs/libgomp-d22c30c5.so.1.0.0
+
+ENV XDG_CACHE_HOME=/home/${USER}/.cache
+ENV TORCH_HOME=${XDG_CACHE_HOME}/torch
+ENV PATH=${PATH}:/home/${USER}/.local/bin
