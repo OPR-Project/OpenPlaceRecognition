@@ -7,6 +7,7 @@ import torch
 from torch import Tensor, nn
 import numpy as np
 import onnxruntime
+import torch_tensorrt
 
 from opr.modules import Concat
 
@@ -29,7 +30,7 @@ class ImageModel(nn.Module):
             head (ImageHead): Image head module.
             fusion (FusionModule, optional): Module to fuse descriptors for multiple images in batch.
                 Defaults to None.
-            forward_type (str, optional): One of fp32 | onnx_fp32.
+            forward_type (str, optional): One of fp32 | onnx_fp32 | trt_fp32.
                 Defaults to fp32.
             onnx_model_path (str, optional): Path to ResNet18FPN_ImageFeatureExtractor.onnx.
                 Defaults to None.
@@ -50,6 +51,9 @@ class ImageModel(nn.Module):
                     onnx_model_path, so, providers=exproviders)
             else:
                 raise NotImplementedError
+        elif forward_type.startswith("trt_fp32"):
+            print(f"WARNING - {forward_type} mode is only for inference on cuda!")
+            self.trt_model = None
 
     def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         img_descriptors = {}
@@ -81,7 +85,33 @@ class ImageModel(nn.Module):
                         shape=tuple(features.shape),
                         buffer_ptr=features.data_ptr(),
                     )
-                    self.ort_session.run_with_iobinding(io_binding)              
+                    self.ort_session.run_with_iobinding(io_binding)
+                elif self.forward_type == "trt_fp32":
+                    if not self.trt_model:
+                        # Enabled precision for TensorRT optimization
+                        enabled_precisions = {torch.float32}
+                        # Whether to print verbose logs
+                        debug = True
+                        # Workspace size for TensorRT
+                        workspace_size = 20 << 30
+                        # Maximum number of TRT Engines
+                        # (Lower value allows more graph segmentation)
+                        min_block_size = 7
+                        # Operations to Run in Torch, regardless of converter support
+                        torch_executed_ops = {}
+
+                        # Build and compile the model with torch.compile, using Torch-TensorRT backend
+                        self.trt_model = torch_tensorrt.compile(
+                            self.backbone,
+                            ir="torch_compile",
+                            inputs=[value.contiguous()],
+                            enabled_precisions=enabled_precisions,
+                            debug=debug,
+                            workspace_size=workspace_size,
+                            min_block_size=min_block_size,
+                            torch_executed_ops=torch_executed_ops,
+                        )
+                    features = self.trt_model(value.contiguous())
                 else:
                     raise NotImplementedError("Unknown forward_type for ImageModel")
                 img_descriptors[key] = self.head(features)
