@@ -1,8 +1,12 @@
 """Base meta-models for Place Recognition."""
+import os
 from typing import Dict, Optional
 
 import MinkowskiEngine as ME  # noqa: N817
+import torch
 from torch import Tensor, nn
+import numpy as np
+import onnxruntime
 
 from opr.modules import Concat
 
@@ -15,6 +19,8 @@ class ImageModel(nn.Module):
         backbone: nn.Module,
         head: nn.Module,
         fusion: Optional[nn.Module] = None,
+        forward_type: Optional[str] = "fp32",
+        onnx_model_path: Optional[str] = None
     ) -> None:
         """Meta-model for image-based Place Recognition.
 
@@ -23,17 +29,62 @@ class ImageModel(nn.Module):
             head (ImageHead): Image head module.
             fusion (FusionModule, optional): Module to fuse descriptors for multiple images in batch.
                 Defaults to None.
+            forward_type (str, optional): One of fp32 | onnx_fp32.
+                Defaults to fp32.
+            onnx_model_path (str, optional): Path to ResNet18FPN_ImageFeatureExtractor.onnx.
+                Defaults to None.
         """
         super().__init__()
         self.backbone = backbone
         self.head = head
         self.fusion = fusion
+        self.forward_type = forward_type
+
+        if forward_type.startswith("onnx"):
+            print(f"WARNING - {forward_type} mode is only for inference on cuda!")
+            so = onnxruntime.SessionOptions()
+            exproviders = ["CUDAExecutionProvider", "CPUExecutionProvider"]
+
+            if self.backbone.__class__.__name__ == "ResNet18FPNFeatureExtractor":
+                self.ort_session = onnxruntime.InferenceSession(
+                    onnx_model_path, so, providers=exproviders)
+            else:
+                raise NotImplementedError
 
     def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         img_descriptors = {}
         for key, value in batch.items():
             if key.startswith("images_"):
-                img_descriptors[key] = self.head(self.backbone(value))
+                if self.forward_type == "fp32":
+                    features = self.backbone(value)
+                elif self.forward_type == "onnx_fp32":
+                    input_name = self.ort_session.get_inputs()[0].name
+                    output_name = self.ort_session.get_outputs()[0].name
+                    io_binding = self.ort_session.io_binding()
+                    value = value.contiguous()
+
+                    io_binding.bind_input(
+                        name=input_name,
+                        device_type='cuda',
+                        device_id=0,
+                        element_type=np.float32,
+                        shape=tuple(value.shape),
+                        buffer_ptr=value.data_ptr(),
+                    )
+
+                    features = torch.empty((value.shape[0], 256, 12, 20), dtype=torch.float32, device='cuda:0').contiguous()
+                    io_binding.bind_output(
+                        name=output_name,
+                        device_type='cuda',
+                        device_id=0,
+                        element_type=np.float32,
+                        shape=tuple(features.shape),
+                        buffer_ptr=features.data_ptr(),
+                    )
+                    self.ort_session.run_with_iobinding(io_binding)              
+                else:
+                    raise NotImplementedError("Unknown forward_type for ImageModel")
+                img_descriptors[key] = self.head(features)
         if len(img_descriptors) > 1:
             if self.fusion is None:
                 raise ValueError("Fusion module is not defined but multiple images are provided")
