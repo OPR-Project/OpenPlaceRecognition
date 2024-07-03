@@ -4,3 +4,4 @@
 /best_soc_75.pth
 /best_soc_oriented.pth
 /ResNet18FPN_ImageFeatureExtractor.onnx
+/ResNet18FPN_ImageFeatureExtractor_int8.engine

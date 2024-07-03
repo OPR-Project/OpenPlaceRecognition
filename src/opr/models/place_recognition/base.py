@@ -8,6 +8,9 @@ from torch import Tensor, nn
 import numpy as np
 import onnxruntime
 import torch_tensorrt
+from polygraphy.backend.trt import (
+    engine_from_bytes,
+    TrtRunner)
 
 from opr.modules import Concat
 
@@ -21,7 +24,8 @@ class ImageModel(nn.Module):
         head: nn.Module,
         fusion: Optional[nn.Module] = None,
         forward_type: Optional[str] = "fp32",
-        onnx_model_path: Optional[str] = None
+        onnx_model_path: Optional[str] = None,
+        engine_path: Optional[str] = None
     ) -> None:
         """Meta-model for image-based Place Recognition.
 
@@ -33,6 +37,8 @@ class ImageModel(nn.Module):
             forward_type (str, optional): One of fp32 | onnx_fp32 | trt_fp32.
                 Defaults to fp32.
             onnx_model_path (str, optional): Path to ResNet18FPN_ImageFeatureExtractor.onnx.
+                Defaults to None.
+            engine_path (str, optional): Path to ResNet18FPN_ImageFeatureExtractor_int8.engine.
                 Defaults to None.
         """
         super().__init__()
@@ -54,6 +60,10 @@ class ImageModel(nn.Module):
         elif forward_type.startswith("trt_fp32"):
             print(f"WARNING - {forward_type} mode is only for inference on cuda!")
             self.trt_model = None
+        elif forward_type.startswith("trt_int8"):
+            print(f"WARNING - {forward_type} mode is only for inference on cuda!")
+            with open(engine_path, "rb") as bf:
+                self.engine = engine_from_bytes(bf.read())
 
     def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         img_descriptors = {}
@@ -112,6 +122,9 @@ class ImageModel(nn.Module):
                             torch_executed_ops=torch_executed_ops,
                         )
                     features = self.trt_model(value.contiguous())
+                elif self.forward_type == "trt_int8":
+                    with TrtRunner(self.engine) as runner:
+                        features = runner.infer({"input": value.contiguous()}, copy_outputs_to_host=False)["output"]
                 else:
                     raise NotImplementedError("Unknown forward_type for ImageModel")
                 img_descriptors[key] = self.head(features)
