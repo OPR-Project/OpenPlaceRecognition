@@ -64,6 +64,8 @@ class ImageModel(nn.Module):
             print(f"WARNING - {forward_type} mode is only for inference on cuda!")
             with open(engine_path, "rb") as bf:
                 self.engine = engine_from_bytes(bf.read())
+            self.runner = TrtRunner(self.engine)
+            self.runner.__enter__()
 
     def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         img_descriptors = {}
@@ -123,8 +125,7 @@ class ImageModel(nn.Module):
                         )
                     features = self.trt_model(value.contiguous())
                 elif self.forward_type == "trt_int8":
-                    with TrtRunner(self.engine) as runner:
-                        features = runner.infer({"input": value.contiguous()}, copy_outputs_to_host=False)["output"]
+                    features = self.runner.infer({"input": value.contiguous()}, copy_outputs_to_host=False)["output"]
                 else:
                     raise NotImplementedError("Unknown forward_type for ImageModel")
                 img_descriptors[key] = self.head(features)
