@@ -1,5 +1,0 @@
-outs:
-- md5: 9662d69d7168294d88410ef693f4d8c5
-  size: 3580948
-  hash: md5
-  path: ResNet18FPN_ImageFeatureExtractor_int8.engine
