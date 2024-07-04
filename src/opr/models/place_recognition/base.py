@@ -101,7 +101,7 @@ class ImageModel(nn.Module):
                         # Enabled precision for TensorRT optimization
                         enabled_precisions = {torch.float32}
                         # Whether to print verbose logs
-                        debug = True
+                        debug = False
                         # Workspace size for TensorRT
                         workspace_size = 20 << 30
                         # Maximum number of TRT Engines
