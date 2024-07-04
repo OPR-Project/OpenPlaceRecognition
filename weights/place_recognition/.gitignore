@@ -5,3 +5,4 @@
 /best_soc_oriented.pth
 /ResNet18FPN_ImageFeatureExtractor_int8_jetsonXavier.engine
 /ResNet18FPN_ImageFeatureExtractor_int8_nvidia.engine
+/ResNet18FPN_ImageFeatureExtractor.onnx
