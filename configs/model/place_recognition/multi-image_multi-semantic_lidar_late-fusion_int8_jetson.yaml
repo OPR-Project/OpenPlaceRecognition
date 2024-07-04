@@ -14,7 +14,7 @@ image_module:
   fusion:
     _target_: opr.modules.Add
   forward_type: trt_int8
-  engine_path: /home/docker_opr/OpenPlaceRecognition/weights/place_recognition/ResNet18FPN_ImageFeatureExtractor_int8_nvidia.engine
+  engine_path: /home/docker_opr/OpenPlaceRecognition/weights/place_recognition/ResNet18FPN_ImageFeatureExtractor_int8_jetsonXavier.engine
 
 semantic_module:
   _target_: opr.models.place_recognition.base.SemanticModel
