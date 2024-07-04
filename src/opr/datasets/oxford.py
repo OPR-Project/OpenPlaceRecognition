@@ -3,12 +3,20 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import cv2
-import MinkowskiEngine as ME  # type: ignore
 import numpy as np
 import torch
+from loguru import logger
 from torch import Tensor
 
 from opr.datasets.base import BasePlaceRecognitionDataset
+
+try:
+    import MinkowskiEngine as ME  # type: ignore
+
+    minkowski_available = True
+except ImportError:
+    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
+    minkowski_available = False
 
 
 class OxfordDataset(BasePlaceRecognitionDataset):
@@ -190,6 +198,8 @@ class OxfordDataset(BasePlaceRecognitionDataset):
             elif data_key.startswith("mask_"):
                 result[f"masks_{data_key[5:]}"] = torch.stack([e[data_key] for e in data_list])
             elif data_key == "pointcloud_lidar_coords":
+                if not minkowski_available:
+                    raise RuntimeError("MinkowskiEngine is not installed. Cannot process point clouds.")
                 coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
                 feats_list = [e["pointcloud_lidar_feats"] for e in data_list]
                 n_points = [int(e.shape[0]) for e in coords_list]

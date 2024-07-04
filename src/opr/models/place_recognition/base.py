@@ -2,8 +2,8 @@
 import os
 from typing import Dict, Optional
 
-import MinkowskiEngine as ME  # noqa: N817
 import torch
+from loguru import logger
 from torch import Tensor, nn
 import numpy as np
 import onnxruntime
@@ -13,6 +13,14 @@ from polygraphy.backend.trt import (
     TrtRunner)
 
 from opr.modules import Concat
+
+try:
+    import MinkowskiEngine as ME  # type: ignore
+
+    minkowski_available = True
+except ImportError:
+    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
+    minkowski_available = False
 
 
 class ImageModel(nn.Module):
@@ -194,7 +202,12 @@ class CloudModel(nn.Module):
         Args:
             backbone (CloudFeatureExtractor): Cloud feature extraction backbone.
             head (CloudHead): Cloud head module.
+
+        Raises:
+            RuntimeError: MinkowskiEngine is not installed. CloudModel requires MinkowskiEngine.
         """
+        if not minkowski_available:
+            raise RuntimeError("MinkowskiEngine is not installed. CloudModel requires MinkowskiEngine.")
         super().__init__()
         self.backbone = backbone
         self.head = head

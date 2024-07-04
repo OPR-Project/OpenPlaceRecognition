@@ -8,10 +8,18 @@ Code for Mink version adopted from the repository: https://github.com/jac99/Mink
 """
 from typing import Optional
 
-import MinkowskiEngine as ME  # noqa: N817
 import numpy as np
-from MinkowskiEngine.modules.resnet_block import BasicBlock
+from loguru import logger
 from torch import nn
+
+try:
+    import MinkowskiEngine as ME  # type: ignore
+    from MinkowskiEngine.modules.resnet_block import BasicBlock
+
+    minkowski_available = True
+except ImportError:
+    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
+    minkowski_available = False
 
 
 class MinkECALayer(nn.Module):
@@ -26,7 +34,12 @@ class MinkECALayer(nn.Module):
             channels (int): Number of channels in input.
             gamma (int): Gamma parameter, see paper for more details. Defaults to 2.
             b (int): b parameter, see paper for more details. Defaults to 1.
+
+        Raises:
+            RuntimeError: If MinkowskiEngine is not installed.
         """
+        if not minkowski_available:
+            raise RuntimeError("MinkowskiEngine is not installed. MinkECALayer requires MinkowskiEngine.")
         super().__init__()
         t = int(abs((np.log2(channels) + b) / gamma))
         k_size = t if t % 2 else t + 1
@@ -71,7 +84,14 @@ class MinkECABasicBlock(BasicBlock):
             dilation (int): Convolution dilation size. Defaults to 1.
             downsample (nn.Module, optional): Downsample layer, if needed. Defaults to None.
             dimension (int): Number of dimensions. Defaults to 3.
+
+        Raises:
+            RuntimeError: If MinkowskiEngine is not installed.
         """
+        if not minkowski_available:
+            raise RuntimeError(
+                "MinkowskiEngine is not installed. MinkECABasicBlock requires MinkowskiEngine."
+            )
         super().__init__(
             inplanes, planes, stride=stride, dilation=dilation, downsample=downsample, dimension=dimension
         )
