@@ -80,6 +80,8 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         ] = "euclidean",
         max_distance_soc: float = 50.0,
         anno: OmegaConf = None,
+        exclude_dynamic: bool = False,
+        dynamic_labels: Optional[list] = None
     ) -> None:
         """NCLT dataset implementation.
 
@@ -174,6 +176,8 @@ class NCLTDataset(BasePlaceRecognitionDataset):
             self.special_classes = [
                 self.anno.staff_classes.index(special) for special in self.anno.special_classes
             ]
+        self.exclude_dynamic = exclude_dynamic
+        self.dynamic_labels = dynamic_labels
 
     # TODO: apply DRY principle -> this is almost the same as in Oxford dataset
     def __getitem__(self, idx: int) -> Dict[str, Tensor]:  # noqa: D105
@@ -189,6 +193,8 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                 im_filepath = track_dir / self._images_dirname / f"{cam_name}" / f"{image_ts}.png"
                 im = cv2.imread(str(im_filepath))
                 im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                if self.exclude_dynamic:
+                    im = self._mask_dynamic_pixels(im, cam_name, self.dynamic_labels, idx)
                 im = self.image_transform(im)
                 data[data_source] = im
             elif data_source.startswith("mask_"):
@@ -201,6 +207,8 @@ class NCLTDataset(BasePlaceRecognitionDataset):
             elif data_source == "pointcloud_lidar":
                 pc_filepath = track_dir / self._pointclouds_dirname / f"{row['pointcloud']}.bin"
                 pointcloud = self._load_pc(pc_filepath)
+                if self.exclude_dynamic:
+                    pointcloud = self._mask_dynamic_points(pointcloud, self.dynamic_labels, idx)
                 data[f"{data_source}_coords"] = self.pointcloud_transform(pointcloud[:, :3])
                 if self._use_intensity_values:
                     data[f"{data_source}_feats"] = pointcloud[:, 3].unsqueeze(1)
@@ -226,6 +234,34 @@ class NCLTDataset(BasePlaceRecognitionDataset):
             return pc_tensor
         else:
             return pc
+    
+    def _mask_dynamic_points(self, pointcloud: Tensor, dynamic_labels: list, idx: int) -> Tensor:
+        row = self.dataset_df.iloc[idx]
+        image_ts = int(row["image"])
+        track_dir = self.dataset_root / str(row["track"])
+
+        mask_front_filepath = track_dir / self._masks_dirname / "Cam5" / f"{image_ts}.png"
+        mask_front = cv2.imread(str(mask_front_filepath), cv2.IMREAD_UNCHANGED).transpose(1, 0)
+        mask_back_filepath = track_dir / self._masks_dirname / "Cam2" / f"{image_ts}.png"
+        mask_back = cv2.imread(str(mask_back_filepath), cv2.IMREAD_UNCHANGED).transpose(1, 0)
+
+        coords_front, _, in_image_front = self.front_cam_proj(pointcloud)
+        coords_back, _, in_image_back = self.back_cam_proj(pointcloud)
+
+        point_labels = np.zeros(len(pointcloud), dtype=np.uint8)
+        point_labels[in_image_front] = get_points_labels_by_mask(coords_front, mask_front)
+        point_labels[in_image_back] = get_points_labels_by_mask(coords_back, mask_back)
+        return pointcloud[np.isin(point_labels, dynamic_labels, invert=True)]
+
+    def _mask_dynamic_pixels(self, im: np.array, cam_name: str, dynamic_labels: list, idx: int) -> np.array:
+        row = self.dataset_df.iloc[idx]
+        image_ts = int(row["image"])
+        track_dir = self.dataset_root / str(row["track"])
+
+        mask_filepath = track_dir / self._masks_dirname / cam_name / f"{image_ts}.png"
+        mask = cv2.imread(str(mask_filepath), cv2.IMREAD_UNCHANGED)
+        im[np.isin(mask, dynamic_labels)] = 0
+        return im
 
     # TODO: this is the same collate_fn as in Oxford -> refactor to DRY principle
     def _collate_data_dict(self, data_list: List[Dict[str, Tensor]]) -> Dict[str, Tensor]:
