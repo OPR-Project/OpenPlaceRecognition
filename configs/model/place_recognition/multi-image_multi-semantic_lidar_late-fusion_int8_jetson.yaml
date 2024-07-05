@@ -1,0 +1,45 @@
+_target_: opr.models.place_recognition.base.LateFusionModel
+
+image_module:
+  _target_: opr.models.place_recognition.base.ImageModel
+  backbone:
+    _target_: opr.modules.feature_extractors.ResNet18FPNFeatureExtractor
+    in_channels: 3
+    lateral_dim: 256
+    fh_num_bottom_up: 4
+    fh_num_top_down: 0
+    pretrained: True
+  head:
+    _target_: opr.modules.GeM
+  fusion:
+    _target_: opr.modules.Add
+  forward_type: trt_int8
+  engine_path: /home/docker_opr/OpenPlaceRecognition/weights/place_recognition/ResNet18FPN_ImageFeatureExtractor_int8_jetsonXavier.engine
+
+semantic_module:
+  _target_: opr.models.place_recognition.base.SemanticModel
+  backbone:
+    _target_: opr.modules.feature_extractors.ResNet18FPNFeatureExtractor
+    in_channels: 1
+    lateral_dim: 256
+    fh_num_bottom_up: 4
+    fh_num_top_down: 0
+    pretrained: False
+  head:
+    _target_: opr.modules.GeM
+  fusion:
+    _target_: opr.modules.Add
+
+cloud_module:
+  _target_: opr.models.place_recognition.MinkLoc3Dv2
+  in_channels: 1
+  out_channels: 256
+  num_top_down: 2
+  conv0_kernel_size: 5
+  block: ECABasicBlock
+  layers: [1, 1, 1, 1]
+  planes: [64, 128, 64, 32]
+  pooling: gem
+
+fusion_module:
+  _target_: opr.modules.Concat

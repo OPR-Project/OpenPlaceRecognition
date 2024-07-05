@@ -1,0 +1,5 @@
+outs:
+- md5: d80aa94679093204d7f963f22864f117
+  size: 11475689
+  hash: md5
+  path: ResNet18FPN_ImageFeatureExtractor.onnx

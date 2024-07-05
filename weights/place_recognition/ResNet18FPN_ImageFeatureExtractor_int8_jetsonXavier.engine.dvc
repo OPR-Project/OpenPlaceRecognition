@@ -1,0 +1,5 @@
+outs:
+- md5: 81a9fc73e1d63c487eb81e5644310954
+  size: 3094093
+  hash: md5
+  path: ResNet18FPN_ImageFeatureExtractor_int8_jetsonXavier.engine
