@@ -1,0 +1,11 @@
+soc_module:
+  _target_: opr.models.place_recognition.soc.SOCMLPMixerModel
+  model:
+    _target_: opr.models.place_recognition.soc.SOCMLPMixer
+    num_classes: ${dataset.anno.num_special}
+    num_objects: ${dataset.top_k_soc}
+    embeddings_size: 256
+    patch_size: 1
+    hidden_dim: 64
+    depth: 3
+  forward_type: trt_fp32
