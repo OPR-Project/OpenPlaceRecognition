@@ -1,0 +1,5 @@
+outs:
+- md5: b4ae7e12ebed4710a98523a9a7bea96f
+  size: 22642603
+  hash: md5
+  path: multimodal_with_soc_outdoor_nclt.pth

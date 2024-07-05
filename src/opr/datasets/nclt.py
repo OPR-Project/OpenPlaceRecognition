@@ -7,8 +7,16 @@ import numpy as np
 import torch
 from loguru import logger
 from torch import Tensor
+from omegaconf import OmegaConf
 
 from opr.datasets.base import BasePlaceRecognitionDataset
+from opr.datasets.projection import NCLTProjector
+from opr.datasets.soc_utils import (
+    get_points_labels_by_mask,
+    instance_masks_to_objects,
+    pack_objects,
+    semantic_mask_to_instances,
+)
 from opr.utils import cartesian_to_spherical
 
 try:
@@ -65,6 +73,15 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         semantic_transform: Optional[Any] = None,
         pointcloud_transform: Optional[Any] = None,
         pointcloud_set_transform: Optional[Any] = None,
+        load_soc: bool = False,
+        top_k_soc: int = 10,
+        soc_coords_type: Literal[
+            "cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"
+        ] = "euclidean",
+        max_distance_soc: float = 50.0,
+        anno: OmegaConf = None,
+        exclude_dynamic: bool = False,
+        dynamic_labels: Optional[list] = None
     ) -> None:
         """NCLT dataset implementation.
 
@@ -146,6 +163,22 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         self._spherical_coords = spherical_coords
         self._use_intensity_values = use_intensity_values
 
+        self.load_soc = load_soc
+        self.front_cam_proj = NCLTProjector(front=True)
+        self.back_cam_proj = NCLTProjector(front=False)
+        self.top_k_soc = top_k_soc
+        self.max_distance_soc = max_distance_soc
+        self.soc_coords_type = soc_coords_type
+        if self.soc_coords_type not in ("cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"):
+            raise ValueError(f"Unknown soc_coords_type: {soc_coords_type!r}")
+        self.anno = anno
+        if anno:
+            self.special_classes = [
+                self.anno.staff_classes.index(special) for special in self.anno.special_classes
+            ]
+        self.exclude_dynamic = exclude_dynamic
+        self.dynamic_labels = dynamic_labels
+
     # TODO: apply DRY principle -> this is almost the same as in Oxford dataset
     def __getitem__(self, idx: int) -> Dict[str, Tensor]:  # noqa: D105
         row = self.dataset_df.iloc[idx]
@@ -160,6 +193,8 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                 im_filepath = track_dir / self._images_dirname / f"{cam_name}" / f"{image_ts}.png"
                 im = cv2.imread(str(im_filepath))
                 im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+                if self.exclude_dynamic:
+                    im = self._mask_dynamic_pixels(im, cam_name, self.dynamic_labels, idx)
                 im = self.image_transform(im)
                 data[data_source] = im
             elif data_source.startswith("mask_"):
@@ -172,15 +207,21 @@ class NCLTDataset(BasePlaceRecognitionDataset):
             elif data_source == "pointcloud_lidar":
                 pc_filepath = track_dir / self._pointclouds_dirname / f"{row['pointcloud']}.bin"
                 pointcloud = self._load_pc(pc_filepath)
+                if self.exclude_dynamic:
+                    pointcloud = self._mask_dynamic_points(pointcloud, self.dynamic_labels, idx)
                 data[f"{data_source}_coords"] = self.pointcloud_transform(pointcloud[:, :3])
                 if self._use_intensity_values:
                     data[f"{data_source}_feats"] = pointcloud[:, 3].unsqueeze(1)
                 else:
                     data[f"{data_source}_feats"] = torch.ones_like(pointcloud[:, :1])
 
+        if self.load_soc:
+            soc = self._get_soc(idx)
+            data["soc"] = soc
+
         return data
 
-    def _load_pc(self, filepath: Union[str, Path]) -> Tensor:
+    def _load_pc(self, filepath: Union[str, Path], torch_tensor: bool = True) -> Tensor:
         if self._use_intensity_values:
             raise NotImplementedError("Intensity values are not supported yet.")
         pc = np.fromfile(filepath, dtype=np.float32).reshape(-1, 3)  # TODO: preprocess pointclouds properly
@@ -188,8 +229,39 @@ class NCLTDataset(BasePlaceRecognitionDataset):
             pc = pc[np.linalg.norm(pc, axis=1) < self._max_point_distance]
         if self._spherical_coords:
             pc = cartesian_to_spherical(pc, dataset_name="nclt")
-        pc_tensor = torch.tensor(pc, dtype=torch.float)
-        return pc_tensor
+        if torch_tensor:
+            pc_tensor = torch.tensor(pc, dtype=torch.float)
+            return pc_tensor
+        else:
+            return pc
+    
+    def _mask_dynamic_points(self, pointcloud: Tensor, dynamic_labels: list, idx: int) -> Tensor:
+        row = self.dataset_df.iloc[idx]
+        image_ts = int(row["image"])
+        track_dir = self.dataset_root / str(row["track"])
+
+        mask_front_filepath = track_dir / self._masks_dirname / "Cam5" / f"{image_ts}.png"
+        mask_front = cv2.imread(str(mask_front_filepath), cv2.IMREAD_UNCHANGED).transpose(1, 0)
+        mask_back_filepath = track_dir / self._masks_dirname / "Cam2" / f"{image_ts}.png"
+        mask_back = cv2.imread(str(mask_back_filepath), cv2.IMREAD_UNCHANGED).transpose(1, 0)
+
+        coords_front, _, in_image_front = self.front_cam_proj(pointcloud)
+        coords_back, _, in_image_back = self.back_cam_proj(pointcloud)
+
+        point_labels = np.zeros(len(pointcloud), dtype=np.uint8)
+        point_labels[in_image_front] = get_points_labels_by_mask(coords_front, mask_front)
+        point_labels[in_image_back] = get_points_labels_by_mask(coords_back, mask_back)
+        return pointcloud[np.isin(point_labels, dynamic_labels, invert=True)]
+
+    def _mask_dynamic_pixels(self, im: np.array, cam_name: str, dynamic_labels: list, idx: int) -> np.array:
+        row = self.dataset_df.iloc[idx]
+        image_ts = int(row["image"])
+        track_dir = self.dataset_root / str(row["track"])
+
+        mask_filepath = track_dir / self._masks_dirname / cam_name / f"{image_ts}.png"
+        mask = cv2.imread(str(mask_filepath), cv2.IMREAD_UNCHANGED)
+        im[np.isin(mask, dynamic_labels)] = 0
+        return im
 
     # TODO: this is the same collate_fn as in Oxford -> refactor to DRY principle
     def _collate_data_dict(self, data_list: List[Dict[str, Tensor]]) -> Dict[str, Tensor]:
@@ -204,6 +276,8 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                 result[f"images_{data_key[6:]}"] = torch.stack([e[data_key] for e in data_list])
             elif data_key.startswith("mask_"):
                 result[f"masks_{data_key[5:]}"] = torch.stack([e[data_key] for e in data_list])
+            elif data_key == "soc":
+                result["soc"] = torch.stack([e["soc"] for e in data_list], dim=0)
             elif data_key == "pointcloud_lidar_coords":
                 if not minkowski_available:
                     raise RuntimeError("MinkowskiEngine is not installed. Cannot process point clouds.")
@@ -244,3 +318,143 @@ class NCLTDataset(BasePlaceRecognitionDataset):
             Dict[str, Tensor]: dictionary of batched data.
         """
         return self._collate_data_dict(data_list)
+
+    def _get_soc(self, idx: int) -> Tensor:
+        row = self.dataset_df.iloc[idx]
+        image_ts = int(row["image"])
+        track_dir = self.dataset_root / str(row["track"])
+
+        mask_front_filepath = track_dir / self._masks_dirname / "Cam5" / f"{image_ts}.png"
+        mask_front = cv2.imread(str(mask_front_filepath), cv2.IMREAD_UNCHANGED).transpose(1, 0)
+        mask_back_filepath = track_dir / self._masks_dirname / "Cam2" / f"{image_ts}.png"
+        mask_back = cv2.imread(str(mask_back_filepath), cv2.IMREAD_UNCHANGED).transpose(1, 0)
+
+        pc_filepath = track_dir / self._pointclouds_dirname / f"{row['pointcloud']}.bin"
+        lidar_scan = self._load_pc(pc_filepath, torch_tensor=False)
+
+        coords_front, _, in_image_front = self.front_cam_proj(lidar_scan)
+        coords_back, _, in_image_back = self.back_cam_proj(lidar_scan)
+
+        point_labels = np.zeros(len(lidar_scan), dtype=np.uint8)
+        point_labels[in_image_front] = get_points_labels_by_mask(coords_front, mask_front)
+        point_labels[in_image_back] = get_points_labels_by_mask(coords_back, mask_back)
+
+        instances_front = semantic_mask_to_instances(
+            mask_front,
+            area_threshold=10,
+            labels_whitelist=self.special_classes,
+        )
+        instances_back = semantic_mask_to_instances(
+            mask_back,
+            area_threshold=10,
+            labels_whitelist=self.special_classes,
+        )
+
+        objects_front = instance_masks_to_objects(
+            instances_front,
+            coords_front,
+            point_labels[in_image_front],
+            lidar_scan[in_image_front],
+        )
+        objects_back = instance_masks_to_objects(
+            instances_back,
+            coords_back,
+            point_labels[in_image_back],
+            lidar_scan[in_image_back],
+        )
+
+        objects = {**objects_front, **objects_back}
+        packed_objects = pack_objects(objects, self.top_k_soc, self.max_distance_soc, self.special_classes)
+
+        if self.soc_coords_type == "cylindrical_3d":
+            packed_objects = np.concatenate(
+                (
+                    np.linalg.norm(packed_objects, axis=-1, keepdims=True),
+                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[..., None],
+                    packed_objects[..., 2:],
+                ),
+                axis=-1,
+            )
+            if self.subset == "train":
+                packed_objects = self.augment_coords_with_rotation(
+                    packed_objects, angle_range=(-np.pi, np.pi)
+                )
+                packed_objects = self.augment_coords_with_normal(packed_objects, std=(0.2, 0.2, 0.2))
+        elif self.soc_coords_type == "cylindrical_2d":
+            packed_objects = np.concatenate(
+                (
+                    np.linalg.norm(packed_objects[..., :2], axis=-1, keepdims=True),
+                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[..., None],
+                    packed_objects[..., 2:],
+                ),
+                axis=-1,
+            )
+        elif self.soc_coords_type == "euclidean":
+            pass
+        elif self.soc_coords_type == "spherical":
+            packed_objects = np.concatenate(
+                (
+                    np.linalg.norm(packed_objects, axis=-1, keepdims=True),
+                    np.arccos(
+                        packed_objects[..., 2] / np.linalg.norm(packed_objects, axis=-1, keepdims=True)
+                    ),
+                    np.arctan2(packed_objects[..., 1], packed_objects[..., 0])[..., None],
+                ),
+                axis=-1,
+            )
+        else:
+            raise ValueError(f"Unknown soc_coords_type: {self.soc_coords_type!r}")
+
+        objects_tensor = torch.from_numpy(packed_objects).float()
+
+        return objects_tensor
+
+    def augment_coords_with_rotation(
+        self, coords: np.ndarray, angle_range: Tuple = (-np.pi, np.pi)
+    ) -> np.ndarray:
+        """Augment the coordinates with a random rotation - all objects are rotated by the same, random uniformly distributed angle.
+
+        Args:
+            coords (np.ndarray): The coordinates to be augmented.
+            angle_range (Tuple, optional): The range of the random rotation angle. Defaults to (-np.pi, np.pi).
+
+        Returns:
+            np.ndarray: The augmented coordinates.
+        """
+        # Generate a random angle for rotation within the specified range
+        random_angle = np.random.uniform(low=angle_range[0], high=angle_range[1])
+
+        # Add the random angle to the θ coordinate of each triplet
+        coords[:, :, 1] = (coords[:, :, 1] + random_angle) % (2 * np.pi)
+
+        # Adjust angles to be in the range (-pi, pi)
+        coords[:, :, 1] = (coords[:, :, 1] + np.pi) % (2 * np.pi) - np.pi
+
+        return coords
+
+    def augment_coords_with_normal(
+        self,
+        coords: np.ndarray,
+        mean: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        std: Tuple[float, float, float] = (1.0, 1.0, 1.0),
+    ) -> np.ndarray:
+        """Augment the coordinates with a random normal distribution.
+
+        Args:
+            coords (np.ndarray): The coordinates to be augmented.
+            mean (Tuple[float, float, float], optional): The mean of the normal distribution. Defaults to (0.0, 0.0, 0.0).
+            std (Tuple[float, float, float], optional): The standard deviation of the normal distribution. Defaults to (1.0, 1.0, 1.0).
+
+        Returns:
+            np.ndarray: The augmented coordinates.
+        """
+        # Generate random values from a normal distribution
+        N, K = coords.shape[:2]
+        for i, (m, s) in enumerate(zip(mean, std)):
+            random_deltas = np.random.normal(m, s, size=(N, K, 1))
+            coords[:, :, i] += random_deltas[:, :, 0]
+
+        coords[:, :, 0] = np.maximum(coords[:, :, 0], 0)
+        coords[:, :, 1] = (coords[:, :, 1] + np.pi) % (2 * np.pi) - np.pi
+
+        return coords

@@ -3,3 +3,6 @@
 /multi-image_lidar_late-fusion_nclt.pth
 /best_soc_75.pth
 /best_soc_oriented.pth
+/soc_nclt.pth
+/multimodal_with_soc_outdoor_nclt.pth
+/multimodal_semantic_with_soc_outdoor_nclt.pth
