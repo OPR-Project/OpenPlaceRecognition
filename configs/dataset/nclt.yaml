@@ -1,4 +1,7 @@
 _target_: opr.datasets.nclt.NCLTDataset
+defaults:
+ - _self_
+ - anno: oneformer
 
 dataset_root: ???
 data_to_load: [pointcloud_lidar,]
@@ -15,3 +18,7 @@ image_transform: null
 semantic_transform: null
 pointcloud_transform: null
 pointcloud_set_transform: null
+
+load_soc: False
+top_k_soc: 5
+max_distance_soc: 50.0

@@ -1,0 +1,5 @@
+outs:
+- md5: 328e75054b29b6934163413407a65e63
+  size: 1458742
+  hash: md5
+  path: soc_nclt.pth
