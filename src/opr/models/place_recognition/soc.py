@@ -1,6 +1,8 @@
 """Semantic-Object-Context modality model."""
 from typing import Dict, Optional
 
+import torch
+import torch_tensorrt
 import torch.nn.functional as F
 from mlp_mixer_pytorch import MLPMixer
 from torch import Tensor, nn
@@ -26,11 +28,11 @@ class SOCModel(nn.Module):
         self.num_classes = num_classes
         self.num_objects = num_objects
 
-    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:
+    def forward(self, x: Tensor) -> Dict[str, Tensor]:
         """Forward pass.
 
         Args:
-            batch (Dict[str, Tensor]): input batch
+            x (Tensor): input batch
 
         Returns:
             Dict[str, Tensor]: output dictionary
@@ -62,16 +64,15 @@ class SOCMLP(SOCModel):
         self.fc2 = nn.Linear(1024, 512)
         self.fc3 = nn.Linear(512, embeddings_size)
 
-    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:
+    def forward(self, x: Tensor) -> Dict[str, Tensor]:
         """Forward pass.
 
         Args:
-            batch (Dict[str, Tensor]): input batch
+            x (Tensor): input batch
 
         Returns:
             torch.Tensor: output tensor of shape (batch_size, embeddings_size)
         """
-        x = batch["soc"]
         batch_size = x.shape[0]
         x = x.view(batch_size, -1)
         x = F.relu(self.fc1(x))
@@ -130,18 +131,17 @@ class SOCMLPMixer(SOCModel):
 
         self.fc = nn.Linear(embeddings_size, embeddings_size)
 
-    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:
+    def forward(self, x: Tensor) -> Dict[str, Tensor]:
         """Forward pass.
 
         Args:
-            batch (Dict[str, Tensor]): input batch
+            x (Tensor): input batch
 
         Returns:
             Dict[str, Tensor] : output dictionary with "final_descriptor" key containing the output tensor
         """
         # Reshape input to be compatible with the MLP Mixer, which expects an "image" tensor
         # Assuming the input x is of shape (batch_size, N, K, 3)
-        x = batch["soc"]
         batch_size = x.shape[0]
 
         # Flatten the last two dimensions and treat them as channels (K*3)
@@ -158,3 +158,45 @@ class SOCMLPMixer(SOCModel):
 
         out_dict: Dict[str, Tensor] = {"final_descriptor": descriptor}
         return out_dict
+    
+
+class SOCMLPMixerModel(nn.Module):
+    def __init__(self, model, forward_type="fp32"):
+        super().__init__()
+        self.model = model
+        self.forward_type = forward_type
+
+        if forward_type.startswith("trt_fp32"):
+            print(f"WARNING - {forward_type} mode is only for inference on cuda!")
+            self.trt_model = None
+
+    def forward(self, batch):
+        value = batch["soc"]
+        if self.forward_type == "trt_fp32":
+            if not self.trt_model:
+                # Enabled precision for TensorRT optimization
+                enabled_precisions = {torch.float32}
+                # Whether to print verbose logs
+                debug = False
+                # Workspace size for TensorRT
+                workspace_size = 20 << 30
+                # Maximum number of TRT Engines
+                # (Lower value allows more graph segmentation)
+                min_block_size = 7
+                # Operations to Run in Torch, regardless of converter support
+                torch_executed_ops = {}
+
+                # Build and compile the model with torch.compile, using Torch-TensorRT backend
+                self.trt_model = torch_tensorrt.compile(
+                    self.model,
+                    ir="torch_compile",
+                    inputs=[value.contiguous()],
+                    enabled_precisions=enabled_precisions,
+                    debug=debug,
+                    workspace_size=workspace_size,
+                    min_block_size=min_block_size,
+                    torch_executed_ops=torch_executed_ops,
+                )
+            return self.trt_model(value.contiguous())
+        else:
+            return self.model(value)
