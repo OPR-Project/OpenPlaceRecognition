@@ -42,7 +42,7 @@ class ImageModel(nn.Module):
             head (ImageHead): Image head module.
             fusion (FusionModule, optional): Module to fuse descriptors for multiple images in batch.
                 Defaults to None.
-            forward_type (str, optional): One of fp32 | onnx_fp32 | trt_fp32.
+            forward_type (str, optional): One of fp32 | onnx_fp32 | trt_fp32 | trt_int8.
                 Defaults to fp32.
             onnx_model_path (str, optional): Path to ResNet18FPN_ImageFeatureExtractor.onnx.
                 Defaults to None.
@@ -157,6 +157,9 @@ class SemanticModel(ImageModel):
         backbone: nn.Module,
         head: nn.Module,
         fusion: Optional[nn.Module] = None,
+        forward_type: Optional[str] = "fp32",
+        onnx_model_path: Optional[str] = None,
+        engine_path: Optional[str] = None
     ) -> None:
         """Meta-model for semantic-based Place Recognition.
 
@@ -165,18 +168,84 @@ class SemanticModel(ImageModel):
             head (ImageHead): Image head module.
             fusion (FusionModule, optional): Module to fuse descriptors for multiple images in batch.
                 Defaults to None.
+            forward_type (str, optional): One of fp32 | onnx_fp32 | trt_fp32 | trt_int8.
+                Defaults to fp32.
+            onnx_model_path (str, optional): Path to ResNet18FPN_ImageFeatureExtractor.onnx.
+                Defaults to None.
+            engine_path (str, optional): Path to ResNet18FPN_ImageFeatureExtractor_int8.engine.
+                Defaults to None.
         """
         super().__init__(
             backbone=backbone,
             head=head,
             fusion=fusion,
+            forward_type=forward_type,
+            onnx_model_path=onnx_model_path,
+            engine_path=engine_path
         )
 
     def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         mask_descriptors = {}
         for key, value in batch.items():
             if key.startswith("masks_"):
-                mask_descriptors[key] = self.head(self.backbone(value))
+                if self.forward_type == "fp32":
+                    features = self.backbone(value)
+                elif self.forward_type == "onnx_fp32":
+                    input_name = self.ort_session.get_inputs()[0].name
+                    output_name = self.ort_session.get_outputs()[0].name
+                    io_binding = self.ort_session.io_binding()
+                    value = value.contiguous()
+
+                    io_binding.bind_input(
+                        name=input_name,
+                        device_type='cuda',
+                        device_id=0,
+                        element_type=np.float32,
+                        shape=tuple(value.shape),
+                        buffer_ptr=value.data_ptr(),
+                    )
+
+                    features = torch.empty((value.shape[0], 256, 12, 20), dtype=torch.float32, device='cuda:0').contiguous()
+                    io_binding.bind_output(
+                        name=output_name,
+                        device_type='cuda',
+                        device_id=0,
+                        element_type=np.float32,
+                        shape=tuple(features.shape),
+                        buffer_ptr=features.data_ptr(),
+                    )
+                    self.ort_session.run_with_iobinding(io_binding)
+                elif self.forward_type == "trt_fp32":
+                    if not self.trt_model:
+                        # Enabled precision for TensorRT optimization
+                        enabled_precisions = {torch.float32}
+                        # Whether to print verbose logs
+                        debug = False
+                        # Workspace size for TensorRT
+                        workspace_size = 20 << 30
+                        # Maximum number of TRT Engines
+                        # (Lower value allows more graph segmentation)
+                        min_block_size = 7
+                        # Operations to Run in Torch, regardless of converter support
+                        torch_executed_ops = {}
+
+                        # Build and compile the model with torch.compile, using Torch-TensorRT backend
+                        self.trt_model = torch_tensorrt.compile(
+                            self.backbone,
+                            ir="torch_compile",
+                            inputs=[value.contiguous()],
+                            enabled_precisions=enabled_precisions,
+                            debug=debug,
+                            workspace_size=workspace_size,
+                            min_block_size=min_block_size,
+                            torch_executed_ops=torch_executed_ops,
+                        )
+                    features = self.trt_model(value.contiguous())
+                elif self.forward_type == "trt_int8":
+                    features = self.runner.infer({"input": value.contiguous()}, copy_outputs_to_host=False)["output"]
+                else:
+                    raise NotImplementedError("Unknown forward_type for ImageModel")
+                mask_descriptors[key] = self.head(features)
         if len(mask_descriptors) > 1:
             if self.fusion is None:
                 raise ValueError("Fusion module is not defined but multiple masks are provided")
