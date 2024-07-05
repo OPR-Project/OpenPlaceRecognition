@@ -24,12 +24,16 @@ semantic_module:
     pretrained: False
   head:
     _target_: opr.modules.GeM
+  forward_type: fp32
 
 soc_module:
-  _target_: opr.models.place_recognition.soc.SOCMLPMixer
-  num_classes: 72
-  num_objects: 10
-  embeddings_size: 256
-  patch_size: 1
-  hidden_dim: 64
-  depth: 3
+  _target_: opr.models.place_recognition.soc.SOCMLPMixerModel
+  model:
+    _target_: opr.models.place_recognition.soc.SOCMLPMixer
+    num_classes: 72
+    num_objects: 10
+    embeddings_size: 256
+    patch_size: 1
+    hidden_dim: 64
+    depth: 3
+  forward_type: fp32

@@ -51,7 +51,7 @@ if __name__ == "__main__":
     if model.image_module:
         benchmark(model.image_module, batch,
                   forward_type=model.image_module.forward_type)
-        benchmark_fp16(model.image_module, batch)
+        #benchmark_fp16(model.image_module, batch)
 
     if model.semantic_module:
         benchmark(model.semantic_module, batch,
@@ -62,4 +62,4 @@ if __name__ == "__main__":
 
     if model.soc_module:
         benchmark(model.soc_module, batch,
-                  forward_type="fp32")
+                  forward_type=model.semantic_module.forward_type)
