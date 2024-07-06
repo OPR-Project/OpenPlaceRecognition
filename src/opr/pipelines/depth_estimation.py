@@ -7,6 +7,8 @@ from opr.utils import init_model, parse_device
 from typing import Dict, Optional, Union
 from torchvision.transforms import Resize
 from skimage.transform import resize
+import torch_tensorrt
+import time
 
 class DepthEstimationPipeline:
     def __init__(self, 
@@ -16,6 +18,8 @@ class DepthEstimationPipeline:
         self.device = parse_device(device)
         self.model = init_model(model, model_weights_path, self.device)
         self.model.eval()
+        self.forward_type = 'fp32'
+        self.trt_model = None
 
     def set_camera_matrix(self, camera_matrix: Dict[str, float]):
         self.camera_matrix = Namespace(**camera_matrix)
@@ -27,8 +31,37 @@ class DepthEstimationPipeline:
         raw_img_h, raw_img_w = image.shape[0], image.shape[1]
         image = resize(image, (480, 640))
         image_tensor = torch.Tensor(np.transpose(image, [2, 0, 1])[np.newaxis, ...]).to(self.device)
-        predicted_depth = self.model.inference(image_tensor).cpu().numpy()[0, 0]
+        if self.forward_type == 'fp32':
+            if not self.trt_model:
+                 # Enabled precision for TensorRT optimization
+                 enabled_precisions = {torch.float32}
+                 # Whether to print verbose logs
+                 debug = True
+                 # Workspace size for TensorRT
+                 workspace_size = 20 << 30
+                 # Maximum number of TRT Engines
+                 # (Lower value allows more graph segmentation)
+                 min_block_size = 7
+                 # Operations to Run in Torch, regardless of converter support
+                 torch_executed_ops = {}
+
+                 # Build and compile the model with torch.compile, using Torch-TensorRT backend
+                 self.trt_model = torch_tensorrt.compile(
+                            self.model.depth_model,
+                            ir="torch_compile",
+                            inputs=[image_tensor.contiguous()],
+                            enabled_precisions=enabled_precisions,
+                            debug=debug,
+                            workspace_size=workspace_size,
+                            min_block_size=min_block_size,
+                            torch_executed_ops=torch_executed_ops,
+                        )
+        start_time = time.time()
+        #predicted_depth = self.model.inference(image_tensor).cpu().numpy()[0, 0]
+        predicted_depth = self.trt_model(image_tensor).cpu().numpy()[0,0]
         predicted_depth = resize(predicted_depth, (raw_img_h, raw_img_w))
+        end_time = time.time()
+        print('Inference time:', end_time - start_time)
         pcd_extended = np.concatenate((point_cloud, np.ones((point_cloud.shape[0], 1))), axis=1)
         pcd_transformed = pcd_extended @ self.lidar_to_camera_transform
         pcd_transformed = pcd_transformed[:, :3] / pcd_transformed[:, 3:]
