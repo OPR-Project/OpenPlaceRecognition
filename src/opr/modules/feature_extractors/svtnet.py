@@ -8,6 +8,8 @@ Citation:
 Source: https://github.com/ZhenboSong/SVTNet
 Paper: https://arxiv.org/abs/2105.00149
 """
+from __future__ import annotations
+
 from loguru import logger
 from torch import nn
 
@@ -22,6 +24,7 @@ try:
     minkowski_available = True
 except ImportError:
     logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
+    BasicBlock = Bottleneck = nn.Module
     minkowski_available = False
 
 

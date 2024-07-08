@@ -6,6 +6,7 @@ Proceedings of the IEEE/CVF conference on computer vision and pattern recognitio
 Paper: https://arxiv.org/abs/1910.03151
 Code for Mink version adopted from the repository: https://github.com/jac99/MinkLoc3Dv2, MIT License
 """
+from __future__ import annotations
 from typing import Optional
 
 import numpy as np
@@ -19,6 +20,7 @@ try:
     minkowski_available = True
 except ImportError:
     logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
+    BasicBlock = nn.Module
     minkowski_available = False
 
 
