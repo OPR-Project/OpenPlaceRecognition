@@ -6,6 +6,7 @@ Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision
 Paper: https://arxiv.org/abs/2011.04530
 Code is adopted from the original repository: https://github.com/jac99/MinkLoc3Dv2, MIT License
 """
+from __future__ import annotations
 from typing import Tuple, Type, Union
 
 from loguru import logger
@@ -20,6 +21,7 @@ try:
     minkowski_available = True
 except ImportError:
     logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
+    BasicBlock = Bottleneck = nn.Module
     minkowski_available = False
 
 
