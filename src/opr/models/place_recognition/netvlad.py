@@ -1,3 +1,4 @@
+"""Implementation of NetVLAD model."""
 from opr.modules.netvlad import NetVLAD
 
 from .base import ImageModel
@@ -17,7 +18,7 @@ class NetVLADModel(ImageModel):
         num_clusters: int = 64,
         dim: int = 128,
         normalize_input: bool = True,
-        vladv2: bool = False
+        vladv2: bool = False,
     ) -> None:
         """Initialize NetVLAD Image Model.
 
