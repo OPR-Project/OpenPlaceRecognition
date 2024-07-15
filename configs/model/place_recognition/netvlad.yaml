@@ -1,0 +1,6 @@
+_target_: opr.models.place_recognition.NetVLADModel
+
+backbone: resnet18
+num_clusters: 64
+normalize_input: True
+vladv2: False
