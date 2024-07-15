@@ -4,7 +4,7 @@ from .base import ImageModel
 from .resnet import ResNet18FPNFeatureExtractor
 
 
-class NetVLADImageModel(ImageModel):
+class NetVLADModel(ImageModel):
     """NetVLAD: CNN architecture for weakly supervised place recognition.
 
     Paper: https://arxiv.org/abs/1511.07247v3
