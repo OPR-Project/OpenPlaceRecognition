@@ -8,3 +8,4 @@ from .resnet import (
     ResNet50FPNFeatureExtractor,
 )
 from .svtnet import SVTNetFeatureExtractor
+from .vgg import VGG16FeatureExtractor
