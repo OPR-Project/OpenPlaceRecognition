@@ -1,0 +1,7 @@
+_target_: opr.models.place_recognition.PointNetVLAD
+
+num_points: 2500
+global_feat: True
+feature_transform: False
+max_pool: False
+output_dim: 1024
