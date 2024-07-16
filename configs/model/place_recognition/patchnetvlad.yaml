@@ -1,0 +1,9 @@
+_target_: opr.models.place_recognition.PatchNetVLAD
+
+backbone: vgg16
+num_clusters: 64
+normalize_input: True
+vladv2: False
+use_faiss: True
+patch_sizes: [4,]
+strides: [1,]
