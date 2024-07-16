@@ -80,7 +80,7 @@ class NetVLADLoupe(nn.Module):
         vlad = vlad - a
 
         vlad = F.normalize(vlad, dim=1, p=2)
-        vlad = vlad.view((-1, self.cluster_size * self.feature_size))
+        vlad = vlad.contiguous().view((-1, self.cluster_size * self.feature_size))
         vlad = F.normalize(vlad, dim=1, p=2)
 
         vlad = torch.matmul(vlad, self.hidden1_weights)
@@ -257,17 +257,18 @@ class PointNetFeat(nn.Module):
             x = self.mp1(x)
             x = x.view(-1, 1024)
             if self.global_feat:
-                return x, trans
+                return x  # , trans
             else:
                 x = x.view(-1, 1024, 1).repeat(1, 1, self.num_points)
-                return torch.cat([x, pointfeat], 1), trans
+                return torch.cat([x, pointfeat], 1)  # , trans
 
 
 class PointNetVLAD(nn.Module):
     """PointNetVLAD: Deep Point Cloud Based Retrieval for Large-Scale Place Recognition.
 
     Paper: https://arxiv.org/abs/1804.03492
-    Code is adopted from original repository: https://github.com/mikacuy/pointnetvlad
+    Original repository: https://github.com/mikacuy/pointnetvlad
+    Code is adopted from repository: https://github.com/cattaneod/PointNetVlad-Pytorch
     """
 
     def __init__(
@@ -275,7 +276,7 @@ class PointNetVLAD(nn.Module):
         num_points: int = 2500,
         global_feat: bool = True,
         feature_transform: bool = False,
-        max_pool: bool = True,
+        max_pool: bool = False,
         output_dim: int = 1024,
     ) -> None:
         """Initialize PointNetVLAD model.
@@ -284,7 +285,7 @@ class PointNetVLAD(nn.Module):
             num_points (int): Number of points in the input point cloud. Defaults to 2500.
             global_feat (bool): Whether to use global feature or not. Defaults to True.
             feature_transform (bool): Whether to apply feature transform or not. Defaults to False.
-            max_pool (bool): Whether to use max pooling or not. Defaults to True.
+            max_pool (bool): Whether to use max pooling or not. Defaults to False.
             output_dim (int): Output dimension of the model. Defaults to 1024.
         """
         super().__init__()
@@ -304,7 +305,9 @@ class PointNetVLAD(nn.Module):
             is_training=True,
         )
 
-    def forward(self, x: Tensor) -> Tensor:  # noqa: D102
-        x = self.point_net(x)
+    def forward(self, batch: dict[str, Tensor]) -> dict[str, Tensor]:  # noqa: D102
+        points = batch["pointclouds_lidar_coords"]
+        x = self.point_net(points)
         x = self.net_vlad(x)
-        return x
+        out_dict: dict[str, Tensor] = {"final_descriptor": x}
+        return out_dict
