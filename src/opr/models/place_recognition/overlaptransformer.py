@@ -78,7 +78,7 @@ class OverlapTransformer(nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.softmax = nn.Softmax()
 
-        self.net_vlad = NetVLAD(num_clusters=64, dim=256)
+        self.net_vlad = NetVLAD(num_clusters=64, dim=1024)  # TODO: implement with 'NetVLADLoupe'?
 
         self.linear1 = nn.Linear(1 * 256, 256)
         self.bnl1 = norm_layer(256)
