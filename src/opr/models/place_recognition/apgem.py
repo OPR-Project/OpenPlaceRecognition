@@ -1,6 +1,6 @@
-from torch.nn.modules import Module
-from opr.modules.feature_extractors import ResNet50FPNFeatureExtractor
+"""Implementation of APGeM Image Model."""
 from opr.modules import GeM
+from opr.modules.feature_extractors import ResNet50FPNFeatureExtractor
 
 from .base import ImageModel
 
