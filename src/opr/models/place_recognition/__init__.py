@@ -1,5 +1,6 @@
 """Module for Place Recognition models."""
 from .apgem import APGeMModel
+from .cosplace import CosPlaceModel
 from .minkloc import MinkLoc3D, MinkLoc3Dv2
 from .netvlad import NetVLADModel
 from .overlaptransformer import OverlapTransformer

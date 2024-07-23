@@ -1,0 +1,4 @@
+_target_: opr.models.place_recognition.CosPlaceModel
+
+backbone: resnet50
+out_dim: 256
