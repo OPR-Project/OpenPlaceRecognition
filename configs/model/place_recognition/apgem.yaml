@@ -1,0 +1,3 @@
+_target_: opr.models.place_recognition.APGeMModel
+
+backbone: resnet50
