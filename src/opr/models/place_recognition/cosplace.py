@@ -1,4 +1,4 @@
-from torch.nn.modules import Module
+"""Implementation of CosPlace model."""
 from opr.modules.cosplace import CosPlace
 from opr.modules.feature_extractors import ResNet50FPNFeatureExtractor
 
@@ -6,12 +6,12 @@ from .base import ImageModel
 
 
 class CosPlaceModel(ImageModel):
-    """CosPlace: Rethinking Visual Geo-localization for Large-Scale Applications
+    """CosPlace: Rethinking Visual Geo-localization for Large-Scale Applications.
 
     Paper: https://arxiv.org/abs/2204.02287
     """
 
-    def __init__(self, backbone: str = "resnet50"):
+    def __init__(self, backbone: str = "resnet50") -> None:
         """Initialize CosPlace Image Model.
 
         Args:
