@@ -5,7 +5,7 @@ from opr.modules.feature_extractors import ResNet50FPNFeatureExtractor
 from .base import ImageModel
 
 
-class APGeMImageModel(ImageModel):
+class APGeMModel(ImageModel):
     """APGeM: 'Learning with Average Precision: Training Image Retrieval with a Listwise Loss'.
 
     Paper: https://arxiv.org/abs/1906.07589
