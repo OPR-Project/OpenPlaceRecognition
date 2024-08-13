@@ -8,6 +8,7 @@ import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
 from torch.autograd import Variable
+from typing import Tuple, Dict
 
 
 class NetVLADLoupe(nn.Module):
@@ -305,9 +306,9 @@ class PointNetVLAD(nn.Module):
             is_training=True,
         )
 
-    def forward(self, batch: dict[str, Tensor]) -> dict[str, Tensor]:  # noqa: D102
+    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         points = batch["pointclouds_lidar_coords"]
         x = self.point_net(points)
         x = self.net_vlad(x)
-        out_dict: dict[str, Tensor] = {"final_descriptor": x}
+        out_dict: Dict[str, Tensor] = {"final_descriptor": x}
         return out_dict

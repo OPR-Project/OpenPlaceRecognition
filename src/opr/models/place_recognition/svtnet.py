@@ -12,6 +12,7 @@ from opr.modules import MinkGeM
 from opr.modules.feature_extractors import SVTNetFeatureExtractor
 
 from .base import CloudModel
+from typing import Tuple, Dict
 
 
 class SVTNet(CloudModel):
@@ -34,8 +35,8 @@ class SVTNet(CloudModel):
         block: str = "ECABasicBlock",
         asvt: bool = True,
         csvt: bool = True,
-        layers: tuple[int, ...] = (1, 1, 1),
-        planes: tuple[int, ...] = (32, 64, 64),
+        layers: Tuple[int, ...] = (1, 1, 1),
+        planes: Tuple[int, ...] = (32, 64, 64),
         pooling: str = "gem",
     ) -> None:
         """SVT-Net: Super Light-Weight Sparse Voxel Transformer for Large Scale Place Recognition.
@@ -47,8 +48,8 @@ class SVTNet(CloudModel):
             block (str): Type of the network block. Defaults to "ECABasicBlock".
             asvt (bool): Whether to use ASVT. Defaults to True.
             csvt (bool): Whether to use CSVT. Defaults to True.
-            layers (tuple[int, ...]): Number of blocks in each layer. Defaults to (1, 1, 1).
-            planes (tuple[int, ...]): Number of channels in each layer. Defaults to (32, 64, 64).
+            layers (Tuple[int, ...]): Number of blocks in each layer. Defaults to (1, 1, 1).
+            planes (Tuple[int, ...]): Number of channels in each layer. Defaults to (32, 64, 64).
             pooling (str): Type of pooling. Defaults to "gem".
 
         Raises:

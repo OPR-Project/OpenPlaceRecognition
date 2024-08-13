@@ -1,7 +1,7 @@
 """ResNet-based image feature extractors."""
 from torch import Tensor, nn
 from torchvision.models import ResNet18_Weights, ResNet50_Weights, resnet18, resnet50
-
+from typing import Tuple
 
 class ResNetFeatureExtractor(nn.Module):
     """ResNet-based image feature extractor."""
@@ -90,7 +90,7 @@ class ResNetFPNFeatureExtractor(nn.Module):
     def __init__(
         self,
         model: nn.Module,
-        layers: tuple[int, int, int, int, int],
+        layers: Tuple[int, int, int, int, int],
         in_channels: int = 3,
         lateral_dim: int = 256,
         fh_num_bottom_up: int = 4,

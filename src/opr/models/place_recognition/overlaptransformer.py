@@ -2,6 +2,7 @@
 import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
+from typing import Dict
 
 from opr.modules import NetVLAD
 
@@ -87,7 +88,7 @@ class OverlapTransformer(nn.Module):
         self.linear3 = nn.Linear(1 * 256, 256)
         self.bnl3 = norm_layer(256)
 
-    def forward(self, batch: dict[str, Tensor]) -> dict[str, Tensor]:  # noqa: D102
+    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         for key, value in batch.items():
             if key.startswith("range_image"):
                 x_l = value
@@ -121,5 +122,5 @@ class OverlapTransformer(nn.Module):
                     out_l = F.normalize(out_l, dim=1)
                     out_l = self.net_vlad(out_l)
                     out_l = F.normalize(out_l, dim=1)
-        out_dict: dict[str, Tensor] = {"final_descriptor": out_l}
+        out_dict: Dict[str, Tensor] = {"final_descriptor": out_l}
         return out_dict

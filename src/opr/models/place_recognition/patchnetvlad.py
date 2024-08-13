@@ -7,6 +7,7 @@ import torch
 import torch.nn.functional as F
 from sklearn.neighbors import NearestNeighbors
 from torch import Tensor, nn
+from typing import Tuple, Dict
 
 from opr.modules.feature_extractors import (
     ResNet18FPNFeatureExtractor,
@@ -56,8 +57,8 @@ class PatchNetVLAD(ImageModel):
         normalize_input: bool = True,
         vladv2: bool = False,
         use_faiss: bool = True,
-        patch_sizes: tuple[int] = (4,),
-        strides: tuple[int] = (1,),
+        patch_sizes: Tuple[int] = (4,),
+        strides: Tuple[int] = (1,),
     ) -> None:
         """Initialize PatchNetVLAD model.
 
@@ -144,7 +145,7 @@ class PatchNetVLAD(ImageModel):
             # noinspection PyArgumentList
             self.conv.bias = nn.Parameter(-self.alpha * self.centroids.norm(dim=1))
 
-    def forward(self, batch: dict[str, Tensor]) -> dict[str, Tensor]:  # noqa: D102
+    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
         img_descriptors = {}
         for key, value in batch.items():
             if key.startswith("images_"):

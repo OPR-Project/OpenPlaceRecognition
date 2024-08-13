@@ -4,7 +4,7 @@ Point cloud augmentations adopted from the repository: https://github.com/jac99/
 """
 import math
 import random
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import albumentations as A  # noqa: N812
 import numpy as np
@@ -93,7 +93,7 @@ class DefaultImageTransform:
 class DefaultHM3DImageTransform:
     """Default image augmentation pipeline."""
 
-    def __init__(self, train: bool = False, resize: tuple[int, int] | None = (288, 160)) -> None:
+    def __init__(self, train: bool = False, resize: Union[Tuple[int, int], None] = (288, 160)) -> None:
         """Default image augmentation pipeline.
 
         Args:
