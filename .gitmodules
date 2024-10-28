@@ -4,3 +4,6 @@
 [submodule "third_party/AdelaiDepth"]
 	path = third_party/AdelaiDepth
 	url = https://github.com/aim-uofa/AdelaiDepth
+[submodule "third_party/HRegNet"]
+	path = third_party/HRegNet
+	url = https://github.com/alexmelekhin/HRegNet.git
