@@ -19,14 +19,6 @@ COPY requirements-notebook.txt .
 RUN pip install -r requirements-notebook.txt && \
     rm requirements-notebook.txt
 
-# install optimization requirements
-RUN pip install onnxruntime-gpu==1.17 --extra-index-url \
-    https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ &&\
-    pip install torch-tensorrt==2.1.0 --extra-index-url https://download.pytorch.org/whl/test/cu121 &&\
-    python -m pip install colored polygraphy --extra-index-url https://pypi.ngc.nvidia.com
-
-RUN pip install onnx
-
 # add user and his password
 ENV USER=docker_opr
 ARG UID=1000
