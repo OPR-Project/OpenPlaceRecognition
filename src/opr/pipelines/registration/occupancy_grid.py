@@ -74,8 +74,10 @@ class Feature2DGlobalRegistrationPipeline:
         translation_y = yp_mean - (x_mean*np.sin(rot_angle) + y_mean*np.cos(rot_angle))
         return rot_angle, translation_x, translation_y
 
-    def _raycast(self, grid: np.ndarray, n_rays: int = 1000, center_point: Union[Tuple[float, float], None] = None) -> np.ndarray:
-        grid_raycasted = grid.copy()
+    def _raycast(self, grid: np.ndarray, n_rays: int = 1000, radius: int = 80, center_point: Union[Tuple[float, float], None] = None) -> np.ndarray:
+        grid_cropped = grid[grid.shape[0] // 2 - radius:grid.shape[0] // 2 + radius,
+                              grid.shape[0] // 2 - radius:grid.shape[0] // 2 + radius]
+        grid_raycasted = grid_cropped.copy()
         if center_point is None:
             center_point = (grid.shape[0] // 2, grid.shape[1] // 2)
         for sector in range(n_rays):
@@ -125,23 +127,24 @@ class Feature2DGlobalRegistrationPipeline:
         cand_wall_mask = (cand_grid == 2).astype(np.uint8)
         cand_wall_mask_dilated = cv2.dilate(cand_wall_mask, kernel)
         ref_floor_mask = (ref_grid_transformed == 1).astype(np.uint8)
-        #ref_floor_mask = self._raycast(ref_wall_mask) - ref_wall_mask
+        #ref_floor_mask = self._raycast(ref_wall_mask) - ref_wall_mask + ref_floor_mask
+        #ref_floor_mask = np.clip(ref_floor_mask, 0, 1)
         cand_floor_mask = (cand_grid == 1).astype(np.uint8)
-        #cand_floor_mask = self._raycast(cand_wall_mask, center_point=(cand_floor_mask.shape[0] // 2 + tf_matrix[0, 3] / self.grid_size, 
-        #                                                              cand_floor_mask.shape[0] // 2 + tf_matrix[1, 3] / self.grid_size)) \
-        #                                                              - cand_wall_mask
+        trans_i, trans_j, rot_angle = transform
+        #cand_floor_mask = self._raycast(cand_wall_mask) - cand_wall_mask + cand_floor_mask
+        #cand_floor_mask = np.clip(cand_floor_mask, 0, 1)
         intersection = np.sum(np.clip(ref_wall_mask + ref_floor_mask, 0, 1) * np.clip(cand_wall_mask + cand_floor_mask, 0, 1))
         union = np.sum(np.clip(ref_wall_mask + ref_floor_mask + cand_wall_mask + cand_floor_mask, 0, 1))
         #print('Intersection:', intersection)
         #print('Union:', union)
         iou = intersection / union
         #print('Transform:', tf_matrix[0, 3], tf_matrix[1, 3], rot_angle)
-        print('Iou from get_fitness:', iou)
+        #print('Iou from get_fitness:', iou)
         good_match = np.sum(cand_wall_mask_dilated * ref_wall_mask)
         bad_match = np.sum(cand_floor_mask * (1 - cand_wall_mask_dilated) * ref_wall_mask) + \
                     np.sum(ref_floor_mask * (1 - ref_wall_mask_dilated) * cand_wall_mask)
-        save_dir = os.path.join(self.save_dir, str(self.cnt))
-        if save_dir is not None:
+        if self.save_dir is not None:
+            save_dir = os.path.join(self.save_dir, str(self.cnt))
             if not os.path.exists(save_dir):
                 os.mkdir(save_dir)
             np.savetxt(os.path.join(save_dir, 'transform.txt'), transform)
@@ -155,10 +158,10 @@ class Feature2DGlobalRegistrationPipeline:
             imsave(os.path.join(save_dir, 'grid_aligned.png'), (grid_aligned * 255).astype(np.uint8))
             np.savetxt(os.path.join(save_dir, 'results.txt'), 
                     [good_match, bad_match, iou, good_match / (good_match + bad_match) * iou ** 0.25])
-            #print('cnt:', self.cnt)
+            print('cnt:', self.cnt)
         self.cnt += 1
         print('Reg score from fitness:', good_match / (good_match + bad_match) * iou ** 0.25)
-        return good_match / (good_match + bad_match) * iou ** 0.25
+        return good_match / (good_match + bad_match) * iou ** 0.25#, ref_wall_mask, ref_floor_mask, cand_wall_mask, cand_floor_mask
 
     def infer(self, ref_grid: Tensor, cand_grid: Tensor, save_dir: Union[str, None] = None) -> Tuple[Union[np.ndarray, None], Union[float, None]]:
         # Convert clouds from tensors to numpy arrays
@@ -177,6 +180,12 @@ class Feature2DGlobalRegistrationPipeline:
         img_cand = cv2.GaussianBlur(img_cand, (3, 3), 0.5)
         #img_cand = cv2.resize(img_cand, None, fx=0.5, fy=0.5)
         #print('Img cand min and max:', img_cand.min(), img_cand.mean(), img_cand.max())
+        if self.save_dir is not None:
+            save_dir = os.path.join(self.save_dir, str(self.cnt))
+            if not os.path.exists(save_dir):
+                os.mkdir(save_dir)
+            imsave(os.path.join(save_dir, 'ref_grid.png'), img_ref)
+            imsave(os.path.join(save_dir, 'cand_grid.png'), img_cand)
         
         # Extract features
         if self.detector_type == 'SIFT' or self.detector_type == 'ORB':
@@ -194,6 +203,8 @@ class Feature2DGlobalRegistrationPipeline:
             # Add geometry constraints
             distance_coef = 1.0
             if len(kp_ref) == 0 or len(kp_cand) == 0:
+                #print('                No kp!')
+                self.cnt += 1
                 return None, 0
             xy_ref = np.array([kp.pt for kp in kp_ref]) * distance_coef
             des_ref = np.concatenate([des_ref, xy_ref], axis=1)
@@ -209,6 +220,7 @@ class Feature2DGlobalRegistrationPipeline:
             flann = cv2.FlannBasedMatcher(index_params)
             if des_ref is None or des_cand is None or len(des_ref) < 2 or len(des_cand) < 2:
                 #print('Too few keypoints! Unable to match')
+                self.cnt += 1
                 return None, 0
             matches = flann.knnMatch(des_ref, des_cand, k=2)
             matches = [x for x in matches if len(x) == 2]
@@ -222,6 +234,7 @@ class Feature2DGlobalRegistrationPipeline:
             flann = cv2.FlannBasedMatcher(index_params,search_params)
             if des_ref is None or des_cand is None or len(des_ref) < 2 or len(des_cand) < 2:
                 #print('Too few keypoints! Unable to match')
+                self.cnt += 1
                 return None, 0
             matches = flann.knnMatch(des_ref, des_cand, k=2)
             matches = [x for x in matches if len(x) == 2]
@@ -238,8 +251,8 @@ class Feature2DGlobalRegistrationPipeline:
         else:
             print('Incorrect detector type')
             return None, None
-        #if 'inline' in self.save_dir:
-        #print('Found {} matches'.format(len(matches)))
+        if self.save_dir is not None and 'inline' in self.save_dir:
+            print('Found {} matches'.format(len(matches)))
         
         # Get 2d point sets from matched features
         good = []
@@ -250,16 +263,17 @@ class Feature2DGlobalRegistrationPipeline:
         for i,(m,n) in enumerate(matches):
             if m.distance < matching_threshold * n.distance:
                 good.append(m)
-        #if 'inline' in self.save_dir:
-        #print('{} of them are good'.format(len(good)))
+        if self.save_dir is not None and 'inline' in self.save_dir:
+            print('{} of them are good'.format(len(good)))
         src_pts = np.float32([ kp_ref[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
         dst_pts = np.float32([ kp_cand[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
         
         # Remove outliers
         for i in range(len(self.outlier_thresholds)):
             if len(src_pts) < self.min_matches:
-                #if 'inline' in self.save_dir:
-                #print('Unable to find transform: too few matches!')
+                if self.save_dir is not None and 'inline' in self.save_dir:
+                    print('Unable to find transform: too few matches!')
+                self.cnt += 1
                 return None, 0
             point_pairs = np.concatenate([src_pts, dst_pts], axis=1)
             rot_angle, trans_j, trans_i = self._point_based_matching(point_pairs)
@@ -267,12 +281,12 @@ class Feature2DGlobalRegistrationPipeline:
             src_transformed[:, 0] = src_pts[:, 0, 0] * np.cos(-rot_angle) + src_pts[:, 0, 1] * np.sin(-rot_angle) + trans_j
             src_transformed[:, 1] = -src_pts[:, 0, 0] * np.sin(-rot_angle) + src_pts[:, 0, 1] * np.cos(-rot_angle) + trans_i
             matching_error = np.sqrt((src_transformed[:, 0] - dst_pts[:, 0, 0]) ** 2 + (src_transformed[:, 1] - dst_pts[:, 0, 1]) ** 2)
-            #if 'inline' in self.save_dir:
-            #    print(matching_error)
+            # if 'inline' in self.save_dir:
+            #     print('Matching error:', matching_error)
             if matching_error.max() < self.outlier_thresholds[-1]:
                 break
-            #if 'inline' in self.save_dir:
-            #print('Number of outliers:', (matching_error > self.outlier_thresholds[i]).sum())
+            if self.save_dir is not None and 'inline' in self.save_dir:
+                print('Number of outliers:', (matching_error > self.outlier_thresholds[i]).sum())
             src_pts = src_pts[matching_error < self.outlier_thresholds[i]]
             dst_pts = dst_pts[matching_error < self.outlier_thresholds[i]]
         
