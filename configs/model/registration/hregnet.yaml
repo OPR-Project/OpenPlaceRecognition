@@ -1,0 +1,6 @@
+_target_: opr.models.registration.hregnet.HRegNet
+
+use_fps: True
+use_weights: True
+freeze_detector: False
+freeze_feats: False
