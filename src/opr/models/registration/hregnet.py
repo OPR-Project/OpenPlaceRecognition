@@ -16,6 +16,7 @@ class HRegNet(_HRegNet):
 
     def __init__(
         self,
+        num_reg_steps: int = 3,
         use_fps: bool = True,
         use_weights: bool = True,
         freeze_detector: bool = False,
@@ -27,6 +28,8 @@ class HRegNet(_HRegNet):
         Code is adopted from the original repository: https://github.com/ispc-lab/HRegNet, MIT License
 
         Args:
+            num_reg_steps (int): Number of registration steps. Must be in [1, 2, 3]. Less steps are faster
+                but less accurate. Defaults to 3.
             use_fps (bool): Whether to use farthest point sampling (FPS) for keypoint detection. Defaults to True.
             use_weights (bool): Whether to use weights for keypoint detection. Defaults to True.
             freeze_detector (bool): Whether to freeze the detector. Defaults to False.
@@ -38,7 +41,7 @@ class HRegNet(_HRegNet):
             freeze_detector=freeze_detector,
             freeze_feats=freeze_feats,
         )
-        super().__init__(args)
+        super().__init__(args, num_reg_steps)
 
     def forward(self, query_pc: Tensor, db_pc: Tensor) -> Dict[str, Any]:  # noqa: D102
         if query_pc.dim() == 2:
