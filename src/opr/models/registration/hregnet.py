@@ -17,6 +17,8 @@ class HRegNet(_HRegNet):
     def __init__(
         self,
         num_reg_steps: int = 3,
+        use_sim: bool = True,
+        use_neighbor: bool = True,
         use_fps: bool = True,
         use_weights: bool = True,
         freeze_detector: bool = False,
@@ -30,6 +32,8 @@ class HRegNet(_HRegNet):
         Args:
             num_reg_steps (int): Number of registration steps. Must be in [1, 2, 3]. Less steps are faster
                 but less accurate. Defaults to 3.
+            use_sim (bool): Whether to use original similarity features. Defaults to True.
+            use_neighbor (bool): Whether to use neighbor-aware similarity featuress. Defaults to True.
             use_fps (bool): Whether to use farthest point sampling (FPS) for keypoint detection. Defaults to True.
             use_weights (bool): Whether to use weights for keypoint detection. Defaults to True.
             freeze_detector (bool): Whether to freeze the detector. Defaults to False.
@@ -41,7 +45,7 @@ class HRegNet(_HRegNet):
             freeze_detector=freeze_detector,
             freeze_feats=freeze_feats,
         )
-        super().__init__(args, num_reg_steps)
+        super().__init__(args=args, num_reg_steps=num_reg_steps, use_sim=use_sim, use_neighbor=use_neighbor)
 
     def forward(self, query_pc: Tensor, db_pc: Tensor) -> Dict[str, Any]:  # noqa: D102
         if query_pc.dim() == 2:
