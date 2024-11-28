@@ -1,5 +1,6 @@
 """Pointcloud registration pipeline."""
 from os import PathLike
+from time import time
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
@@ -19,6 +20,7 @@ class PointcloudRegistrationPipeline:
         model_weights_path: Optional[Union[str, PathLike]] = None,
         device: Union[str, int, torch.device] = "cuda",
         voxel_downsample_size: Optional[float] = 0.3,
+        num_points_downsample: Optional[int] = None,
     ) -> None:
         """Pointcloud registration pipeline.
 
@@ -28,10 +30,15 @@ class PointcloudRegistrationPipeline:
                 If None, the weights are not loaded. Defaults to None.
             device (Union[str, int, torch.device]): Device to use. Defaults to "cuda".
             voxel_downsample_size (Optional[float]): Voxel downsample size. Defaults to 0.3.
+            num_points_downsample (int, optional): Number number of points to keep. If num_points is bigger
+                than the number of points in the pointcloud, the points are sampled with replacement.
+                Defaults to None, which keeps all points.
         """
         self.device = parse_device(device)
         self.model = init_model(model, model_weights_path, self.device)
         self.voxel_downsample_size = voxel_downsample_size
+        self.num_points_downsample = num_points_downsample
+        self.stats_history = {"inference_time": [], "downsample_time": [], "total_time": []}
 
     def _downsample_pointcloud(self, pc: Tensor) -> Tensor:
         """Downsample the pointcloud.
@@ -42,10 +49,19 @@ class PointcloudRegistrationPipeline:
         Returns:
             Tensor: Downsampled pointcloud. Coordinates array of shape (M, 3), where M <= N.
         """
-        pcd = o3d.geometry.PointCloud()
-        pcd.points = o3d.utility.Vector3dVector(pc.cpu().numpy())
+        pc_o3d = o3d.core.Tensor.from_dlpack(torch.utils.dlpack.to_dlpack(pc))
+        pcd = o3d.t.geometry.PointCloud(pc_o3d)
         pcd = pcd.voxel_down_sample(self.voxel_downsample_size)
-        pc = torch.from_numpy(np.array(pcd.points).astype(np.float32)).float()
+        pc = torch.utils.dlpack.from_dlpack(pcd.point.positions.to_dlpack())
+        if self.num_points_downsample:
+            N = pc.shape[0]
+            if N >= self.num_points_downsample:
+                sample_idx = torch.randperm(N)[: self.num_points_downsample]
+            else:
+                sample_idx = torch.cat(
+                    (torch.arange(N), torch.randint(0, N, (self.num_points_downsample - N,))), dim=0
+                )
+            pc = pc[sample_idx]
         return pc
 
     def infer(self, query_pc: Tensor, db_pc: Tensor) -> np.ndarray:
@@ -58,10 +74,19 @@ class PointcloudRegistrationPipeline:
         Returns:
             np.ndarray: Transformation matrix.
         """
+        query_pc = query_pc.to(self.device)
+        db_pc = db_pc.to(self.device)
+        start_time = time()
         query_pc = self._downsample_pointcloud(query_pc)
         db_pc = self._downsample_pointcloud(db_pc)
+        self.stats_history["downsample_time"].append(time() - start_time)
+        start_time = time()
         with torch.no_grad():
             transform = self.model(query_pc, db_pc)["estimated_transform"]
+        self.stats_history["inference_time"].append(time() - start_time)
+        self.stats_history["total_time"].append(
+            self.stats_history["downsample_time"][-1] + self.stats_history["inference_time"][-1]
+        )
         return transform.cpu().numpy()
 
 
@@ -74,6 +99,7 @@ class SequencePointcloudRegistrationPipeline(PointcloudRegistrationPipeline):
         model_weights_path: Optional[Union[str, PathLike]] = None,
         device: Union[str, int, torch.device] = "cuda",
         voxel_downsample_size: Optional[float] = 0.3,
+        num_points_downsample: Optional[int] = None,
     ) -> None:
         """Pointcloud registration pipeline that supports sequences.
 
@@ -83,8 +109,11 @@ class SequencePointcloudRegistrationPipeline(PointcloudRegistrationPipeline):
                 If None, the weights are not loaded. Defaults to None.
             device (Union[str, int, torch.device]): Device to use. Defaults to "cuda".
             voxel_downsample_size (Optional[float]): Voxel downsample size. Defaults to 0.3.
+            num_points_downsample (int, optional): Number number of points to keep. If num_points is bigger
+                than the number of points in the pointcloud, the points are sampled with replacement.
+                Defaults to None, which keeps all points.
         """
-        super().__init__(model, model_weights_path, device, voxel_downsample_size)
+        super().__init__(model, model_weights_path, device, voxel_downsample_size, num_points_downsample)
         self.ransac_pipeline = RansacGlobalRegistrationPipeline(
             voxel_downsample_size=0.5  # handcrafted optimal value for fast inference
         )

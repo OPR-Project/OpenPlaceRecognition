@@ -1,0 +1,7 @@
+_target_: opr.models.registration.hregnet.HRegNet
+
+num_reg_steps: 3
+use_fps: True
+use_weights: True
+freeze_detector: False
+freeze_feats: False
