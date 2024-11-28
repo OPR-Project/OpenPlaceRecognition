@@ -1,0 +1,5 @@
+outs:
+- md5: ef10a027d931ad1050b1a5f3040589e3
+  size: 10046334
+  hash: md5
+  path: hregnet_light_nuscenes.pth
