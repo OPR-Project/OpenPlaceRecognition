@@ -1,0 +1,5 @@
+outs:
+- md5: 2f052f38ff29b892aaa090b5a0411ed6
+  size: 10058238
+  hash: md5
+  path: hregnet_kitti.pth

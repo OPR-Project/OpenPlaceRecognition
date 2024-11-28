@@ -1,8 +1,8 @@
 _target_: opr.models.registration.hregnet.HRegNet
 
-num_reg_steps: 3
-use_sim: True
-use_neighbor: True
+num_reg_steps: 1
+use_sim: False
+use_neighbor: False
 use_fps: True
 use_weights: True
 freeze_detector: False

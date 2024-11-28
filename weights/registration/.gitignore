@@ -1,1 +1,4 @@
 /geotransformer_kitti.pth
+/hregnet_kitti.pth
+/hregnet_light_nuscenes.pth
+/hregnet_nuscenes.pth
