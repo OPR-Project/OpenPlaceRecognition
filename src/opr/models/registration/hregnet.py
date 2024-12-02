@@ -21,6 +21,7 @@ class HRegNet(_HRegNet):
         use_neighbor: bool = True,
         use_fps: bool = True,
         use_weights: bool = True,
+        light_feats: bool = False,
         freeze_detector: bool = False,
         freeze_feats: bool = False,
     ) -> None:
@@ -36,6 +37,7 @@ class HRegNet(_HRegNet):
             use_neighbor (bool): Whether to use neighbor-aware similarity featuress. Defaults to True.
             use_fps (bool): Whether to use farthest point sampling (FPS) for keypoint detection. Defaults to True.
             use_weights (bool): Whether to use weights for keypoint detection. Defaults to True.
+            light_feats (bool): Whether to use light feature extractor. Defaults to False.
             freeze_detector (bool): Whether to freeze the detector. Defaults to False.
             freeze_feats (bool): Whether to freeze the features. Defaults to False.
         """
@@ -45,7 +47,13 @@ class HRegNet(_HRegNet):
             freeze_detector=freeze_detector,
             freeze_feats=freeze_feats,
         )
-        super().__init__(args=args, num_reg_steps=num_reg_steps, use_sim=use_sim, use_neighbor=use_neighbor)
+        super().__init__(
+            args=args,
+            num_reg_steps=num_reg_steps,
+            use_sim=use_sim,
+            use_neighbor=use_neighbor,
+            model_version=("light" if light_feats else "original"),
+        )
 
     def forward(self, query_pc: Tensor, db_pc: Tensor) -> Dict[str, Any]:  # noqa: D102
         if query_pc.dim() == 2:
