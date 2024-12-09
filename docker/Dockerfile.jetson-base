@@ -106,3 +106,6 @@ RUN cd build && make install-pip-package -j1
 
 # install polygraphy
 RUN pip install colored polygraphy --extra-index-url https://pypi.ngc.nvidia.com
+
+# install pytorch3d
+RUN pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
