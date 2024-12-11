@@ -1,0 +1,5 @@
+outs:
+- md5: 631a4e183bf055fd3f3c2acdc8b7f2cf
+  size: 2649214
+  hash: md5
+  path: hregnet_light_feats_nuscenes.pth
