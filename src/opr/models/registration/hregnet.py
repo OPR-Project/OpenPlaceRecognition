@@ -81,6 +81,8 @@ class HRegNet(_HRegNet):
         return output_dict
 
     def extract_features(self, pc: Tensor) -> Dict[str, Tensor]:  # noqa: D102
+        if pc.dim() == 2:
+            pc = pc.unsqueeze(0)
         return self.feature_extraction(pc)
 
     def _forward(
