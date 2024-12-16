@@ -96,4 +96,4 @@ RUN pip install onnxruntime-gpu==1.18 --extra-index-url \
     pip install onnx
 
 # install pytorch3d
-RUN pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
+RUN FORCE_CUDA=1 pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
