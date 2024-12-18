@@ -121,6 +121,7 @@ class LocalizationPipeline:
         )
 
         db_idx = pr_output["idx"]
+        out_dict["db_match_idx"] = db_idx
         if not self.precomputed_reg_feats:
             db_pc_filename = f"{int(self.database_df.iloc[db_idx]['pointcloud'])}.bin"
             db_pc = self._load_pc(self.pointclouds_dir / db_pc_filename)
