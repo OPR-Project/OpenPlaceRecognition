@@ -64,25 +64,48 @@ class PointcloudRegistrationPipeline:
             pc = pc[sample_idx]
         return pc
 
-    def infer(self, query_pc: Tensor, db_pc: Tensor) -> np.ndarray:
+    def infer(
+        self, query_pc: Tensor, db_pc: Tensor | None = None, db_pc_feats: dict[str, Tensor] | None = None
+    ) -> np.ndarray:
         """Infer the transformation between the query and the database pointclouds.
 
         Args:
             query_pc (Tensor): Query pointcloud. Coordinates array of shape (N, 3).
-            db_pc (Tensor): Database pointcloud. Coordinates array of shape (M, 3).
+            db_pc (Tensor, optional): Database pointcloud. Coordinates array of shape (M, 3).
+                If None, `db_pc_feats` must be provided. Defaults to None.
+            db_pc_feats (dict[str, Tensor], optional): Database pointcloud features.
+                If None, `db_pc` must be provided. Defaults to None.
 
         Returns:
             np.ndarray: Transformation matrix.
+
+        Raises:
+            ValueError: If both `db_pc` and `db_pc_feats` are provided or if none of them are provided.
         """
-        query_pc = query_pc.to(self.device)
-        db_pc = db_pc.to(self.device)
+        if db_pc is None and db_pc_feats is None:
+            raise ValueError("Either `db_pc` or `db_pc_feats` must be provided.")
+        if db_pc is not None and db_pc_feats is not None:
+            raise ValueError("Only one of `db_pc` or `db_pc_feats` must be provided.")
+
         start_time = time()
+
+        query_pc = query_pc.to(self.device)
         query_pc = self._downsample_pointcloud(query_pc)
-        db_pc = self._downsample_pointcloud(db_pc)
+
+        if db_pc is not None:
+            db_pc = db_pc.to(self.device)
+            db_pc = self._downsample_pointcloud(db_pc)
+        else:
+            db_pc_feats = {k: v.to(self.device) for k, v in db_pc_feats.items()}
+
         self.stats_history["downsample_time"].append(time() - start_time)
+
         start_time = time()
         with torch.no_grad():
-            transform = self.model(query_pc, db_pc)["estimated_transform"]
+            if db_pc is not None:
+                transform = self.model(query_pc=query_pc, db_pc=db_pc)["estimated_transform"]
+            else:
+                transform = self.model(query_pc=query_pc, db_pc_feats=db_pc_feats)["estimated_transform"]
         self.stats_history["inference_time"].append(time() - start_time)
         self.stats_history["total_time"].append(
             self.stats_history["downsample_time"][-1] + self.stats_history["inference_time"][-1]

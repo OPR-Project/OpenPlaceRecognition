@@ -52,7 +52,8 @@ class PlaceRecognitionPipeline:
         """
         self.device = parse_device(device)
         self.model = init_model(model, model_weights_path, self.device)
-        self._init_database(database_dir)
+        self.database_dir = Path(database_dir)
+        self._init_database(self.database_dir)
         self._pointcloud_quantization_size = pointcloud_quantization_size
 
     def _init_database(self, database_dir: Union[str, PathLike]) -> None:
