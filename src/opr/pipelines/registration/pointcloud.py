@@ -1,7 +1,7 @@
 """Pointcloud registration pipeline."""
 from os import PathLike
 from time import time
-from typing import List, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
 import numpy as np
 import open3d as o3d
@@ -149,12 +149,21 @@ class SequencePointcloudRegistrationPipeline(PointcloudRegistrationPipeline):
         points_transformed = points_transformed_hom[:, :3] / points_transformed_hom[:, 3].unsqueeze(-1)
         return points_transformed
 
-    def infer(self, query_pc_list: List[Tensor], db_pc: Tensor) -> np.ndarray:
-        """Infer the transformation between the query sequence and the database pointclouds.
+    def infer(
+        self,
+        query_pc_list: list[Tensor],
+        db_pc: Tensor | None = None,
+        db_pc_feats: dict[str, Tensor] | None = None,
+    ) -> np.ndarray:
+        """Infer the transformation between the query and the database pointclouds.
 
         Args:
-            query_pc_list (List[Tensor]): Sequence of query pointclouds. Coordinates arrays of shape (N, 3).
-            db_pc (Tensor): Database pointcloud. Coordinates array of shape (M, 3).
+            query_pc_list (list[Tensor]): List of query pointclouds. Each pointcloud
+                is a coordinates array of shape (N, 3).
+            db_pc (Tensor, optional): Database pointcloud. Coordinates array of shape (M, 3).
+                If None, `db_pc_feats` must be provided. Defaults to None.
+            db_pc_feats (dict[str, Tensor], optional): Database pointcloud features.
+                If None, `db_pc` must be provided. Defaults to None.
 
         Returns:
             np.ndarray: Transformation matrix.
@@ -170,7 +179,7 @@ class SequencePointcloudRegistrationPipeline(PointcloudRegistrationPipeline):
                 )
         else:
             accumulated_query_pc = query_pc_list[0]
-        return super().infer(accumulated_query_pc, db_pc)
+        return super().infer(query_pc=accumulated_query_pc, db_pc=db_pc, db_pc_feats=db_pc_feats)
 
 
 class RansacGlobalRegistrationPipeline:

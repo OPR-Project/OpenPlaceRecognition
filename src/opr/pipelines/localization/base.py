@@ -15,7 +15,10 @@ from torch import Tensor
 from tqdm import tqdm
 
 from opr.pipelines.place_recognition import PlaceRecognitionPipeline
-from opr.pipelines.registration import PointcloudRegistrationPipeline
+from opr.pipelines.registration import (
+    PointcloudRegistrationPipeline,
+    SequencePointcloudRegistrationPipeline,
+)
 
 
 class LocalizationPipeline:
@@ -29,7 +32,7 @@ class LocalizationPipeline:
     def __init__(
         self,
         place_recognition_pipeline: PlaceRecognitionPipeline,
-        registration_pipeline: PointcloudRegistrationPipeline,
+        registration_pipeline: PointcloudRegistrationPipeline | SequencePointcloudRegistrationPipeline,
         precomputed_reg_feats: bool = False,
         pointclouds_subdir: str | PathLike | None = None,
     ) -> None:
@@ -56,6 +59,11 @@ class LocalizationPipeline:
         self.reg_pipe = registration_pipeline
         self.database_df = self.pr_pipe.database_df
         self.database_dir = self.pr_pipe.database_dir
+
+        if isinstance(self.reg_pipe, SequencePointcloudRegistrationPipeline):
+            self.sequences = True
+        else:
+            self.sequences = False
 
         if not precomputed_reg_feats and pointclouds_subdir is None:
             raise ValueError(
@@ -89,7 +97,7 @@ class LocalizationPipeline:
                     save_dir=self.precomputed_reg_feats_dir, pointclouds_dir=self.pointclouds_dir
                 )
 
-    def infer(self, input_data: Dict[str, Tensor]) -> Dict[str, np.ndarray]:
+    def infer(self, input_data: Dict[str, Tensor] | list[Dict[str, Tensor]]) -> Dict[str, np.ndarray]:
         """Single sample inference.
 
         Args:
@@ -109,11 +117,25 @@ class LocalizationPipeline:
                 "db_match_pose" for database match pose in the format [tx, ty, tz, qx, qy, qz, qw],
 
                 "estimated_pose" for estimated pose in the format [tx, ty, tz, qx, qy, qz, qw].
+
+        Raises:
+            ValueError: Provided input data is a list, but the pipeline is not for sequences.
+            ValueError: Provided input data is not a list, but the pipeline is for sequences.
         """
+        if isinstance(input_data, list) and not self.sequences:
+            raise ValueError("Provided input data is a list, but the pipeline is not for sequences.")
+        if not isinstance(input_data, list) and self.sequences:
+            raise ValueError("Provided input data is not a list, but the pipeline is for sequences.")
+
         out_dict = {}
 
-        pr_output = self.pr_pipe.infer(input_data)
-        query_pc = input_data["pointcloud_lidar_coords"]
+        if isinstance(input_data, list):
+            pr_output = self.pr_pipe.infer(input_data[-1])
+            query_pc = [x["pointcloud_lidar_coords"] for x in input_data]
+        else:
+            pr_output = self.pr_pipe.infer(input_data)
+            query_pc = input_data["pointcloud_lidar_coords"]
+
         db_pose = pr_output["pose"]
         out_dict["db_match_pose"] = db_pose
         db_pose = get_transform_from_rotation_translation(
@@ -125,12 +147,18 @@ class LocalizationPipeline:
         if not self.precomputed_reg_feats:
             db_pc_filename = f"{int(self.database_df.iloc[db_idx]['pointcloud'])}.bin"
             db_pc = self._load_pc(self.pointclouds_dir / db_pc_filename)
-            estimated_transform = self.reg_pipe.infer(query_pc=query_pc, db_pc=db_pc)
+            if isinstance(query_pc, list):
+                estimated_transform = self.reg_pipe.infer(query_pc_list=query_pc, db_pc=db_pc)
+            else:
+                estimated_transform = self.reg_pipe.infer(query_pc=query_pc, db_pc=db_pc)
         else:
             db_pc_feats = self._load_feats(
                 self.precomputed_reg_feats_dir / f"{int(self.database_df.iloc[db_idx]['pointcloud'])}.pt"
             )
-            estimated_transform = self.reg_pipe.infer(query_pc=query_pc, db_pc_feats=db_pc_feats)
+            if isinstance(query_pc, list):
+                estimated_transform = self.reg_pipe.infer(query_pc_list=query_pc, db_pc_feats=db_pc_feats)
+            else:
+                estimated_transform = self.reg_pipe.infer(query_pc=query_pc, db_pc_feats=db_pc_feats)
         estimated_pose = db_pose @ self._invert_rigid_transformation_matrix(estimated_transform)
         rot, trans = get_rotation_translation_from_transform(estimated_pose)
         rot = Rotation.from_matrix(rot).as_quat()
