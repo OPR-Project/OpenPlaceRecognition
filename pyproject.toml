@@ -51,6 +51,8 @@ dev = [
     "types-tqdm",
     "pygls",
     "bandit",
+    "sphinx",
+    "sphinx-autodoc-typehints",
 ]
 notebook = [
     "ipykernel",
