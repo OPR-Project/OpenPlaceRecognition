@@ -6,6 +6,11 @@ per-file-ignores =
     __init__.py:F401
 max-complexity = 10
 max-line-length = 110
-exclude = .git,venv,build,__pycache__
+exclude =
+    .git
+    venv
+    build
+    __pycache__
+    docs/source/conf.py
 docstring-convention = google
 strictness = short
