@@ -1,6 +1,6 @@
 # Open Place Recognition library
 
-![Place Recognition overview](./img/PR_overview.png)
+![Place Recognition overview](./docs/images/PR_overview.png)
 
 _An overview of a typical place recognition pipeline. At first, the input data is encoded into a query descriptor. Then, a K-nearest neighbors search is performed between the query and the database. Finally, the position of the closest database descriptor found is considered as the answer._
 
