@@ -154,14 +154,15 @@ class ITLPCampus(Dataset):
 
         subset_csv = self.dataset_root / csv_file
         self.dataset_df = pd.read_csv(subset_csv)
-        if subset == "train":
-            self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(train_split)]
-            self.dataset_df.reset_index(inplace=True)
-        elif subset == "test" or subset == "val":
-            self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(test_split)]
-            self.dataset_df.reset_index(inplace=True)
-        else:
-            raise ValueError(f"Unknown subset: {subset!r}")
+        if indoor:
+            if subset == "train":
+                self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(train_split)]
+                self.dataset_df.reset_index(inplace=True)
+            elif subset == "test" or subset == "val":
+                self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(test_split)]
+                self.dataset_df.reset_index(inplace=True)
+            else:
+                raise ValueError(f"Unknown subset: {subset!r}")
 
         if self.subset == "test":
             self.dataset_df["in_query"] = True
@@ -505,7 +506,7 @@ class ITLPCampus(Dataset):
                 aruco = self._load_aruco_labels("back_cam", idx)
                 data["aruco_labels_back_cam_df"] = aruco
         if "lidar" in self.sensors:
-            pc = self._load_pc(idx, track, floor)
+            pc = self._load_pc(idx, track, floor, tensor=True)
 
             if self.exclude_dynamic_classes and self.indoor:
                 if "back_cam" in self.sensors:
@@ -515,7 +516,8 @@ class ITLPCampus(Dataset):
                     pc = self._remove_dynamic_points(pc, data["mask_front_cam"].numpy().transpose(1, 2, 0),
                                                      self.lidar2front, self.front_matrix, self.front_dist)
 
-            pc = torch.tensor(pc, dtype=torch.float32)
+            if isinstance(pc, np.ndarray):
+                pc = torch.from_numpy(pc, dtype=torch.float32)
             data["pointcloud_lidar_coords"] = pc
             data["pointcloud_lidar_feats"] = torch.ones_like(pc[:, :1])
 
