@@ -1,0 +1,50 @@
+defaults:
+  - _self_
+  - model: place_recognition/multimodal_with_soc_outdoor
+
+loss:
+  _target_: opr.losses.BatchHardTripletMarginLoss
+  margin: 0.2
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _convert_: all
+  lr: 0.0001
+  weight_decay: 0.0001
+
+sampler:
+  _target_: opr.samplers.BatchSampler
+  batch_size: 32
+  batch_size_limit: 64
+  batch_expansion_rate: 1.4
+  max_batches: null
+  positives_per_group: 2
+  seed: ${seed}
+  drop_last: True
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.MultiStepLR
+  gamma: 0.1
+  milestones: [5]
+
+wandb:
+  disabled: false
+  project: OPR_MODEL_ZOO
+
+modalities_weights:
+  image: 1.0
+  cloud: 1.0
+  semantic: 1.0
+  text: null
+  final_descriptor: 1.0
+
+debug: false
+device: cuda
+seed: 3121999
+num_workers: 2
+checkpoints_dir: checkpoints
+
+exp_name: finetune_itlp_multimodal_with_soc_outdoor
+
+epochs: 10
+batch_expansion_threshold: 0.7
