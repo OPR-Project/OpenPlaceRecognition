@@ -60,6 +60,13 @@ class LocalizationPipeline:
         self.database_df = self.pr_pipe.database_df
         self.database_dir = self.pr_pipe.database_dir
 
+        if "pointcloud" in self.database_df.columns:
+            self.pc_col = "pointcloud"
+            self.num_points_properties = 3
+        elif "lidar_ts" in self.database_df.columns:
+            self.pc_col = "lidar_ts"
+            self.num_points_properties = 4
+
         if isinstance(self.reg_pipe, SequencePointcloudRegistrationPipeline):
             self.sequences = True
         else:
@@ -75,8 +82,11 @@ class LocalizationPipeline:
             raise ValueError(f"Pointclouds directory not found: {self.pointclouds_dir}")
 
         self.precomputed_reg_feats = precomputed_reg_feats
+        self._setup_precomputed_reg_feats()
+
+    def _setup_precomputed_reg_feats(self) -> None:
         self.precomputed_reg_feats_dir = None
-        reg_model_name = registration_pipeline.model.__class__.__name__
+        reg_model_name = self.reg_pipe.model.__class__.__name__
         if self.precomputed_reg_feats:
             if reg_model_name != "HRegNet":
                 raise ValueError("Precomputed registration features are only supported for HRegNet.")
@@ -145,15 +155,18 @@ class LocalizationPipeline:
         db_idx = pr_output["idx"]
         out_dict["db_match_idx"] = db_idx
         if not self.precomputed_reg_feats:
-            db_pc_filename = f"{int(self.database_df.iloc[db_idx]['pointcloud'])}.bin"
-            db_pc = self._load_pc(self.pointclouds_dir / db_pc_filename)
+            db_pc_filename = f"{int(self.database_df.iloc[db_idx][self.pc_col])}.bin"
+            db_pc = self._load_pc(
+                self.pointclouds_dir / db_pc_filename, num_point_properties=self.num_points_properties
+            )
+            db_pc = db_pc[:, :3]
             if isinstance(query_pc, list):
                 estimated_transform = self.reg_pipe.infer(query_pc_list=query_pc, db_pc=db_pc)
             else:
                 estimated_transform = self.reg_pipe.infer(query_pc=query_pc, db_pc=db_pc)
         else:
             db_pc_feats = self._load_feats(
-                self.precomputed_reg_feats_dir / f"{int(self.database_df.iloc[db_idx]['pointcloud'])}.pt"
+                self.precomputed_reg_feats_dir / f"{int(self.database_df.iloc[db_idx][self.pc_col])}.pt"
             )
             if isinstance(query_pc, list):
                 estimated_transform = self.reg_pipe.infer(query_pc_list=query_pc, db_pc_feats=db_pc_feats)
@@ -174,10 +187,10 @@ class LocalizationPipeline:
             save_dir (str | PathLike): Directory to save the features.
             pointclouds_dir (str | PathLike): Directory where pointclouds will be saved.
         """
-        for _, row in tqdm(self.database_df.iterrows(), total=len(self.database_df), leave=False):
-            pc_ts = int(row["pointcloud"])
+        for idx in tqdm(range(len(self.database_df)), total=len(self.database_df), leave=False):
+            pc_ts = int(self.database_df[self.pc_col].iloc[idx])
             pointcloud_path = Path(pointclouds_dir) / f"{pc_ts}.bin"
-            pointcloud = self._load_pc(pointcloud_path)
+            pointcloud = self._load_pc(pointcloud_path, num_point_properties=self.num_points_properties)
             pointcloud = pointcloud.to(self.reg_pipe.device)
             pointcloud = pointcloud[:, :3]
             pointcloud = self.reg_pipe._downsample_pointcloud(pointcloud)
@@ -227,6 +240,7 @@ class LocalizationPipeline:
         """
         pc = np.fromfile(str(filepath), dtype=dtype).reshape(-1, num_point_properties)
         pc = torch.from_numpy(pc)
+        pc = pc[~torch.isnan(pc).any(dim=1)]
         return pc
 
     def _load_feats(self, filepath: str | PathLike) -> Dict[str, Tensor]:
