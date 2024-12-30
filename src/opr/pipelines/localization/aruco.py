@@ -147,7 +147,7 @@ class ArucoLocalizationPipeline(LocalizationPipeline):
                 input_data[key] = im_transform(input_data[key])
         return super().infer(input_data)["estimated_pose"]
 
-    def infer(self, input_data: Dict[str, Tensor], q_i) -> Dict[str, np.ndarray]:
+    def infer(self, input_data: Dict[str, Tensor]) -> Dict[str, np.ndarray]:
         """Single sample inference.
 
         Args:
