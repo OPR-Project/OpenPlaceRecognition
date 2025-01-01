@@ -4,3 +4,6 @@
 [submodule "third_party/AdelaiDepth"]
 	path = third_party/AdelaiDepth
 	url = https://github.com/aim-uofa/AdelaiDepth
+[submodule "third_party/Depth-Anything-V2"]
+	path = third_party/Depth-Anything-V2
+	url = https://github.com/DepthAnything/Depth-Anything-V2
