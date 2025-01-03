@@ -41,4 +41,8 @@ exclude_patterns = []
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "sphinx_rtd_theme"
+html_theme_options = {
+    'navigation_depth': 4,  # Ensures deeper levels of the TOC are displayed
+    'titles_only': False,   # Shows the full TOC tree, not just section titles
+}
 html_static_path = ["_static"]
