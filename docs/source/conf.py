@@ -13,6 +13,19 @@ copyright = f"2024, {author}"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
+autodoc_mock_imports = [
+    'hregnet',
+    'geotransformer',
+    'faiss',
+    'MinkowskiEngine',
+    'torchvision',
+    'onnxruntime',
+    'paddleocr',
+    'torch_tensorrt',
+    'polygraphy',
+    'skimage',
+]
+
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',  # for Google style docstrings
