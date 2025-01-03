@@ -18,6 +18,8 @@ Finally, the position of the closest database descriptor found is considered as 
    :maxdepth: 2
    :caption: Contents:
 
+   api/index
+
 
 Featured modules
 ================
