@@ -1,0 +1,67 @@
+defaults:
+  - _self_
+  - model: place_recognition/multi-image_lidar_late-fusion
+  - loss: batch_hard_triplet_margin
+  - optimizer: ???
+  - scheduler: multi_step
+
+dataset:
+  _target_: opr.datasets.nclt.NCLTDataset
+
+  dataset_root: /home/docker_opr/Datasets/OpenPlaceRecognition/NCLT_preprocessed
+  data_to_load: [pointcloud_lidar, image_Cam5, image_Cam2]
+  positive_threshold: 10.0
+  negative_threshold: 50.0
+  images_dirname: images_small
+  masks_dirname: segmentation_masks_small
+  pointclouds_dirname: velodyne_data
+  pointcloud_quantization_size: 0.5
+  max_point_distance: 40.0
+  spherical_coords: False
+  use_intensity_values: False
+  image_transform: null
+  semantic_transform: null
+  pointcloud_transform: null
+  pointcloud_set_transform: null
+
+sampler:
+  _target_: opr.samplers.BatchSampler
+  batch_size: 32
+  batch_size_limit: 64
+  batch_expansion_rate: 1.4
+  max_batches: null
+  positives_per_group: 2
+  seed: ${seed}
+  drop_last: True
+
+scheduler:
+  _target_: torch.optim.lr_scheduler.MultiStepLR
+  milestones: [40, 60]
+  gamma: 0.1
+
+wandb:
+  disabled: false
+  project: OPR_MODEL_ZOO
+
+modalities_weights:
+  image: 1.0
+  cloud: 1.0
+  semantic: null
+  text: null
+  final_descriptor: 1.0
+
+debug: false
+device: cuda
+seed: 3121999
+num_workers: 4
+
+exp_name: find_parameters_multimodal
+
+epochs: 60
+batch_expansion_threshold: 0.7
+
+hydra:
+  sweeper:
+    params:
+      optimizer: multimodal_adam_lr001,multimodal_adam_lr003,multimodal_adam_lr0003,multimodal_adamw_lr001,multimodal_adamw_lr003,multimodal_adamw_lr0003
+      scheduler: multi_step_30-50,multi_step_30-40-50
