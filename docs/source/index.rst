@@ -19,13 +19,8 @@ Finally, the position of the closest database descriptor found is considered as 
    :caption: Contents:
 
    Introduction <self>
+   featured_modules/index
    api/index
-
-
-Featured modules
-================
-
-*WIP*
 
 
 Installation
