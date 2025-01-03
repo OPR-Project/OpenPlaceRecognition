@@ -15,7 +15,7 @@ with the image and cloud modules.
 The recommended way to do this is to use the
 `configs/model/place_recognition/multi-image_lidar_late-fusion.yaml <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/configs/model/place_recognition/multi-image_lidar_late-fusion.yaml>`_
 config file to instantiate the model with Hydra and load the weights from the
-`weights/place_recognition/multi-image_lidar_late-fusion_nclt.pth <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/weights/place_recognition/multi-image_lidar_late-fusion_nclt.pth>`_
+``"weights/place_recognition/multi-image_lidar_late-fusion_nclt.pth"``
 or other file.
 
 .. code-block:: python
