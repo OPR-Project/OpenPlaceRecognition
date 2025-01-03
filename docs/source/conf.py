@@ -13,7 +13,24 @@ copyright = f"2024, {author}"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+autodoc_mock_imports = [
+    'hregnet',
+    'geotransformer',
+    'faiss',
+    'MinkowskiEngine',
+    'torchvision',
+    'onnxruntime',
+    'paddleocr',
+    'torch_tensorrt',
+    'polygraphy',
+    'skimage',
+]
+
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',  # for Google style docstrings
+    'sphinx.ext.viewcode',  # to add links to source code
+]
 
 templates_path = ["_templates"]
 exclude_patterns = []
@@ -23,5 +40,9 @@ exclude_patterns = []
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "alabaster"
+html_theme = "sphinx_rtd_theme"
+html_theme_options = {
+    'navigation_depth': 4,  # Ensures deeper levels of the TOC are displayed
+    'titles_only': False,   # Shows the full TOC tree, not just section titles
+}
 html_static_path = ["_static"]
