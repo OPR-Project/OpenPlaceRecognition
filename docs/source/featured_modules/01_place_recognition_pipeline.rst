@@ -31,7 +31,9 @@ or other file.
    pr_model = instantiate(pr_model_config)
    pr_model.load_state_dict(torch.load(PR_WEIGHTS_PATH))
 
-In the similar manner you should initialize the registration model:
+In the similar manner you should initialize the registration model with the
+`configs/model/registration/hregnet_light_feats.yaml <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/configs/model/registration/hregnet_light_feats.yaml>`_
+config:
 
 .. code-block:: python
 
