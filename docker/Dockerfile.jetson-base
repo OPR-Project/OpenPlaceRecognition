@@ -57,7 +57,7 @@ RUN pip install \
 
 WORKDIR /
 RUN rm -rf /TensorRT
-RUN git clone -b v2.1.0-rc9 https://github.com/pytorch/TensorRT.git
+RUN git clone -b v2.2.0 https://github.com/pytorch/TensorRT.git
 
 # Install Bazel.
 WORKDIR /TensorRT
@@ -81,3 +81,31 @@ RUN python3 setup.py install --use-cxx11-abi
 RUN wget https://nvidia.box.com/shared/static/ndh4omnbyx9icnbwsizmivngnjo5kp1b.whl -O onnxruntime_gpu-1.18.0-cp310-cp310-linux_aarch64.whl && \
     pip install onnxruntime_gpu-1.18.0-cp310-cp310-linux_aarch64.whl && \
     rm onnxruntime_gpu-1.18.0-cp310-cp310-linux_aarch64.whl
+
+# COPY docker/Open3D /Open3D
+RUN git clone https://github.com/isl-org/Open3D.git && cd Open3D && git checkout c8856fc
+WORKDIR /Open3D
+RUN bash util/install_deps_ubuntu.sh assume-yes && \
+    rm -rf /var/lib/apt/lists/*
+RUN mkdir build && cd build && \
+    cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=ON \
+        -DGLIBCXX_USE_CXX11_ABI=ON \
+        -DBUILD_CUDA_MODULE=ON \
+        -DBUILD_PYTORCH_OPS=ON \
+        -DBUILD_TENSORFLOW_OPS=OFF \
+        -DPYTHON_EXECUTABLE=$(which python) \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        .. && \
+    make -j1 && \
+    make install -j1
+RUN pip install yapf==0.43.0
+ENV LD_PRELOAD=${LD_PRELOAD}:/usr/local/lib/libOpen3D.so
+RUN cd build && make install-pip-package -j1
+
+# install polygraphy
+RUN pip install colored polygraphy --extra-index-url https://pypi.ngc.nvidia.com
+
+# install pytorch3d
+RUN FORCE_CUDA=1 pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"

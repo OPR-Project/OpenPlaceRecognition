@@ -1,1 +1,5 @@
 /geotransformer_kitti.pth
+/hregnet_kitti.pth
+/hregnet_nuscenes.pth
+/hregnet_nosim_nuscenes.pth
+/hregnet_light_feats_nuscenes.pth

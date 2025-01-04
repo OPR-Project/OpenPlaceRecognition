@@ -93,6 +93,7 @@ class ITLPCampus(Dataset):
         negative_threshold: float = 50.0,
         image_transform = DefaultImageTransform(resize=(320, 192), train=False),
         semantic_transform = DefaultSemanticTransform(resize=(320, 192), train=False),
+        late_image_transform = None,
         load_soc: bool = False,
         top_k_soc: int = 5,
         soc_coords_type: Literal[
@@ -139,6 +140,7 @@ class ITLPCampus(Dataset):
             vis_dir (str): Directory to save visualization images. Defaults to "./vis/".
             train_split (list): List of train split floor names. Defaults to None.
             test_split (list): List of test split floor names. Defaults to None.
+            late_image_transform (bool): perform image albu transform before getitem return. Defaults to None.
 
         Raises:
             FileNotFoundError: If dataset_root doesn't exist.
@@ -154,14 +156,15 @@ class ITLPCampus(Dataset):
 
         subset_csv = self.dataset_root / csv_file
         self.dataset_df = pd.read_csv(subset_csv)
-        if subset == "train":
-            self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(train_split)]
-            self.dataset_df.reset_index(inplace=True)
-        elif subset == "test" or subset == "val":
-            self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(test_split)]
-            self.dataset_df.reset_index(inplace=True)
-        else:
-            raise ValueError(f"Unknown subset: {subset!r}")
+        if indoor:
+            if subset == "train":
+                self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(train_split)]
+                self.dataset_df.reset_index(inplace=True)
+            elif subset == "test" or subset == "val":
+                self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(test_split)]
+                self.dataset_df.reset_index(inplace=True)
+            else:
+                raise ValueError(f"Unknown subset: {subset!r}")
 
         if self.subset == "test":
             self.dataset_df["in_query"] = True
@@ -170,6 +173,7 @@ class ITLPCampus(Dataset):
             sensors = tuple(sensors)
         self.sensors = sensors
 
+        self.late_image_transform = late_image_transform
         self._pointcloud_quantization_size = mink_quantization_size
         self._max_point_distance = max_point_distance
         self.load_semantics = load_semantics
@@ -246,6 +250,7 @@ class ITLPCampus(Dataset):
         self.pointcloud_set_transform = DefaultCloudSetTransform(train=False)
 
         self._ade20k_dynamic_idx = [12]
+        self._mapillary_dynamic_idx = [19, 55] # human, car
         self.exclude_dynamic_classes = exclude_dynamic_classes
 
         self.lidar2front = np.array([[ 0.01509615, -0.99976457, -0.01558544,  0.04632156],
@@ -470,9 +475,14 @@ class ITLPCampus(Dataset):
                 im = self._load_semantic_mask("front_cam", idx, track, floor)
                 data["mask_front_cam"] = im
 
-                if self.exclude_dynamic_classes and self.indoor:
-                    for index in self._ade20k_dynamic_idx:
-                        data["image_front_cam"] = torch.where(data["mask_front_cam"] == index, 0, data["image_front_cam"])
+                if self.exclude_dynamic_classes:
+                    if self.indoor:
+                        for index in self._ade20k_dynamic_idx:
+                            data["image_front_cam"] = torch.where(data["mask_front_cam"] == index, 0, data["image_front_cam"])
+                    else:
+                        #outdoor
+                        for index in self._mapillary_dynamic_idx:
+                            data["image_front_cam"] = torch.where(data["mask_front_cam"] == index, 0, data["image_front_cam"])
 
             if self.load_text_labels:
                 text_labels = self._load_text_labels("front_cam", idx)
@@ -491,9 +501,14 @@ class ITLPCampus(Dataset):
                 im = self._load_semantic_mask("back_cam", idx, track, floor)
                 data["mask_back_cam"] = im
 
-                if self.exclude_dynamic_classes and self.indoor:
-                    for index in self._ade20k_dynamic_idx:
-                        data["image_back_cam"] = torch.where(data["mask_back_cam"] == index, 0, data["image_back_cam"])
+                if self.exclude_dynamic_classes:
+                    if self.indoor:
+                        for index in self._ade20k_dynamic_idx:
+                            data["image_back_cam"] = torch.where(data["mask_back_cam"] == index, 0, data["image_back_cam"])
+                    else:
+                        #outdoor
+                        for index in self._mapillary_dynamic_idx:
+                            data["image_back_cam"] = torch.where(data["mask_back_cam"] == index, 0, data["image_back_cam"])
 
             if self.load_text_labels:
                 text_labels = self._load_text_labels("back_cam", idx)
@@ -505,27 +520,40 @@ class ITLPCampus(Dataset):
                 aruco = self._load_aruco_labels("back_cam", idx)
                 data["aruco_labels_back_cam_df"] = aruco
         if "lidar" in self.sensors:
-            pc = self._load_pc(idx, track, floor)
+            pc = self._load_pc(idx, track, floor, tensor=True)
 
-            if self.exclude_dynamic_classes and self.indoor:
+            if self.exclude_dynamic_classes:
+                if self.indoor:
+                    dynamic_classes = self._ade20k_dynamic_idx
+                else:
+                    #outdoor
+                    dynamic_classes = self._mapillary_dynamic_idx
                 if "back_cam" in self.sensors:
-                    pc = self._remove_dynamic_points(pc, data["mask_back_cam"].numpy().transpose(1, 2, 0),
-                                                     self.lidar2back, self.back_matrix, self.back_dist)
+                    pc = self._remove_dynamic_points(pc,
+                        data["mask_back_cam"].numpy().transpose(1, 2, 0), dynamic_classes,
+                        self.lidar2back, self.back_matrix, self.back_dist)
                 if "front_cam" in self.sensors:
-                    pc = self._remove_dynamic_points(pc, data["mask_front_cam"].numpy().transpose(1, 2, 0),
-                                                     self.lidar2front, self.front_matrix, self.front_dist)
+                    pc = self._remove_dynamic_points(pc,
+                        data["mask_front_cam"].numpy().transpose(1, 2, 0), dynamic_classes,
+                        self.lidar2front, self.front_matrix, self.front_dist)
 
-            pc = torch.tensor(pc, dtype=torch.float32)
+            if isinstance(pc, np.ndarray):
+                pc = torch.from_numpy(pc, dtype=torch.float32)
             data["pointcloud_lidar_coords"] = pc
             data["pointcloud_lidar_feats"] = torch.ones_like(pc[:, :1])
 
         if self.load_soc:
             soc = self._get_soc(idx, track, floor)
             data["soc"] = soc
+
+        for elem in ["back_cam", "front_cam"]:
+            if elem in self.sensors and self.late_image_transform:
+                data[f"image_{elem}"] = self.late_image_transform(data[f"image_{elem}"].permute((1, 2, 0)).numpy())
         return data
 
-    def _remove_dynamic_points(self, pointcloud: np.ndarray, semantic_map: np.ndarray, lidar2sensor: np.ndarray,
-                               sensor_intrinsics: np.ndarray, sensor_dist: np.ndarray) -> np.ndarray:
+    def _remove_dynamic_points(self, pointcloud: np.ndarray, semantic_map: np.ndarray, dynamic_classes: list, 
+        lidar2sensor: np.ndarray, sensor_intrinsics: np.ndarray, sensor_dist: np.ndarray) -> np.ndarray:
+
         pc_values = np.concatenate([pointcloud, np.ones((pointcloud.shape[0], 1))],axis=1).T
         camera_values = lidar2sensor @ pc_values
         camera_values = np.transpose(camera_values)[:, :3]
@@ -537,8 +565,7 @@ class ITLPCampus(Dataset):
         points_2d = points_2d[:, 0, :]
 
         classes = set(np.unique(semantic_map))
-        dynamic_classes = set(self._ade20k_dynamic_idx)
-        if classes.intersection(dynamic_classes):
+        if classes.intersection(set(dynamic_classes)):
             valid = (~np.isnan(points_2d[:,0])) & (~np.isnan(points_2d[:,1]))
             in_bounds_x = (points_2d[:,0] >= 0) & (points_2d[:,0] < 1280)
             in_bounds_y = (points_2d[:,1] >= 0) & (points_2d[:,1] < 720)
@@ -548,7 +575,7 @@ class ITLPCampus(Dataset):
             indices = np.where(mask)[0]
             mask_for_points = np.full((points_2d.shape[0], 3), True)
 
-            dynamic_idx = np.array(self._ade20k_dynamic_idx)
+            dynamic_idx = np.array(dynamic_classes)
             semantic_values = semantic_map[np.floor(points_2d[indices, 1]).astype(int), np.floor(points_2d[indices, 0]).astype(int)]
 
             matching_indices = np.where(np.isin(semantic_values, dynamic_idx))

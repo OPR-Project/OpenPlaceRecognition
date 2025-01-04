@@ -8,6 +8,8 @@ Citation:
 Source: https://github.com/ZhenboSong/SVTNet
 Paper: https://arxiv.org/abs/2105.00149
 """
+from __future__ import annotations
+
 import torch
 from loguru import logger
 from torch import nn

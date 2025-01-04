@@ -1,0 +1,7 @@
+_target_: opr.models.place_recognition.OverlapTransformer
+
+height: 64
+width: 900
+channels: 1
+norm_layer: null
+use_transformer: True

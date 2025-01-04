@@ -193,7 +193,14 @@ class UnimodalPlaceRecognitionTrainer:
 
         logger.debug(f"Test embeddings: {test_embeddings.shape}")
 
-        utms = torch.tensor(test_df[["tx", "ty"]].to_numpy())
+        if all(item in test_df.columns for item in ["northing", "easting"]):
+            coords_cols = ["northing", "easting"]
+        elif all(item in test_df.columns for item in ["tx", "ty"]):
+            coords_cols = ["tx", "ty"]
+        elif all(item in test_df.columns for item in ["x", "y"]):
+            coords_cols = ["x", "y"]
+
+        utms = torch.tensor(test_df[coords_cols].to_numpy())
         dist_fn = LpDistance(normalize_embeddings=False)
         dist_utms = dist_fn(utms).numpy()
 

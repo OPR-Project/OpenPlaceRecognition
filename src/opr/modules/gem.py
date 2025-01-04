@@ -7,6 +7,8 @@ machine intelligence 41.7 (2018): 1655-1668.
 Paper: https://arxiv.org/abs/1711.02512
 Code adopted from the repository: https://github.com/jac99/MinkLocMultimodal, MIT License
 """
+from __future__ import annotations
+
 import torch
 import torch.nn.functional as F  # noqa: N812
 from loguru import logger

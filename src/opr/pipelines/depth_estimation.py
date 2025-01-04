@@ -63,6 +63,7 @@ class DepthEstimationPipeline:
             rel_errors: np.ndarray - relative errors of depth reconstruction for the points of the projected lidar point cloud
         """
         raw_img_h, raw_img_w = image.shape[0], image.shape[1]
+
         if self.model_type == 'DepthAnything':
             image = resize(image, (240, 320))
             image = (image * 255).astype(np.uint8)
@@ -123,6 +124,7 @@ class DepthEstimationPipeline:
         errors = []
         rel_errors = []
         zs = []
+
         for x, y, z in pcd_in_fov_numpy:
             i = int(self.camera_matrix.cy + y / z * self.camera_matrix.f)
             j = int(self.camera_matrix.cx + x / z * self.camera_matrix.f)

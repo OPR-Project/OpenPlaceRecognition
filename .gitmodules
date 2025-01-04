@@ -7,3 +7,6 @@
 [submodule "third_party/Depth-Anything-V2"]
 	path = third_party/Depth-Anything-V2
 	url = https://github.com/DepthAnything/Depth-Anything-V2
+[submodule "third_party/HRegNet"]
+	path = third_party/HRegNet
+	url = https://github.com/alexmelekhin/HRegNet.git

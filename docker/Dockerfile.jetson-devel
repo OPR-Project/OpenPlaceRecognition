@@ -15,9 +15,6 @@ COPY requirements-notebook.txt .
 RUN pip install -r requirements-notebook.txt && \
     rm requirements-notebook.txt
 
-# install polygraphy
-RUN pip install colored polygraphy --extra-index-url https://pypi.ngc.nvidia.com
-
 # add user and his password
 ENV USER=docker_opr
 ARG UID=1000
@@ -35,7 +32,7 @@ RUN mkdir Datasets && chown -R ${UID}:${GID} /home/${USER}
 USER ${UID}:${GID}
 
 # see https://stackoverflow.com/questions/67735216/after-using-pip-i-get-the-error-scikit-learn-has-not-been-built-correctly
-ENV LD_PRELOAD=/usr/local/lib/python3.10/dist-packages/scikit_learn.libs/libgomp-d22c30c5.so.1.0.0
+ENV LD_PRELOAD=${LD_PRELOAD}:/usr/local/lib/python3.10/dist-packages/scikit_learn.libs/libgomp-d22c30c5.so.1.0.0
 
 ENV XDG_CACHE_HOME=/home/${USER}/.cache
 ENV TORCH_HOME=${XDG_CACHE_HOME}/torch
