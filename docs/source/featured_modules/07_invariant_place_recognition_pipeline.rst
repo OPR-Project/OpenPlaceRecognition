@@ -10,7 +10,7 @@ Usage example
 
 You should start with initializing neural model
 :class:`opr.models.place_recognition.base.LateFusionModel`
-with the image and cloud modules.
+with the image, cloud, semantic and SOC modules.
 The recommended way to do this is to use the
 `configs/model/place_recognition/multimodal_semantic_with_soc_outdoor.yaml <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/configs/model/place_recognition/multimodal_semantic_with_soc_outdoor.yaml>`_
 config file to instantiate the model with Hydra and load the weights from the
