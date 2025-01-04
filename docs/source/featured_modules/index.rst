@@ -7,3 +7,4 @@ This page provides a brief description of featured library modules.
    :maxdepth: 1
 
    01_place_recognition_pipeline
+   02_depth_estimation_pipeline
