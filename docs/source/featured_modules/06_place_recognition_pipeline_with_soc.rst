@@ -84,7 +84,9 @@ Then you can use the pipeline to infer the location of the input query data:
 
    query_data = {
        "image_front": image_front,
+       "mask_front": mask_front,
        "image_back": image_back,
+       "mask_back": mask_back,
        "pointcloud_lidar_coords": pointcloud_lidar_coords,
        "pointcloud_lidar_feats": pointcloud_lidar_feats,
    }
