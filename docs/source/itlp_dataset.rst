@@ -1,7 +1,13 @@
-ITLP-Campus
-========================
+###################
+ITLP-Campus Dataset
+###################
+
+.. image:: ../images/dataset-cover-husky.png
+   :align: center
+   :scale: 50%
 
 Class for working with the ITLP-Campus dataset.
+
 
 Download
 -------------
@@ -16,6 +22,7 @@ Download
      - `link1 <https://drive.google.com/drive/folders/14-0Ew5qVWh607tdFsovbXZsdWX-vU-Vy?usp=sharing>`_
    * - Yandex Disk
      - `link2 <https://disk.yandex.com/d/tvPdmWTTw5mEQg>`_
+
 
 Sensors
 -------------
@@ -36,6 +43,7 @@ Sensors
    * - LiDAR
      - VLP-16
      - 16x1824
+
 
 Structure
 -------------
@@ -97,8 +105,10 @@ An example of a indoor track trajectory (track_map.png):
 
 .. image:: ../images/00_indoor_track_map.png
 
+
 ITLP-Campus Indoor
 ===================
+
 
 Data
 ----
@@ -146,6 +156,7 @@ Data
 
 6 DoF poses are obtained using Cartographer SLAM with global localization in a pre-built map.
 
+
 Semantics
 ---------
 
@@ -185,10 +196,12 @@ An example of a mask over the image:
 
 .. image:: ../images/sem_mask_image_indoor.png
 
+
 ITLP-Campus Outdoor
 ====================
 
 The outdoor part of this dataset was recorded on the Husky robotics platform on the university campus and consists of 5 tracks recorded at different times of day (day/dusk/night) and different seasons (winter/spring).
+
 
 Data
 ----
@@ -216,7 +229,7 @@ Data
      - 1280x720
      - 16
      - ✓
-     - front + back  
+     - front + back
        1280x720x65 classes
      - ✓
      - ✓
@@ -228,7 +241,7 @@ Data
      - 1280x720
      - 16
      - ✓
-     - front + back  
+     - front + back
        1280x720x65 classes
      - ✓
      - ✓
@@ -240,7 +253,7 @@ Data
      - 1280x720
      - 16
      - ✓
-     - front + back  
+     - front + back
        1280x720x65 classes
      - ✓
      - ✓
@@ -252,7 +265,7 @@ Data
      - 1280x720
      - 16
      - ✓
-     - front + back  
+     - front + back
        1280x720x65 classes
      - ✓
      - ✓
@@ -264,7 +277,7 @@ Data
      - 1280x720
      - 16
      - ✓
-     - front + back  
+     - front + back
        1280x720x65 classes
      - ✓
      - ✓
@@ -276,7 +289,7 @@ Data
      - 1280x720
      - 16
      - ✓
-     - front + back  
+     - front + back
        1280x720x65 classes
      - ✓
      - ✓
@@ -288,7 +301,7 @@ Data
      - 1280x720
      - 16
      - ✓
-     - front + back  
+     - front + back
        1280x720x65 classes
      - ✓
      - ✓
@@ -300,7 +313,7 @@ Data
      - 1280x720
      - 16
      - ✓
-     - front + back  
+     - front + back
        1280x720x65 classes
      - ✓
      - ✓
@@ -312,12 +325,13 @@ Data
      - 1280x720
      - 16
      - ✓
-     - front + back  
+     - front + back
        1280x720x65 classes
      - ✓
      - ✓
 
 6 DoF poses are obtained using ALeGO-LOAM localization method refined with Interactive SLAM.
+
 
 Semantics
 ---------
@@ -358,12 +372,14 @@ An example of a mask over the image:
 
 .. image:: ../images/segmentation_mask_over_image_demo.png
 
+
 PyTorch dataset API
 ====================
 
 Implementation of PyTorch's dataset class for ITLP-Campus track is provided in the `src/opr/datasets/itlp.py <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/src/opr/datasets/itlp.py>`_ file.
 
 That class can be used for loading the track's data in the format of ``torch.Tensor``.
+
 
 Outdoor data
 ------------
