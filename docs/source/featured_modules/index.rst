@@ -14,4 +14,5 @@ This page provides a brief description of featured library modules.
    06_place_recognition_pipeline_with_soc
    07_invariant_place_recognition_pipeline
    08_text_labels_place_recognition
+   09_multimodal_place_recognition_trainer
    10_depth_estimation_pipeline
