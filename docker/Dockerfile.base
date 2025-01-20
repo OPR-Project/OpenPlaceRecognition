@@ -50,6 +50,10 @@ ARG PIP_VERSION=23.3.2
 ARG SETUPTOOLS_VERSION=69.0.3
 RUN pip install pip==${PIP_VERSION} setuptools==${SETUPTOOLS_VERSION}
 
+# install numpy<2
+ARG NUMPY_VERSION=1.26.4
+RUN pip install numpy==${NUMPY_VERSION}
+
 # install pytorch and torchvision
 RUN pip install \
     torch==2.1.2+cu121 \
@@ -94,6 +98,28 @@ RUN pip install onnxruntime-gpu==1.18 --extra-index-url \
     pip install torch-tensorrt==2.1.0 --extra-index-url https://download.pytorch.org/whl/test/cu121 && \
     pip install colored polygraphy --extra-index-url https://pypi.ngc.nvidia.com && \
     pip install onnx
+
+# Install Open3D library with GPU support
+RUN git clone https://github.com/isl-org/Open3D.git && cd Open3D && git checkout c8856fc
+WORKDIR /Open3D
+RUN bash util/install_deps_ubuntu.sh assume-yes && \
+    rm -rf /var/lib/apt/lists/*
+RUN mkdir build && cd build && \
+    cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=ON \
+        -DGLIBCXX_USE_CXX11_ABI=OFF \
+        -DBUILD_CUDA_MODULE=ON \
+        -DBUILD_PYTORCH_OPS=ON \
+        -DBUILD_TENSORFLOW_OPS=OFF \
+        -DPYTHON_EXECUTABLE=$(which python) \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        .. && \
+    make -j${MAX_JOBS} && \
+    make install -j${MAX_JOBS}
+ARG YAPF_VERSION=0.43.0
+RUN pip install yapf==${YAPF_VERSION}
+RUN cd build && make install-pip-package -j${MAX_JOBS}
 
 # install pytorch3d
 RUN FORCE_CUDA=1 pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
