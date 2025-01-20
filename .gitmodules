@@ -10,3 +10,6 @@
 [submodule "third_party/HRegNet"]
 	path = third_party/HRegNet
 	url = https://github.com/alexmelekhin/HRegNet.git
+[submodule "third_party/PointMamba"]
+	path = third_party/PointMamba
+	url = https://github.com/alexmelekhin/PointMamba.git
