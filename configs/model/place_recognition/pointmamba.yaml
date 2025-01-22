@@ -1,0 +1,13 @@
+_target_: opr.models.place_recognition.pointmamba.PointMambaPR
+
+pooling: "gem"
+normalize_output: False
+trans_dim: 256
+depth: 12
+group_size: 32
+num_group: 512
+encoder_dims: 256
+drop_out: 0.0
+drop_path: 0.1
+rms_norm: False
+drop_out_in_block: 0.0
