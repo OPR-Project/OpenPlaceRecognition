@@ -70,6 +70,7 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         use_minkowski: bool = True,
         pointcloud_quantization_size: Optional[Union[float, Tuple[float, float, float]]] = 0.5,
         max_point_distance: Optional[float] = None,
+        normalize_point_cloud: bool = False,
         num_points_sample: int | None = None,
         spherical_coords: bool = False,
         use_intensity_values: bool = False,
@@ -108,6 +109,8 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                 Defaults to 0.01.
             max_point_distance (float, optional): The maximum distance of points from the origin.
                 Defaults to None.
+            normalize_point_cloud (bool): Whether to normalize point clouds by max_point_distance.
+                Defaults to False.
             num_points_sample (int, optional): The number of points to sample from the point cloud.
                 Defaults to None, which means no sampling.
             spherical_coords (bool): Whether to use spherical coordinates for point clouds.
@@ -133,6 +136,8 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         Raises:
             ValueError: If data_to_load contains invalid data source names.
             FileNotFoundError: If images, masks or pointclouds directory does not exist.
+            ValueError: If num_points_sample is not specified and MinkowskiEngine is not used.
+            ValueError: If max_point_distance is not specified and normalize_point_cloud is set to True.
         """
         # TODO: ^ docstring is also not DRY -> it is almost the same as in Oxford dataset
         super().__init__(
@@ -181,6 +186,9 @@ class NCLTDataset(BasePlaceRecognitionDataset):
 
         self._pointcloud_quantization_size = pointcloud_quantization_size
         self._max_point_distance = max_point_distance
+        self._normalize_point_cloud = normalize_point_cloud
+        if not self._max_point_distance and self._normalize_point_cloud:
+            raise ValueError("max_point_distance must be specified if normalize_point_cloud is set to True.")
         self._spherical_coords = spherical_coords
         self._use_intensity_values = use_intensity_values
 
@@ -248,6 +256,8 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         pc = np.fromfile(filepath, dtype=np.float32).reshape(-1, 3)  # TODO: preprocess pointclouds properly
         if self._max_point_distance is not None:
             pc = pc[np.linalg.norm(pc, axis=1) < self._max_point_distance]
+        if self._normalize_point_cloud:
+            pc = pc / self._max_point_distance
         if self._spherical_coords:
             pc = cartesian_to_spherical(pc, dataset_name="nclt")
         if torch_tensor:

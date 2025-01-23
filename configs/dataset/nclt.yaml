@@ -10,8 +10,11 @@ negative_threshold: 50.0
 images_dirname: images_small
 masks_dirname: segmentation_masks_small
 pointclouds_dirname: velodyne_data
+use_minkowski: False
 pointcloud_quantization_size: 0.5
-max_point_distance: 40.0
+max_point_distance: 100.0
+normalize_point_cloud: False
+num_points_sample: 8192
 spherical_coords: False
 use_intensity_values: False
 image_transform: null
