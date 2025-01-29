@@ -1,4 +1,6 @@
 """Adaptation of PointMamba model for Place Recognition."""
+from time import time
+
 import torch
 from easydict import EasyDict
 from loguru import logger
@@ -87,12 +89,36 @@ class PointMambaPR(PointMamba):
 
         self.normalize_output = normalize_output
 
-    def forward(self, batch: dict[str, Tensor]) -> dict[str, Tensor]:  # noqa: D102
-        pts = batch["pointclouds_lidar_coords"]
-        neighborhood, center = self.group_divider(pts)
-        group_input_tokens = self.encoder(neighborhood)  # B G N
-        pos = self.pos_embed(center)
+        self.stats = {
+            "total": [],
+            "group_divider": [],
+            "encoder": [],
+            "pos_embed": [],
+            "transformer": [],
+            "reordering": [],
+        }
 
+    def forward(self, batch: dict[str, Tensor]) -> dict[str, Tensor]:  # noqa: D102
+        total_t_s = time()
+
+        pts = batch["pointclouds_lidar_coords"]
+
+        t_s = time()
+        neighborhood, center = self.group_divider(pts)
+        torch.cuda.current_stream().synchronize()
+        self.stats["group_divider"].append(time() - t_s)
+
+        t_s = time()
+        group_input_tokens = self.encoder(neighborhood)  # B G N
+        torch.cuda.current_stream().synchronize()
+        self.stats["encoder"].append(time() - t_s)
+
+        t_s = time()
+        pos = self.pos_embed(center)
+        torch.cuda.current_stream().synchronize()
+        self.stats["pos_embed"].append(time() - t_s)
+
+        t_s = time()
         # reordering strategy
         center_x = center[:, :, 0].argsort(dim=-1)[:, :, None]
         center_y = center[:, :, 1].argsort(dim=-1)[:, :, None]
@@ -115,12 +141,22 @@ class PointMambaPR(PointMamba):
         pos = torch.cat([pos_x, pos_y, pos_z], dim=1)
 
         x = group_input_tokens
+        torch.cuda.current_stream().synchronize()
+        self.stats["reordering"].append(time() - t_s)
+
+        t_s = time()
         # transformer
         x = self.drop_out(x)
         x = self.blocks(x, pos)
         x = self.norm(x)
+        torch.cuda.current_stream().synchronize()
+        self.stats["transformer"].append(time() - t_s)
+
         x = self.head(x.permute(0, 2, 1))
         if self.normalize_output:
             x = torch.nn.functional.normalize(x, dim=-1)
         out_dict: dict[str, Tensor] = {"final_descriptor": x}
+
+        self.stats["total"].append(time() - total_t_s)
+
         return out_dict
