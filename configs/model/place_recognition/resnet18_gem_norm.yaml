@@ -1,0 +1,13 @@
+_target_: opr.models.place_recognition.base.ImageModel
+backbone:
+  _target_: opr.modules.feature_extractors.ResNet18FPNFeatureExtractor
+  in_channels: 3
+  lateral_dim: 256
+  fh_num_bottom_up: 4
+  fh_num_top_down: 0
+  pretrained: True
+head:
+  _target_: torch.nn.Sequential
+  _args_:
+    - _target_: opr.modules.GeM
+    - _target_: opr.modules.normalization.L2Norm
