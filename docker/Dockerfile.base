@@ -123,3 +123,20 @@ RUN cd build && make install-pip-package -j${MAX_JOBS}
 
 # install pytorch3d
 RUN FORCE_CUDA=1 pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
+
+# install PointMamba requirements
+WORKDIR /
+ARG CAUSALCONV1D_VERSION=1.4.0
+ARG MAMBA_VERSION=1.2.2
+RUN git clone https://github.com/alexmelekhin/PointMamba.git && \
+    cd PointMamba && \
+    pip install -r requirements.txt && \
+    cd pointmamba/extensions/chamfer_dist && \
+    python setup.py install && \
+    cd ../emd && \
+    python setup.py install && \
+    pip install "git+https://github.com/alexmelekhin/Pointnet2_PyTorch.git#egg=pointnet2_ops&subdirectory=pointnet2_ops_lib" && \
+    pip install causal-conv1d==${CAUSALCONV1D_VERSION} && \
+    pip install mamba-ssm==${MAMBA_VERSION} && \
+    cd / && \
+    rm -rf PointMamba

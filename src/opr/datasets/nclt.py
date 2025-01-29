@@ -1,9 +1,11 @@
 """NCLT dataset implementation."""
 from pathlib import Path
+from time import time
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import cv2
 import numpy as np
+import open3d as o3d
 import torch
 from loguru import logger
 from torch import Tensor
@@ -65,8 +67,11 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         images_dirname: str = "images_small",
         masks_dirname: str = "segmentation_masks_small",
         pointclouds_dirname: str = "velodyne_data",
+        use_minkowski: bool = True,
         pointcloud_quantization_size: Optional[Union[float, Tuple[float, float, float]]] = 0.5,
         max_point_distance: Optional[float] = None,
+        normalize_point_cloud: bool = False,
+        num_points_sample: int | None = None,
         spherical_coords: bool = False,
         use_intensity_values: bool = False,
         image_transform: Optional[Any] = None,
@@ -75,13 +80,11 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         pointcloud_set_transform: Optional[Any] = None,
         load_soc: bool = False,
         top_k_soc: int = 10,
-        soc_coords_type: Literal[
-            "cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"
-        ] = "euclidean",
+        soc_coords_type: Literal["cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"] = "euclidean",
         max_distance_soc: float = 50.0,
         anno: OmegaConf = None,
         exclude_dynamic: bool = False,
-        dynamic_labels: Optional[list] = None
+        dynamic_labels: Optional[list] = None,
     ) -> None:
         """NCLT dataset implementation.
 
@@ -100,10 +103,16 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                 if custom preprocessing was done. Defaults to "segmentation_masks".
             pointclouds_dirname (str): Point clouds directory name. It should be specified
                 explicitly if custom preprocessing was done. Defaults to "velodyne_data".
+            use_minkowski (bool): Whether to use MinkowskiEngine to collate point clouds in batches.
+                Defaults to True.
             pointcloud_quantization_size (float, optional): The quantization size for point clouds.
                 Defaults to 0.01.
             max_point_distance (float, optional): The maximum distance of points from the origin.
                 Defaults to None.
+            normalize_point_cloud (bool): Whether to normalize point clouds by max_point_distance.
+                Defaults to False.
+            num_points_sample (int, optional): The number of points to sample from the point cloud.
+                Defaults to None, which means no sampling.
             spherical_coords (bool): Whether to use spherical coordinates for point clouds.
                 Defaults to False.
             use_intensity_values (bool): Whether to use intensity values for point clouds. Defaults to False.
@@ -115,10 +124,20 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                 will be used. Defaults to None.
             pointcloud_set_transform (Any, optional): Point clouds set transform. If None,
                 DefaultCloudSetTransform will be used. Defaults to None.
+            load_soc (bool): Whether to load SOC (Semantic Objects in Context) data. Defaults to False.
+            top_k_soc (int): The number of objects to keep in SOC data. Defaults to 10.
+            soc_coords_type (Literal["cylindrical_3d", "cylindrical_2d", "euclidean", "spherical"]): The type
+                of coordinates to use in SOC data. Defaults to "euclidean".
+            max_distance_soc (float): The maximum distance of objects in SOC data. Defaults to 50.0.
+            anno (OmegaConf): The annotation configuration. Defaults to None.
+            exclude_dynamic (bool): Whether to exclude dynamic objects from the point cloud. Defaults to False.
+            dynamic_labels (Optional[list]): The list of dynamic labels. Defaults to None.
 
         Raises:
             ValueError: If data_to_load contains invalid data source names.
             FileNotFoundError: If images, masks or pointclouds directory does not exist.
+            ValueError: If num_points_sample is not specified and MinkowskiEngine is not used.
+            ValueError: If max_point_distance is not specified and normalize_point_cloud is set to True.
         """
         # TODO: ^ docstring is also not DRY -> it is almost the same as in Oxford dataset
         super().__init__(
@@ -158,8 +177,18 @@ class NCLTDataset(BasePlaceRecognitionDataset):
                     f"Pointclouds directory {self._pointclouds_dirname!r} does not exist."
                 )
 
+        self._use_minkowski = use_minkowski
+        self._num_points_sample = num_points_sample
+        if self._num_points_sample is None and not self._use_minkowski:
+            raise ValueError(
+                "num_points_sample must be specified if MinkowskiEngine is not used to collate data in batch."
+            )
+
         self._pointcloud_quantization_size = pointcloud_quantization_size
         self._max_point_distance = max_point_distance
+        self._normalize_point_cloud = normalize_point_cloud
+        if not self._max_point_distance and self._normalize_point_cloud:
+            raise ValueError("max_point_distance must be specified if normalize_point_cloud is set to True.")
         self._spherical_coords = spherical_coords
         self._use_intensity_values = use_intensity_values
 
@@ -227,6 +256,8 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         pc = np.fromfile(filepath, dtype=np.float32).reshape(-1, 3)  # TODO: preprocess pointclouds properly
         if self._max_point_distance is not None:
             pc = pc[np.linalg.norm(pc, axis=1) < self._max_point_distance]
+        if self._normalize_point_cloud:
+            pc = pc / self._max_point_distance
         if self._spherical_coords:
             pc = cartesian_to_spherical(pc, dataset_name="nclt")
         if torch_tensor:
@@ -234,7 +265,7 @@ class NCLTDataset(BasePlaceRecognitionDataset):
             return pc_tensor
         else:
             return pc
-    
+
     def _mask_dynamic_points(self, pointcloud: Tensor, dynamic_labels: list, idx: int) -> Tensor:
         row = self.dataset_df.iloc[idx]
         image_ts = int(row["image"])
@@ -263,6 +294,35 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         im[np.isin(mask, dynamic_labels)] = 0
         return im
 
+    def _collate_pc_minkowski(self, data_list: List[Dict[str, Tensor]]) -> tuple[Tensor, Tensor]:
+        if not minkowski_available:
+            raise RuntimeError("MinkowskiEngine is not installed. Cannot process point clouds.")
+        coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
+        feats_list = [e["pointcloud_lidar_feats"] for e in data_list]
+        n_points = [int(e.shape[0]) for e in coords_list]
+        coords_tensor = torch.cat(coords_list, dim=0).unsqueeze(0)  # (1,batch_size*n_points,3)
+        if self.pointcloud_set_transform is not None:
+            # Apply the same transformation on all dataset elements
+            coords_tensor = self.pointcloud_set_transform(coords_tensor)
+        coords_list = torch.split(coords_tensor.squeeze(0), split_size_or_sections=n_points, dim=0)
+        quantized_coords_list = []
+        quantized_feats_list = []
+        for coords, feats in zip(coords_list, feats_list):
+            quantized_coords, quantized_feats = ME.utils.sparse_quantize(
+                coordinates=coords,
+                features=feats,
+                quantization_size=self._pointcloud_quantization_size,
+            )
+            quantized_coords_list.append(quantized_coords)
+            quantized_feats_list.append(quantized_feats)
+        return ME.utils.batched_coordinates(quantized_coords_list), torch.cat(quantized_feats_list)
+
+    def _collate_pc(self, data_list: List[Dict[str, Tensor]]) -> Tensor:
+        coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
+        coords_list = [self._random_point_sample(coords, self._num_points_sample) for coords in coords_list]
+        # TODO: add support for features tensor
+        return torch.stack(coords_list)  # B x NUM_POINTS_FPS x 3
+
     # TODO: this is the same collate_fn as in Oxford -> refactor to DRY principle
     def _collate_data_dict(self, data_list: List[Dict[str, Tensor]]) -> Dict[str, Tensor]:
         result: Dict[str, Tensor] = {}
@@ -279,29 +339,13 @@ class NCLTDataset(BasePlaceRecognitionDataset):
             elif data_key == "soc":
                 result["soc"] = torch.stack([e["soc"] for e in data_list], dim=0)
             elif data_key == "pointcloud_lidar_coords":
-                if not minkowski_available:
-                    raise RuntimeError("MinkowskiEngine is not installed. Cannot process point clouds.")
-                coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
-                feats_list = [e["pointcloud_lidar_feats"] for e in data_list]
-                n_points = [int(e.shape[0]) for e in coords_list]
-                coords_tensor = torch.cat(coords_list, dim=0).unsqueeze(0)  # (1,batch_size*n_points,3)
-                if self.pointcloud_set_transform is not None:
-                    # Apply the same transformation on all dataset elements
-                    coords_tensor = self.pointcloud_set_transform(coords_tensor)
-                coords_list = torch.split(coords_tensor.squeeze(0), split_size_or_sections=n_points, dim=0)
-                quantized_coords_list = []
-                quantized_feats_list = []
-                for coords, feats in zip(coords_list, feats_list):
-                    quantized_coords, quantized_feats = ME.utils.sparse_quantize(
-                        coordinates=coords,
-                        features=feats,
-                        quantization_size=self._pointcloud_quantization_size,
-                    )
-                    quantized_coords_list.append(quantized_coords)
-                    quantized_feats_list.append(quantized_feats)
-
-                result["pointclouds_lidar_coords"] = ME.utils.batched_coordinates(quantized_coords_list)
-                result["pointclouds_lidar_feats"] = torch.cat(quantized_feats_list)
+                if self._use_minkowski:
+                    (
+                        result["pointclouds_lidar_coords"],
+                        result["pointclouds_lidar_feats"],
+                    ) = self._collate_pc_minkowski(data_list)
+                else:
+                    result["pointclouds_lidar_coords"] = self._collate_pc(data_list)
             elif data_key == "pointcloud_lidar_feats":
                 continue
             else:
@@ -318,6 +362,38 @@ class NCLTDataset(BasePlaceRecognitionDataset):
             Dict[str, Tensor]: dictionary of batched data.
         """
         return self._collate_data_dict(data_list)
+
+    def _custom_fps(self, point: Tensor, num_points: int) -> Tensor:
+        N, _ = point.shape
+        xyz = point[:, :3]
+        centroids = torch.zeros((num_points,))
+        distance = torch.ones((N,)) * 1e10
+        farthest = torch.randint(0, N, (1,))
+        for i in range(num_points):
+            centroids[i] = farthest
+            centroid = xyz[farthest, :]
+            dist = torch.sum((xyz - centroid) ** 2, -1)
+            mask = dist < distance
+            distance[mask] = dist[mask]
+            farthest = torch.argmax(distance, -1)
+        point = point[centroids.int()]
+        return point
+
+    def _o3d_fps(self, input: Tensor, num_points: int) -> Tensor:
+        pc_o3d = o3d.core.Tensor.from_dlpack(torch.utils.dlpack.to_dlpack(input))
+        pcd = o3d.t.geometry.PointCloud(pc_o3d)
+        pcd = pcd.farthest_point_down_sample(num_points)
+        pc = torch.utils.dlpack.from_dlpack(pcd.point.positions.to_dlpack())
+        return pc
+
+    def _random_point_sample(self, point: Tensor, num_points: int) -> Tensor:
+        N = point.shape[0]
+        if N >= num_points:
+            sample_idx = torch.randperm(N)[:num_points]
+        else:
+            sample_idx = torch.cat((torch.arange(N), torch.randint(0, N, (num_points - N,))), dim=0)
+        point = point[sample_idx]
+        return point
 
     def _get_soc(self, idx: int) -> Tensor:
         row = self.dataset_df.iloc[idx]

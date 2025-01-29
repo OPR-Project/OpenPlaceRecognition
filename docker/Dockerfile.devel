@@ -34,3 +34,6 @@ RUN mkdir OpenPlaceRecognition && chown -R ${UID}:${GID} /home/${USER}
 RUN mkdir Datasets && chown -R ${UID}:${GID} /home/${USER}
 
 USER ${UID}:${GID}
+
+# required for PointMamba, should be installed without root
+RUN pip install --user --upgrade https://github.com/unlimblue/KNN_CUDA/releases/download/0.2/KNN_CUDA-0.2-py3-none-any.whl
