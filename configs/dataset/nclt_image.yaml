@@ -1,0 +1,9 @@
+_target_: opr.datasets.nclt.NCLTDataset
+dataset_root: /home/docker_opr/Datasets/NCLT_preprocessed_small
+data_to_load: ["image_Cam0",]
+subset: test
+images_dirname: lb3_small 
+image_transform:
+  _target_: opr.datasets.augmentations.DefaultImageTransform
+  train: false
+  resize: [322, 322]  # Width, Height format
