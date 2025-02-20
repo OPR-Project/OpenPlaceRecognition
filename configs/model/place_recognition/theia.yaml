@@ -1,0 +1,5 @@
+_target_: opr.models.place_recognition.Theia
+feat_type: theia
+device: cuda
+pooling: gmp
+weights_path: null

@@ -1,0 +1,9 @@
+_target_: opr.models.place_recognition.DinoV2
+dino_model: get_trained_boq
+layer: 31
+facet: null
+use_cls: False
+norm_descs: True
+device: cuda
+pooling: gap
+weights_path: null
