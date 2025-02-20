@@ -9,6 +9,11 @@ DINO_V2_MODELS = ["dinov2_vits14", "dinov2_vitb14", "dinov2_vitl14", "dinov2_vit
 BOQ_MODELS = ["get_trained_boq",]
 DINO_FACETS = Literal["query", "key", "value", "token", None]
 
+from opr.modules.feature_extractors.boq.hubconf import VPRModel
+# from opr.modules.feature_extractors.boq import hubconf
+
+from opr.modules.feature_extractors.boq.backbones import ResNet, DinoV2
+from opr.modules.feature_extractors.boq.boq import BoQ
 
 class ViTBaseFeatureExtractor(nn.Module):
     """
@@ -88,7 +93,44 @@ class ViTBaseFeatureExtractor(nn.Module):
         elif vit_type in RADIO_MODELS:
             return torch.hub.load('NVlabs/RADIO', 'radio_model', version=vit_type)
         elif vit_type in BOQ_MODELS:
-            return torch.hub.load("amaralibey/bag-of-queries", vit_type, backbone_name="dinov2", output_dim=12288)
+
+            # model = torch.hub.load("amaralibey/bag-of-queries", vit_type, backbone_name="dinov2", output_dim=12288)
+            # im_size = (322, 322)
+            output_dim = 12288
+
+            MODEL_URLS = {
+                "resnet50_16384": "https://github.com/amaralibey/Bag-of-Queries/releases/download/v1.0/resnet50_16384.pth",
+                "dinov2_12288": "https://github.com/amaralibey/Bag-of-Queries/releases/download/v1.0/dinov2_12288.pth",
+                # "resnet50_4096": "",
+            }
+            backbone_name = "dinov2"
+
+            backbone = DinoV2()
+            aggregator = BoQ(
+                in_channels=backbone.out_channels,  # make sure the backbone has out_channels attribute
+                proj_channels=384,
+                num_queries=64,
+                num_layers=2,
+                row_dim=output_dim//384, # 32 for dinov2
+            )
+
+            vpr_model = VPRModel(
+                backbone=backbone,
+                aggregator=aggregator
+            )
+
+            vpr_model.load_state_dict(
+                torch.hub.load_state_dict_from_url(
+                    MODEL_URLS[f"{backbone_name}_{output_dim}"],
+                    map_location=torch.device('cpu')
+                ),
+                strict=False
+            )
+            # return torch.hub.load("amaralibey/bag-of-queries", vit_type, backbone_name="resnet50", output_dim=16384)
+            # return torch.hub.load("amaralibey/bag-of-queries", vit_type, backbone_name="dinov2", output_dim=12288)
+            return vpr_model
+
+            # return torch.hub.load("amaralibey/bag-of-queries", vit_type, backbone_name="dinov2", output_dim=12288)
         else:
             raise ValueError(f"Invalid model version: {vit_type}")
     

@@ -1,6 +1,6 @@
 import torch
 from .base import ImageModel
-from opr.modules.feature_extractors.dinov2 import DINO_V2_MODELS, DINO_FACETS
+from opr.modules.feature_extractors.dinov2 import DINO_V2_MODELS, DINO_FACETS, BOQ_MODELS
 from opr.modules.gem import GlobalAvgPooling, GlobalMaxPooling
 from opr.modules.feature_extractors.dinov2 import ViTBaseFeatureExtractor
 
