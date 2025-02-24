@@ -1,0 +1,9 @@
+_target_: opr.models.place_recognition.DinoV2
+dino_model: dinov2_vitg14
+layer: 31
+facet: token
+use_cls: False
+norm_descs: True
+device: cuda
+pooling: gap
+weights_path: null

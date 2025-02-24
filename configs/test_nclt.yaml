@@ -1,0 +1,15 @@
+defaults:
+  - _self_
+  - dataset: nclt_image
+  # - model: place_recognition/dinov2
+  # - model: place_recognition/theia
+  - model: place_recognition/boq
+
+dataset:
+  dataset_root: /home/docker_opr/Datasets/NCLT_preprocessed_small
+  subset: test
+
+device: cuda
+batch_size: 32
+num_workers: 4
+pr_threshold: 25.0 
