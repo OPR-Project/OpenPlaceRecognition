@@ -326,6 +326,24 @@ class NCLTDatasetV2(Dataset):
         return positive_indices, nonnegative_indices
 
     @property
+    def dataset_df(self) -> pd.DataFrame:
+        """Dataset DataFrame with information about each frame.
+
+        It contains the following columns:
+            - track (str): Track to which the frame belongs.
+            - timestamp (int64): Unix timestamp of the pose.
+            - frame_timestamp (int64): Unix timestamp of the frame.
+            - tx (float32): X coordinate of the pose.
+            - ty (float32): Y coordinate of the pose.
+            - tz (float32): Z coordinate of the pose.
+            - qw (float32): Quaternion W component of the pose.
+            - qx (float32): Quaternion X component of the pose.
+            - qy (float32): Quaternion Y component of the pose.
+            - qz (float32): Quaternion Z component of the pose
+        """
+        return self._dataset_df
+
+    @property
     def positives_index(self) -> list[Tensor]:
         """List of indexes of positive samples for each element in the dataset."""
         return self._positives_index
