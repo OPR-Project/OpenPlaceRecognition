@@ -3,20 +3,20 @@ dependencies = ['torch', 'torchvision']
 import torch
 from opr.modules.feature_extractors.boq.backbones import ResNet, DinoV2
 from opr.modules.feature_extractors.boq.boq import BoQ
-    
+
 
 class VPRModel(torch.nn.Module):
-    def __init__(self, 
+    def __init__(self,
                  backbone,
                  aggregator):
         super().__init__()
         self.backbone = backbone
         self.aggregator = aggregator
-        
+
     def forward(self, x):
         x = self.backbone(x)
         x, attns = self.aggregator(x)
-        return x, attns
+        return x
 
 
 AVAILABLE_BACKBONES = {
@@ -41,7 +41,7 @@ def get_trained_boq(backbone_name="resnet50", output_dim=16384):
         raise ValueError(f"output_dim should be an integer, not a {type(output_dim)}")
     if output_dim not in AVAILABLE_BACKBONES[backbone_name]:
         raise ValueError(f"output_dim should be one of {AVAILABLE_BACKBONES[backbone_name]}")
-    
+
     if "dinov2" in backbone_name:
         # load the backbone
         backbone = DinoV2()
@@ -53,7 +53,7 @@ def get_trained_boq(backbone_name="resnet50", output_dim=16384):
             num_layers=2,
             row_dim=output_dim//384, # 32 for dinov2
         )
-        
+
     elif "resnet" in backbone_name:
         backbone = ResNet(
                 backbone_name=backbone_name,
@@ -71,7 +71,7 @@ def get_trained_boq(backbone_name="resnet50", output_dim=16384):
             backbone=backbone,
             aggregator=aggregator
         )
-    
+
     vpr_model.load_state_dict(
         torch.hub.load_state_dict_from_url(
             MODEL_URLS[f"{backbone_name}_{output_dim}"],
