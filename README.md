@@ -4,6 +4,13 @@
 
 _An overview of a typical place recognition pipeline. At first, the input data is encoded into a query descriptor. Then, a K-nearest neighbors search is performed between the query and the database. Finally, the position of the closest database descriptor found is considered as the answer._
 
+This library is suitable for:
+
+- 🚗 **Navigation of autonomous cars, robots, and drones** using cameras and lidars, especially in areas with limited or unavailable GPS signals.
+- 📦 **Localization of delivery robots** needing reliable positioning both indoors and outdoors.
+- 🔬 **Research and development of computer vision algorithms**, related to multimodal place recognition and localization.
+- 🎓 **Educational purposes and research projects**, involving robotics, autonomous systems, and computer vision.
+
 ### Featured modules
 
 Detailed description of featured library modules can be found in the [docs/modules.md](./docs/modules.md) document.
