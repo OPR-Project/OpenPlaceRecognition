@@ -1,7 +1,7 @@
 FROM nvcr.io/nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
 ARG MAX_JOBS=4
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies for convinient development inside container
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
