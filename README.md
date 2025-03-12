@@ -61,6 +61,16 @@ To enter the container's `/bin/bash` terminal, use the [`docker/into.sh`](./dock
 bash docker/into.sh
 ```
 
+After you enter the container, install the library (we recommend installing in editable mode with the `-e` flag to be able to make modifications to the code):
+
+```bash
+pip install -e ~/OpenPlaceRecognition
+```
+
+### Advanced
+
+For more detailed instructions on installing third-party dependencies, configuring your environment manually, and additional setup options, please refer to the [Installation section of our documentation](https://openplacerecognition.readthedocs.io/en/latest/#installation).
+
 ### How to load the weights
 
 You can download the weights from the public [Google Drive folder](https://drive.google.com/drive/folders/1uRiMe2-I9b5Tgv8mIJLkdGaHXccp_UFJ?usp=sharing).
