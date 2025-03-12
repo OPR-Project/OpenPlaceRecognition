@@ -29,45 +29,37 @@ Detailed description of featured library modules can be found in the [docs/modul
 
 ## Installation
 
-### Pre-requisites
+### Quick-start
 
-- The library requires `PyTorch`, `MinkowskiEngine` and (optionally) `faiss` libraries to be installed manually:
-  - [PyTorch Get Started](https://pytorch.org/get-started/locally/)
-  - [MinkowskiEngine repository](https://github.com/NVIDIA/MinkowskiEngine)
-  - [faiss repository](https://github.com/facebookresearch/faiss)
+The recommended and easiest way to use the library is through the provided Docker environment.
+The [`Dockerfile.base`](./docker/Dockerfile.base) contains all prerequisites needed to run the library,
+including optional [MinkowskiEngine](https://github.com/NVIDIA/MinkowskiEngine) and [faiss](https://github.com/facebookresearch/faiss) libraries.
+You can either pull this image from Docker Hub (`docker pull alexmelekhin/open-place-recognition:base`),
+or build it manually (`bash docker/build_base.sh`).
 
-- Another option is to use the docker image. You can read detailed description in the [docker/README.md](./docker/README.md).
-  Quick-start commands to build, start and enter the container:
+The [`Dockerfile.devel`](./docker/Dockerfile.devel) installs additional requirements from
+[`requirements.txt`](./requirements.txt),
+[`requirements-dev.txt`](./requirements-dev.txt),
+and [`requirements-notebook.txt`](./requirements-notebook.txt) files,
+and creates a non-root user inside the image to avoid permission issues when using the container with mounted volumes.
 
-  ```bash
-  # from repo root dir
-  bash docker/build_devel.sh
-  bash docker/start.sh [DATASETS_DIR]
-  bash docker/into.sh
-  ```
+The `devel` version of the image should be built manually by the user:
 
-### Library installation
+```bash
+bash docker/build_devel.sh
+```
 
-- After the pre-requisites are met, install the Open Place Recognition library with the following command:
+When starting the container, you must provide a data directory that will be mounted to `~/Datasets` inside the container:
 
-    ```bash
-    pip install -e .
-    ```
+```bash
+bash docker/start.sh [DATASETS_DIR]
+```
 
-### Third-party packages
+To enter the container's `/bin/bash` terminal, use the [`docker/into.sh`](./docker/into.sh) script:
 
-- If you want to use the `GeoTransformer` model for pointcloud registration, you should install the package located in the `third_party` directory:
-
-    ```bash
-    # load submodules from git
-    git submodule update --init
-
-    # change dir
-    cd third_party/GeoTransformer/
-
-    # install the package
-    bash setup.sh
-    ```
+```bash
+bash docker/into.sh
+```
 
 ### How to load the weights
 
