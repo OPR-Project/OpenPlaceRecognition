@@ -34,39 +34,58 @@ This library is suitable for:
 Installation
 ============
 
-Pre-requisites
---------------
+Quick-start
+-----------
 
-* The library requires `PyTorch`, `MinkowskiEngine` and (optionally) `faiss` libraries
-  to be installed manually:
-
-  * `PyTorch Get Started <https://pytorch.org/get-started/locally/>`_
-  * `MinkowskiEngine repository <https://github.com/NVIDIA/MinkowskiEngine>`_
-  * `faiss repository <https://github.com/facebookresearch/faiss>`_
-
-* Another option is to use the docker image.
-  Quick-start commands to build, start and enter the container:
-
-  .. code-block:: bash
-
-     # from repo root dir
-     bash docker/build_devel.sh
-     bash docker/start.sh [DATASETS_DIR]
-     bash docker/into.sh
-
-
-Library installation
---------------------
-
-After the pre-requisites are met, install the Open Place Recognition library with the following command:
+At first, ensure that you cloned the repository https://github.com/OPR-Project/OpenPlaceRecognition
+and changed the directory to the root of the repository:
 
 .. code-block:: bash
 
-   pip install -e .
+   git clone https://github.com/OPR-Project/OpenPlaceRecognition.git
+   cd OpenPlaceRecognition
+
+The recommended and easiest way to use the library is through the provided Docker environment.
+The ``Dockerfile.base`` contains all prerequisites needed to run the library,
+including optional `MinkowskiEngine <https://github.com/NVIDIA/MinkowskiEngine>`_ and `faiss <https://github.com/facebookresearch/faiss>`_ libraries.
+You can either pull this image from Docker Hub (``docker pull alexmelekhin/open-place-recognition:base``),
+or build it manually (``bash docker/build_base.sh``).
+
+The ``Dockerfile.devel`` installs additional requirements from
+``requirements.txt``,
+``requirements-dev.txt``,
+and ``requirements-notebook.txt`` files,
+and creates a non-root user inside the image to avoid permission issues when using the container with mounted volumes.
+
+The ``devel`` version of the image should be built manually by the user:
+
+.. code-block:: bash
+
+   bash docker/build_devel.sh
+
+When starting the container, you must provide a data directory that will be mounted to ``~/Datasets`` inside the container:
+
+.. code-block:: bash
+
+   bash docker/start.sh [DATASETS_DIR]
+
+To enter the container's ``/bin/bash`` terminal, use the ``docker/into.sh`` script:
+
+.. code-block:: bash
+
+   bash docker/into.sh
+
+After you enter the container, install the library (we recommend installing in editable mode with the ``-e`` flag to be able to make modifications to the code):
+
+.. code-block:: bash
+
+   pip install -e ~/OpenPlaceRecognition
 
 
 Third-party packages
 --------------------
+
+Some modules and pipelines require third-party packages to be installed manually. You can install these dependencies with the following commands:
 
 * If you want to use the `GeoTransformer` model for pointcloud registration,
   you should install the package located in the `third_party` directory:
@@ -82,6 +101,14 @@ Third-party packages
      # install the package
      bash setup.sh
 
+  If you are seeing `Permission denied` error, you should run the command with `sudo`:
+
+  .. code-block:: bash
+
+     # ... previous commands are the same
+
+     sudo bash setup.sh
+
 * If you want to use the `HRegNet` model for pointcloud registration,
   you should install the package located in the `third_party` directory:
 
@@ -94,11 +121,37 @@ Third-party packages
      cd third_party/HRegNet/
 
      # at first, install PointUtils dependency
-     python hregnet/PointUtils/setup.py install
+     cd hregnet/PointUtils
+     python setup.py install
 
      # then, install the package hregnet
+     cd ../..  # go back to the third_party/HRegNet/ directory
      pip install .
 
+  If you are seeing `Permission denied` error while trying to install PointUtils, you should run the command with `sudo`:
+
+  .. code-block:: bash
+
+     # ... previous commands are the same
+
+     # install PointUtils dependency
+     cd hregnet/PointUtils
+     python setup.py install
+
+     # then, install the package hregnet
+     cd ../..  # go back to the third_party/HRegNet/ directory
+     pip install .
+
+
+Advanced
+--------
+
+For a manual installation, you'll need to install several prerequisite libraries:
+
+* `PyTorch <https://pytorch.org/get-started/locally/>`_
+* `MinkowskiEngine <https://github.com/NVIDIA/MinkowskiEngine>`_
+* `faiss <https://github.com/facebookresearch/faiss>`_
+* `Open3D <https://www.open3d.org/docs/release/getting_started.html>`_
 
 
 How to load the weights
