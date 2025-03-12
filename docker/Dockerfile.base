@@ -140,3 +140,8 @@ RUN git clone https://github.com/alexmelekhin/PointMamba.git && \
     pip install mamba-ssm==${MAMBA_VERSION} && \
     cd / && \
     rm -rf PointMamba
+
+# install PaddlePaddle and PaddleOCR for OCR tasks
+RUN pip install paddlepaddle-gpu==2.6.1.post120 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
+ARG PADDLEOCR_VERSION=2.10.0
+RUN pip install paddleocr==${PADDLEOCR_VERSION}
