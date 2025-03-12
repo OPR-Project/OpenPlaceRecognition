@@ -142,6 +142,26 @@ Some modules and pipelines require third-party packages to be installed manually
      cd ../..  # go back to the third_party/HRegNet/ directory
      pip install .
 
+**Note:** If you are using the provided Docker environment,
+the default password for the user `docker_opr` can be found in the ``Dockerfile.devel`` file:
+
+.. code-block:: bash
+
+   # add user and his password
+   ENV USER=docker_opr
+   ARG UID=1000
+   ARG GID=1000
+   # default password
+   ARG PW=user
+
+You can change the password by providing the `PW` build-time argument in the `docker/build_devel.sh` script:
+
+.. code-block:: bash
+
+   docker build $PROJECT_ROOT_DIR \
+       --build-arg PW=<new_password> \
+       # other arguments
+
 
 Advanced
 --------
