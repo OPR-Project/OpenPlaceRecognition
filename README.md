@@ -31,6 +31,14 @@ Detailed description of featured library modules can be found in the [docs/modul
 
 ### Quick-start
 
+At first, ensure that you cloned the repository https://github.com/OPR-Project/OpenPlaceRecognition
+and changed the directory to the root of the repository:
+
+```bash
+git clone https://github.com/OPR-Project/OpenPlaceRecognition.git
+cd OpenPlaceRecognition
+```
+
 The recommended and easiest way to use the library is through the provided Docker environment.
 The [`Dockerfile.base`](./docker/Dockerfile.base) contains all prerequisites needed to run the library,
 including optional [MinkowskiEngine](https://github.com/NVIDIA/MinkowskiEngine) and [faiss](https://github.com/facebookresearch/faiss) libraries.
