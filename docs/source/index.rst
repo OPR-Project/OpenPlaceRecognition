@@ -168,10 +168,37 @@ Advanced
 
 For a manual installation, you'll need to install several prerequisite libraries:
 
-* `PyTorch <https://pytorch.org/get-started/locally/>`_
-* `MinkowskiEngine <https://github.com/NVIDIA/MinkowskiEngine>`_
-* `faiss <https://github.com/facebookresearch/faiss>`_
-* `Open3D <https://www.open3d.org/docs/release/getting_started.html>`_
+* **PyTorch** is the main dependency for our library. We recommend using version ``>=2.1.2``.
+  Please refer to the `PyTorch Get Started <https://pytorch.org/get-started/locally/>`_ documentation for installation instructions.
+* **torchvision** is a PyTorch library that provides datasets, transforms, and models for computer vision.
+  It should be installed with PyTorch. Please refer to the `PyTorch Get Started <https://pytorch.org/get-started/locally/>`_ documentation.
+  If you want to install it separately, please refer to the `torchvision GitHub repository <https://github.com/pytorch/vision>`_.
+* **MinkowskiEngine** is a library for sparse tensor operations. We recommend using the fork of the library, which is compatible with CUDA 12.
+  Please refer to the `Official Installation Guide <https://github.com/NVIDIA/MinkowskiEngine/wiki/Installation>`_,
+  but instead of the official repository, use the fork: `<https://github.com/alexmelekhin/MinkowskiEngine.git>`_.
+* **faiss** is a library for efficient similarity search and clustering of dense vectors.
+  Please refer to the `faiss GitHub repository <https://github.com/facebookresearch/faiss>`_ for installation instructions.
+  We recommend using the GPU version of the library because our pipelines use it for better performance.
+* **Open3D** is a library for 3D data processing.
+  Please refer to the `Open3D documentation <https://www.open3d.org/docs/release/getting_started.html>`_ for installation instructions.
+  We recommend using the GPU version of the library because our pipelines use it for better performance.
+* **PaddlePaddle** and **PaddleOCR** are used for text-based place recognition pipelines.
+  Please refer to the `PaddlePaddle Quick Start Guide <https://www.paddlepaddle.org.cn/en/install/quick>`_ for installation instructions.
+  We recommend using the GPU version of the library because our pipelines use it for better performance.
+  After installing PaddlePaddle, you can install PaddleOCR via pip: ``pip install paddleocr``.
+* The library also depends on several performance optimization libraries that should be installed:
+
+  * ONNX: refer to the `ONNX GitHub repository <https://github.com/onnx/onnx?tab=readme-ov-file#installation>`_.
+  * ONNX Runtime: refer to the `Installation Guide <https://onnxruntime.ai/docs/install/#install-onnx-runtime-gpu-cuda-12x>`_.
+  * TensorRT: refer to the `Installation Guide <https://docs.nvidia.com/deeplearning/tensorrt/latest/installing-tensorrt/installing.html#python-package-index-installation>`_.
+  * Torch-TensorRT: refer to the `Installation Guide <https://pytorch.org/TensorRT/getting_started/installation.html>`_.
+  * Polygraphy: refer to the `Polygraphy GitHub repository <https://github.com/NVIDIA/TensorRT/tree/main/tools/Polygraphy#installation>`_.
+
+Please note that the manual installation of the library and its dependencies can be challenging and time-consuming.
+We recommend using the provided Docker environment for a quick start.
+
+If you encounter any issues during the installation process,
+please refer to the `OpenPlaceRecognition Issues <https://github.com/OPR-Project/OpenPlaceRecognition/issues>`_ page.
 
 
 How to load the weights
