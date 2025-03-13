@@ -178,6 +178,7 @@ For a manual installation, you'll need to install several prerequisite libraries
   but instead of the official repository, use the fork: `<https://github.com/alexmelekhin/MinkowskiEngine.git>`_.
 * **faiss** is a library for efficient similarity search and clustering of dense vectors.
   Please refer to the `faiss GitHub repository <https://github.com/facebookresearch/faiss>`_ for installation instructions.
+  The recommended version is ``>=1.7.4``.
   We recommend using the GPU version of the library because our pipelines use it for better performance.
 * **Open3D** is a library for 3D data processing.
   Please refer to the `Open3D documentation <https://www.open3d.org/docs/release/getting_started.html>`_ for installation instructions.
