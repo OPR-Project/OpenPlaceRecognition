@@ -236,7 +236,7 @@ Usage example:
    from opr.datasets import OxfordDataset
 
    train_dataset = OxfordDataset(
-       dataset_root="/home/docker_opr/Datasets/pnvlad_oxford_robotcar_full/",
+       dataset_root="/home/docker_opr/Datasets/OpenPlaceRecognition/pnvlad_oxford_robotcar",
        subset="train",
        data_to_load=["image_stereo_centre", "pointcloud_lidar"]
    )
@@ -248,6 +248,15 @@ The iterator will return a dictionary with the following keys:
 * (optional) ``"image_stereo_centre"``: image Tensor of shape ``(C, H, W)``
 * (optional) ``"pointcloud_lidar_feats"``: point cloud features Tensor of shape ``(N, 1)``
 * (optional) ``"pointcloud_lidar_coords"``: point cloud coordinates Tensor of shape ``(N, 3)``
+
+In this example, we use a pre-processed version of the Oxford RobotCar dataset.
+We use the same subsample of tracks and preprocessed point clouds as described in the
+`PointNetVLAD paper <https://openaccess.thecvf.com/content_cvpr_2018/html/Uy_PointNetVLAD_Deep_Point_CVPR_2018_paper.html>`_.
+Additionally, we created the files "train.csv", "val.csv", and "test.csv."
+
+You can download our version of the dataset via the following link:
+
+* [Kaggle](https://www.kaggle.com/datasets/creatorofuniverses/oxfordrobotcar-iprofi-hack-23)
 
 More details can be found in the `demo_datasets.ipynb <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/notebooks/demo_datasets.ipynb>`_ notebook.
 
