@@ -274,7 +274,7 @@ Usage example:
 
    loss_fn = BatchHardTripletMarginLoss(margin=0.2)
 
-   idxs = sample_batch["idxs"]
+   idxs = sample_batch["idxs"].cpu()
    positives_mask = dataset.positives_mask[idxs][:, idxs]
    negatives_mask = dataset.negatives_mask[idxs][:, idxs]
 
