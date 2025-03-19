@@ -139,11 +139,11 @@ Some modules and pipelines require third-party packages to be installed manually
 
      # install PointUtils dependency
      cd hregnet/PointUtils
-     python setup.py install
+     sudo python setup.py install
 
      # then, install the package hregnet
      cd ../..  # go back to the third_party/HRegNet/ directory
-     pip install .
+     sudo pip install .
 
 **Note:** If you are using the provided Docker environment,
 the default password for the user `docker_opr` can be found in the ``Dockerfile.devel`` file:
