@@ -45,6 +45,9 @@ and changed the directory to the root of the repository:
    git clone https://github.com/OPR-Project/OpenPlaceRecognition.git
    cd OpenPlaceRecognition
 
+   # do not forget to load git submodules
+   git submodule update --init
+
 The recommended and easiest way to use the library is through the provided Docker environment.
 The ``Dockerfile.base`` contains all prerequisites needed to run the library,
 including optional `MinkowskiEngine <https://github.com/NVIDIA/MinkowskiEngine>`_ and `faiss <https://github.com/facebookresearch/faiss>`_ libraries.
