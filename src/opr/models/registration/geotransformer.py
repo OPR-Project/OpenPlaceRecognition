@@ -4,6 +4,7 @@ Paper: https://arxiv.org/abs/2202.06688
 
 Code is adopted from original repository: https://github.com/qinzheng93/GeoTransformer, MIT License
 """
+from time import time
 from typing import Any, Dict, List, Optional
 
 import torch
@@ -256,6 +257,16 @@ class GeoTransformer(nn.Module):
 
         self.optimal_transport = LearnableLogOptimalTransport(model.num_sinkhorn_iterations)
 
+        self.stats_history = {
+            "preprocessing": [],
+            "generate_gt": [],
+            "encoder": [],
+            "transformer": [],
+            "coarse_matching": [],
+            "optimal_transport": [],
+            "fine_matching": [],
+        }
+
     @property
     def _is_cuda(self) -> bool:
         for param in self.parameters():
@@ -296,6 +307,7 @@ class GeoTransformer(nn.Module):
     def forward(  # noqa: D102
         self, query_pc: Tensor, db_pc: Tensor, gt_transform: Optional[Tensor] = None
     ) -> Dict[str, Any]:
+        t_s = time()
         data_dict = self._preprocess_input(query_pc, db_pc, gt_transform)
         output_dict = {}
 
@@ -323,8 +335,10 @@ class GeoTransformer(nn.Module):
         # output_dict["src_points_f"] = src_points_f
         # output_dict["ref_points"] = ref_points
         # output_dict["src_points"] = src_points
+        self.stats_history["preprocessing"].append(time() - t_s)
 
         # 1. Generate ground truth node correspondences
+        t_s = time()
         _, ref_node_masks, ref_node_knn_indices, ref_node_knn_masks = point_to_node_partition(
             ref_points_f, ref_points_c, self.num_points_in_patch
         )
@@ -352,14 +366,19 @@ class GeoTransformer(nn.Module):
 
         # output_dict["gt_node_corr_indices"] = gt_node_corr_indices
         # output_dict["gt_node_corr_overlaps"] = gt_node_corr_overlaps
+        self.stats_history["generate_gt"].append(time() - t_s)
 
         # 2. KPFCNN Encoder
+        t_s = time()
         feats_list = self.backbone(feats, data_dict)
 
         feats_c = feats_list[-1]
         feats_f = feats_list[0]
 
+        self.stats_history["encoder"].append(time() - t_s)
+
         # 3. Conditional Transformer
+        t_s = time()
         ref_feats_c = feats_c[:ref_length_c]
         src_feats_c = feats_c[ref_length_c:]
         ref_feats_c, src_feats_c = self.transformer(
@@ -374,6 +393,8 @@ class GeoTransformer(nn.Module):
         # output_dict["ref_feats_c"] = ref_feats_c_norm
         # output_dict["src_feats_c"] = src_feats_c_norm
 
+        self.stats_history["transformer"].append(time() - t_s)
+
         # 5. Head for fine level matching
         ref_feats_f = feats_f[:ref_length_f]
         src_feats_f = feats_f[ref_length_f:]
@@ -381,6 +402,7 @@ class GeoTransformer(nn.Module):
         # output_dict["src_feats_f"] = src_feats_f
 
         # 6. Select topk nearest node correspondences
+        t_s = time()
         with torch.no_grad():
             ref_node_corr_indices, src_node_corr_indices, node_corr_scores = self.coarse_matching(
                 ref_feats_c_norm, src_feats_c_norm, ref_node_masks, src_node_masks
@@ -394,6 +416,8 @@ class GeoTransformer(nn.Module):
                 ref_node_corr_indices, src_node_corr_indices, node_corr_scores = self.coarse_target(
                     gt_node_corr_indices, gt_node_corr_overlaps
                 )
+
+        self.stats_history["coarse_matching"].append(time() - t_s)
 
         # 7.2 Generate batched node points & feats
         ref_node_corr_knn_indices = ref_node_knn_indices[ref_node_corr_indices]  # (P, K)
@@ -418,6 +442,7 @@ class GeoTransformer(nn.Module):
         # output_dict["src_node_corr_knn_masks"] = src_node_corr_knn_masks
 
         # 8. Optimal transport
+        t_s = time()
         matching_scores = torch.einsum(
             "bnd,bmd->bnm", ref_node_corr_knn_feats, src_node_corr_knn_feats
         )  # (P, K, K)
@@ -425,10 +450,12 @@ class GeoTransformer(nn.Module):
         matching_scores = self.optimal_transport(
             matching_scores, ref_node_corr_knn_masks, src_node_corr_knn_masks
         )
+        self.stats_history["optimal_transport"].append(time() - t_s)
 
         # output_dict["matching_scores"] = matching_scores
 
         # 9. Generate final correspondences during testing
+        t_s = time()
         with torch.no_grad():
             if not self.fine_matching.use_dustbin:
                 matching_scores = matching_scores[:, :-1, :-1]
@@ -446,5 +473,7 @@ class GeoTransformer(nn.Module):
             # output_dict["src_corr_points"] = src_corr_points
             # output_dict["corr_scores"] = corr_scores
             output_dict["estimated_transform"] = estimated_transform
+
+        self.stats_history["fine_matching"].append(time() - t_s)
 
         return output_dict
