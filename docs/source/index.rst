@@ -420,6 +420,4 @@ Connected Projects
 License
 =======
 
-**the license is subject to change in future versions**
-
 .. include:: ../../LICENSE

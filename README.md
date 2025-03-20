@@ -252,4 +252,4 @@ More details can be found in the [demo_pipelines.ipynb](./notebooks/demo_pipelin
 
 ## License
 
-[MIT License](./LICENSE) (**_the license is subject to change in future versions_**)
+[Apache 2.0 license](./LICENSE)
