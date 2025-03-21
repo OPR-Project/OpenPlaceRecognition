@@ -19,6 +19,7 @@ Download
 You can download the dataset from Kaggle:
 
 * `ITLP Campus Outdoor <https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-outdoor>`_
+* `ITLP Campus Indoor <https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-indoor>`_
 
 Alternatively, you can download the dataset from the following links:
 

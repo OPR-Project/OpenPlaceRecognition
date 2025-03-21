@@ -97,6 +97,7 @@ You can find more details in the [OPR-Project/ITLP-Campus](https://github.com/OP
 You can download the dataset from Kaggle:
 
 - [ITLP Campus Outdoor](https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-outdoor)
+- [ITLP Campus Indoor](https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-indoor)
 
 ## Package Structure
 
