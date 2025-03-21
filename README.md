@@ -91,6 +91,10 @@ Built for real-world challenges, day or night, floor or field.
 
 You can find more details in the [OPR-Project/ITLP-Campus](https://github.com/OPR-Project/ITLP-Campus) repository.
 
+You can download the dataset from Kaggle:
+
+- [ITLP Campus Outdoor](https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-outdoor)
+
 ## Package Structure
 
 You can learn more about the package structure in the

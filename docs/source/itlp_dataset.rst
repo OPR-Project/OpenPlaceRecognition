@@ -16,6 +16,12 @@ See also the `OPR-Project/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campu
 Download
 -------------
 
+You can download the dataset from Kaggle:
+
+* `ITLP Campus Outdoor <https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-outdoor>`_
+
+Alternatively, you can download the dataset from the following links:
+
 .. list-table::
    :widths: 25 25
    :header-rows: 1
