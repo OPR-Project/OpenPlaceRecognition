@@ -25,6 +25,9 @@ and changed the directory to the root of the repository:
 ```bash
 git clone https://github.com/OPR-Project/OpenPlaceRecognition.git
 cd OpenPlaceRecognition
+
+# do not forget to load git submodules
+git submodule update --init
 ```
 
 The recommended and easiest way to use the library is through the provided Docker environment.
