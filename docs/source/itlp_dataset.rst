@@ -6,7 +6,11 @@ ITLP-Campus Dataset
    :align: center
    :scale: 50%
 
-Class for working with the ITLP-Campus dataset.
+Explore multimodal Place Recognition with ITLP Campus — a diverse dataset of indoor and outdoor university environments featuring synchronized RGB images,
+LiDAR point clouds, semantic masks, and rich scene descriptions.
+Built for real-world challenges, day or night, floor or field.
+
+See also the `OPR-Project/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_ repository.
 
 
 Download

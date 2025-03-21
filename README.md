@@ -85,7 +85,11 @@ You can download the weights from the public [Google Drive folder](https://drive
 
 ## ITLP-Campus dataset
 
-We introduce the ITLP-Campus dataset. The dataset was recorded on the Husky wheeled robotic platform on the university campus and consists of tracks recorded at different times of day (day/dusk/night) and different seasons (winter/spring). You can find more detail in the [VitalyyBezuglyj/ITLP-Campus](https://github.com/VitalyyBezuglyj/ITLP-Campus) repository.
+Explore multimodal Place Recognition with ITLP Campus — a diverse dataset of indoor and outdoor university environments featuring synchronized RGB images,
+LiDAR point clouds, semantic masks, and rich scene descriptions.
+Built for real-world challenges, day or night, floor or field.
+
+You can find more details in the [OPR-Project/ITLP-Campus](https://github.com/OPR-Project/ITLP-Campus) repository.
 
 ## Package Structure
 
