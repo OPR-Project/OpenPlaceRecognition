@@ -1,7 +1,7 @@
 FROM nvcr.io/nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
 ARG MAX_JOBS=4
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies for convinient development inside container
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
@@ -34,7 +34,16 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libxmlsec1-dev \
     libffi-dev \
     liblzma-dev \
+    locales \
+    language-pack-en \
+    language-pack-ru \
     && rm -rf /var/lib/apt/lists/*
+
+# Ensure locale environment variables are properly set
+RUN locale-gen en_US.UTF-8 ru_RU.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
@@ -140,3 +149,8 @@ RUN git clone https://github.com/alexmelekhin/PointMamba.git && \
     pip install mamba-ssm==${MAMBA_VERSION} && \
     cd / && \
     rm -rf PointMamba
+
+# install PaddlePaddle and PaddleOCR for OCR tasks
+RUN pip install paddlepaddle-gpu==2.6.1.post120 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
+ARG PADDLEOCR_VERSION=2.10.0
+RUN pip install paddleocr==${PADDLEOCR_VERSION}

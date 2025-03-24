@@ -10,8 +10,8 @@ The `alexmelekhin/open-place-recognition:base` image contains following:
 - cuDNN 8
 - PyTorch 2.1.2
 - torhvision 0.16.2
-- MinkowskiEngine
-- faiss
+- MinkowskiEngine (fork [alexmelekhin/MinkowskiEngine at commit 6532dc3](https://github.com/alexmelekhin/MinkowskiEngine/tree/6532dc3599947bf694f61b800133ebaef9bf6ae6))
+- faiss ([facebookresearch/faiss at commit c3b93749](https://github.com/facebookresearch/faiss/tree/c3b9374984208f37484fb7b86c44345729592835))
 
 You can either pull it from dockerhub:
 

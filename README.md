@@ -4,67 +4,111 @@
 
 _An overview of a typical place recognition pipeline. At first, the input data is encoded into a query descriptor. Then, a K-nearest neighbors search is performed between the query and the database. Finally, the position of the closest database descriptor found is considered as the answer._
 
+This library is suitable for:
+
+- 🚗 **Navigation of autonomous cars, robots, and drones** using cameras and lidars, especially in areas with limited or unavailable GPS signals.
+- 📦 **Localization of delivery robots** needing reliable positioning both indoors and outdoors.
+- 🔬 **Research and development of computer vision algorithms**, related to multimodal place recognition and localization.
+- 🎓 **Educational purposes and research projects**, involving robotics, autonomous systems, and computer vision.
+
+Documentation: [https://openplacerecognition.readthedocs.io](https://openplacerecognition.readthedocs.io)
+
 ### Featured modules
 
-Detailed description of featured library modules can be found in the [docs/modules.md](./docs/modules.md) document.
-
-1. [PlaceRecognitionPipeline](./docs/modules.md#1-placerecognitionpipeline)
-2. [SequencePointcloudRegistrationPipeline](./docs/modules.md#2-sequencepointcloudregistrationpipeline)
-3. [PlaceRecognitionPipeline with semantics](./docs/modules.md#3-placerecognitionpipeline-with-semantics)
-4. [ArucoLocalizationPipeline](./docs/modules.md#4-arucolocalizationpipeline)
-5. [LocalizationPipeline without dynamic objects](./docs/modules.md#5-localizationpipeline-without-dynamic-objects)
-6. [Localization by specific scene elements (Semantic Object Context (SOC) module)](./docs/modules.md#6-localization-by-specific-scene-elements-semantic-object-context-soc-module)
-7. [Module for generating global vector representations of multimodal outdoor data](./docs/modules.md#7-module-for-generating-global-vector-representations-of-multimodal-outdoor-data)
-8. [MultimodalPlaceRecognitionTrainer](./docs/modules.md#8-multimodalplacerecognitiontrainer)
-9. [TextLabelsPlaceRecognitionPipeline](./docs/modules.md#9-textlabelsplacerecognitionpipeline)
-10. [DepthReconstruction](./docs/modules.md#10-depthreconstruction)
-11. [ITLPCampus](./docs/modules.md#11-itlpcampus)
+Our library comes packed with ready-to-use modules that you can use "as-is" or as inspiration for your custom creations. Dive into the details in our [documentation](https://openplacerecognition.readthedocs.io/en/latest/featured_modules/index.html).
 
 ## Installation
 
-### Pre-requisites
+### Requirements
 
-- The library requires `PyTorch`, `MinkowskiEngine` and (optionally) `faiss` libraries to be installed manually:
-  - [PyTorch Get Started](https://pytorch.org/get-started/locally/)
-  - [MinkowskiEngine repository](https://github.com/NVIDIA/MinkowskiEngine)
-  - [faiss repository](https://github.com/facebookresearch/faiss)
+#### Hardware
 
-- Another option is to use the docker image. You can read detailed description in the [docker/README.md](./docker/README.md).
-  Quick-start commands to build, start and enter the container:
+- **x86_64**:
+  - **CPU**: 6 or more physical cores
+  - **RAM**: at least 8 GB
+  - **GPU**: NVIDIA RTX 2060 or higher (to ensure adequate performance)
+  - **Video memory**: at least 4 GB
+  - **Storage**: SSD recommended for faster loading of data and models
 
-  ```bash
-  # from repo root dir
-  bash docker/build_devel.sh
-  bash docker/start.sh [DATASETS_DIR]
-  bash docker/into.sh
-  ```
+- **NVIDIA Jetson**:
+  - We recommend using NVIDIA Jetson Xavier AGX.
+    *The library should be compatible with all newer versions of devices, but we haven't tested them yet.*
 
-### Library installation
+#### Software
 
-- After the pre-requisites are met, install the Open Place Recognition library with the following command:
+- **Operating System**:
+  - **x86_64**: Any OS with support for Docker and CUDA >= 11.1.
+    *Ubuntu 20.04 or later is recommended.*
+  - **NVIDIA Jetson**: Ubuntu 20.04 or later with Jetpack >= 5.0.
 
-    ```bash
-    pip install -e .
-    ```
+- **Dependencies** (if not using Docker):
+  - Python >= 3.10
+  - CUDA Toolkit >= 11.1
+  - cuDNN >= 7.5
 
-### Third-party packages
+More details on the installation without Docker can be found in the [Advanced Installation section of our documentation](https://openplacerecognition.readthedocs.io/en/latest/#installation).
 
-- If you want to use the `GeoTransformer` model for pointcloud registration, you should install the package located in the `third_party` directory:
+### Quick-start
 
-    ```bash
-    # load submodules from git
-    git submodule update --init
+At first, ensure that you cloned the repository https://github.com/OPR-Project/OpenPlaceRecognition
+and changed the directory to the root of the repository:
 
-    # change dir
-    cd third_party/GeoTransformer/
+```bash
+git clone https://github.com/OPR-Project/OpenPlaceRecognition.git
+cd OpenPlaceRecognition
 
-    # install the package
-    bash setup.sh
-    ```
+# do not forget to load git submodules
+git submodule update --init
+```
+
+The recommended and easiest way to use the library is through the provided Docker environment.
+The [`Dockerfile.base`](./docker/Dockerfile.base) contains all prerequisites needed to run the library,
+including optional [MinkowskiEngine](https://github.com/NVIDIA/MinkowskiEngine) and [faiss](https://github.com/facebookresearch/faiss) libraries.
+You can either pull this image from Docker Hub (`docker pull alexmelekhin/open-place-recognition:base`),
+or build it manually (`bash docker/build_base.sh`).
+
+The [`Dockerfile.devel`](./docker/Dockerfile.devel) installs additional requirements from
+[`requirements.txt`](./requirements.txt),
+[`requirements-dev.txt`](./requirements-dev.txt),
+and [`requirements-notebook.txt`](./requirements-notebook.txt) files,
+and creates a non-root user inside the image to avoid permission issues when using the container with mounted volumes.
+
+The `devel` version of the image should be built manually by the user:
+
+```bash
+bash docker/build_devel.sh
+```
+
+When starting the container, you must provide a data directory that will be mounted to `~/Datasets` inside the container:
+
+```bash
+bash docker/start.sh [DATASETS_DIR]
+```
+
+To enter the container's `/bin/bash` terminal, use the [`docker/into.sh`](./docker/into.sh) script:
+
+```bash
+bash docker/into.sh
+```
+
+After you enter the container, install the library (we recommend installing in editable mode with the `-e` flag to be able to make modifications to the code):
+
+```bash
+pip install -e ~/OpenPlaceRecognition
+```
+
+### Advanced
+
+For more detailed instructions on installing third-party dependencies, configuring your environment manually, and additional setup options, please refer to the [Installation section of our documentation](https://openplacerecognition.readthedocs.io/en/latest/#installation).
 
 ### How to load the weights
 
-You can download the weights from the public [Google Drive folder](https://drive.google.com/drive/folders/1uRiMe2-I9b5Tgv8mIJLkdGaHXccp_UFJ?usp=sharing).
+You can load the weights from the Hugging Face organization [OPR-Project](https://huggingface.co/OPR-Project).
+This is the recommended way to load the weights, as you can see the license and the README file for each model group.
+Note that models may have different licenses, depending on the dataset they were trained on.
+
+Alternatively, you can download the weights from the public [Google Drive folder](https://drive.google.com/drive/folders/1uRiMe2-I9b5Tgv8mIJLkdGaHXccp_UFJ?usp=sharing).
+But please check the license for each model group on the [OPR-Project](https://huggingface.co/OPR-Project) page before using them.
 
 <details>
   <summary>Developers only</summary>
@@ -80,163 +124,45 @@ You can download the weights from the public [Google Drive folder](https://drive
 
 ## ITLP-Campus dataset
 
-We introduce the ITLP-Campus dataset. The dataset was recorded on the Husky wheeled robotic platform on the university campus and consists of tracks recorded at different times of day (day/dusk/night) and different seasons (winter/spring). You can find more detail in the [VitalyyBezuglyj/ITLP-Campus](https://github.com/VitalyyBezuglyj/ITLP-Campus) repository.
+Explore multimodal Place Recognition with ITLP Campus — a diverse dataset of indoor and outdoor university environments featuring synchronized RGB images,
+LiDAR point clouds, semantic masks, and rich scene descriptions.
+Built for real-world challenges, day or night, floor or field.
+
+You can find more details in the [OPR-Project/ITLP-Campus](https://github.com/OPR-Project/ITLP-Campus) repository.
+
+You can download the dataset:
+
+- Kaggle:
+  - [ITLP Campus Outdoor](https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-outdoor)
+  - [ITLP Campus Indoor](https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-indoor)
+- Hugging Face:
+  - [ITLP Campus Outdoor](https://huggingface.co/datasets/OPR-Project/ITLP-Campus-Outdoor)
+  - [ITLP Campus Indoor](https://huggingface.co/datasets/OPR-Project/ITLP-Campus-Indoor)
 
 ## Package Structure
 
-### opr.datasets
-
-Subpackage containing dataset classes and functions.
-
-Usage example:
-
-```python
-from opr.datasets import OxfordDataset
-
-train_dataset = OxfordDataset(
-    dataset_root="/home/docker_opr/Datasets/pnvlad_oxford_robotcar_full/",
-    subset="train",
-    data_to_load=["image_stereo_centre", "pointcloud_lidar"]
-)
-```
-
-The iterator will return a dictionary with the following keys:
-- `"idx"`: index of the sample in the dataset, single number Tensor
-- `"utm"`: UTM coordinates of the sample, Tensor of shape `(2)`
-- (optional) `"image_stereo_centre"`: image Tensor of shape `(C, H, W)`
-- (optional) `"pointcloud_lidar_feats"`: point cloud features Tensor of shape `(N, 1)`
-- (optional) `"pointcloud_lidar_coords"`: point cloud coordinates Tensor of shape `(N, 3)`
-
-More details can be found in the [demo_datasets.ipynb](./notebooks/demo_datasets.ipynb) notebook.
-
-### opr.losses
-
-The `opr.losses` subpackage contains ready-to-use loss functions implemented in PyTorch, featuring a common interface.
-
-Usage example:
-
-```python
-from opr.losses import BatchHardTripletMarginLoss
-
-loss_fn = BatchHardTripletMarginLoss(margin=0.2)
-
-idxs = sample_batch["idxs"]
-positives_mask = dataset.positives_mask[idxs][:, idxs]
-negatives_mask = dataset.negatives_mask[idxs][:, idxs]
-
-loss, stats = loss_fn(output["final_descriptor"], positives_mask, negatives_mask)
-```
-
-The loss functions introduce a unified interface:
-- **Input:**
-  - `embeddings`: descriptor Tensor of shape `(B, D)`
-  - `positives_mask`: boolean mask Tensor of shape `(B, B)`
-  - `negatives_mask`: boolean mask Tensor of shape `(B, B)`
-- **Output:**
-  - `loss`: loss value Tensor
-  - `stats`: dictionary with additional statistics
-
-More details can be found in the [demo_losses.ipynb](./notebooks/demo_losses.ipynb) notebook.
-
-### opr.models
-
-The `opr.models` subpackage contains ready-to-use neural networks implemented in PyTorch, featuring a common interface.
-
-Usage example:
-
-```python
-from opr.models.place_recognition import MinkLoc3D
-
-model = MinkLoc3D()
-
-# forward pass
-output = model(batch)
-```
-
-The models introduce unified input and output formats:
-- **Input:** a `batch` dictionary with the following keys
-  (all keys are optional, depending on the model and dataset):
-  - `"images_<camera_name>"`: images Tensor of shape `(B, 3, H, W)`
-  - `"masks_<camera_name>"`: semantic segmentation masks Tensor of shape `(B, 1, H, W)`
-  - `"pointclouds_lidar_coords"`: point cloud coordinates Tensor of shape `(B * N_points, 4)`
-  - `"pointclouds_lidar_feats"`: point cloud features Tensor of shape `(B * N_points, C)`
-- **Output:** a dictionary with the requiered key `"final_descriptor"`
-  and optional keys for intermediate descriptors:
-  - `"final_descriptor"`: final descriptor Tensor of shape `(B, D)`
-
-More details can be found in the [demo_models.ipynb](./notebooks/demo_models.ipynb) notebook.
-
-### opr.trainers
-
-The `opr.trainers` subpackage contains ready-to-use training algorithms.
-
-Usage example:
-
-```python
-from opr.trainers.place_recognition import UnimodalPlaceRecognitionTrainer
-
-trainer = UnimodalPlaceRecognitionTrainer(
-    checkpoints_dir=checkpoints_dir,
-    model=model,
-    loss_fn=loss_fn,
-    optimizer=optimizer,
-    scheduler=scheduler,
-    batch_expansion_threshold=cfg.batch_expansion_threshold,
-    wandb_log=(not cfg.debug and not cfg.wandb.disabled),
-    device=cfg.device,
-)
-
-trainer.train(
-    epochs=cfg.epochs,
-    train_dataloader=dataloaders["train"],
-    val_dataloader=dataloaders["val"],
-    test_dataloader=dataloaders["test"],
-)
-```
-
-### opr.pipelines
-
-The `opr.pipelines` subpackage contains ready-to-use pipelines for model inference.
-
-Usage example:
-
-```python
-from opr.models.place_recognition import MinkLoc3Dv2
-from opr.pipelines.place_recognition import PlaceRecognitionPipeline
-
-pipe = **PlaceRecognitionPipeline**(
-    database_dir="/home/docker_opr/Datasets/ITLP_Campus/ITLP_Campus_outdoor/databases/00",
-    model=MinkLoc3Dv2(),
-    model_weights_path=None,
-    device="cuda",
-)
-
-out = pipe.infer(sample)
-```
-
-The pipeline introduces a unified interface for model inference:
-- **Input:** a dictionary with the following keys
-  (all keys are optional, depending on the model and dataset):
-  - `"image_<camera_name>"`: image Tensor of shape `(3, H, W)`
-  - `"mask_<camera_name>"`: semantic segmentation mask Tensor of shape `(1, H, W)`
-  - `"pointcloud_lidar_coords"`: point cloud coordinates Tensor of shape `(N_points, 4)`
-  - `"pointcloud_lidar_feats"`: point cloud features Tensor of shape `(N_points, C)`
-- **Output:** a dictionary with keys:
-  - `"idx"` for predicted index in the database,
-  - `"pose"` for predicted pose in the format `[tx, ty, tz, qx, qy, qz, qw]`,
-  - `"descriptor"` for predicted descriptor.
-
-More details can be found in the [demo_pipelines.ipynb](./notebooks/demo_pipelines.ipynb) notebook.
+You can learn more about the package structure in the
+[Introduction - Package Structure](https://openplacerecognition.readthedocs.io/en/latest/index.html#package-structure)
+section of the documentation.
 
 ## Model Zoo
 
 ### Place Recognition
 
+You can find the models for place recognition in the Hugging Face model hub:
+- https://huggingface.co/OPR-Project/PlaceRecognition-NCLT - NCLT-trained models (including models with ITLP Campus fine-tuning)
+
 | Model      | Modality | Train Dataset | Config | Weights |
 | ---------- | -------- | ------------- | ------ | ------- |
 | MinkLoc3D ([paper](https://openaccess.thecvf.com/content/WACV2021/html/Komorowski_MinkLoc3D_Point_Cloud_Based_Large-Scale_Place_Recognition_WACV_2021_paper.html)) | LiDAR | NCLT | [minkloc3d.yaml](./configs/model/place_recognition/minkloc3d.yaml) | `minkloc3d_nclt.pth` |
 | Custom | Multi-Image, Multi-Semantic, LiDAR | NCLT | [multi-image_multi-semantic_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_multi-semantic_lidar_late-fusion.yaml) | `multi-image_multi-semantic_lidar_late-fusion_nclt.pth` |
+| Custom | Multi-Image, Multi-Semantic, LiDAR | NCLT + ITLP Campus Outdoor fine-tune | [multi-image_multi-semantic_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_multi-semantic_lidar_late-fusion.yaml) | `multi-image_multi-semantic_lidar_late-fusion_itlp-finetune.pth` |
 | Custom | Multi-Image, LiDAR | NCLT | [multi-image_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_lidar_late-fusion.yaml) | `multi-image_lidar_late-fusion_nclt.pth` |
+| Custom | Multi-Image, LiDAR | NCLT + ITLP Campus Outdoor fine-tune | [multi-image_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_lidar_late-fusion.yaml) | `multi-image_lidar_late-fusion_itlp-finetune.pth` |
+| Custom | Multi-Image, Multi-Semantic, LiDAR, SOC | NCLT | [multimodal_semantic_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_semantic_with_soc_outdoor.yaml) | `multimodal_semantic_with_soc_outdoor_nclt.pth` |
+| Custom | Multi-Image, Multi-Semantic, LiDAR, SOC | NCLT + ITLP Campus Outdoor fine-tune | [multimodal_semantic_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_semantic_with_soc_outdoor.yaml) | `multimodal_semantic_with_soc_outdoor_itlp-finetune.pth` |
+| Custom | Multi-Image, LiDAR, SOC | NCLT | [multimodal_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_with_soc_outdoor.yaml) | `multimodal_with_soc_outdoor_nclt.pth` |
+| Custom | Multi-Image, LiDAR, SOC | NCLT + ITLP Campus Outdoor fine-tune | [multimodal_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_with_soc_outdoor.yaml) | `multimodal_with_soc_outdoor_itlp-finetune.pth` |
 
 ## Сonnected Projects
 
@@ -247,4 +173,4 @@ More details can be found in the [demo_pipelines.ipynb](./notebooks/demo_pipelin
 
 ## License
 
-[MIT License](./LICENSE) (**_the license is subject to change in future versions_**)
+[Apache 2.0 license](./LICENSE)

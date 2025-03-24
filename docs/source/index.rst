@@ -14,6 +14,13 @@ At first, the input data is encoded into a query descriptor.
 Then, a K-nearest neighbors search is performed between the query and the database.
 Finally, the position of the closest database descriptor found is considered as the answer.*
 
+This library is suitable for:
+
+* 🚗 **Navigation of autonomous cars, robots, and drones** using cameras and lidars, especially in areas with limited or unavailable GPS signals.
+* 📦 **Localization of delivery robots** needing reliable positioning both indoors and outdoors.
+* 🔬 **Research and development of computer vision algorithms**, related to multimodal place recognition and localization.
+* 🎓 **Educational purposes and research projects**, involving robotics, autonomous systems, and computer vision.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -27,39 +34,93 @@ Finally, the position of the closest database descriptor found is considered as 
 Installation
 ============
 
-Pre-requisites
---------------
+Requirements
+------------
 
-* The library requires `PyTorch`, `MinkowskiEngine` and (optionally) `faiss` libraries
-  to be installed manually:
+Hardware
+~~~~~~~~
 
-  * `PyTorch Get Started <https://pytorch.org/get-started/locally/>`_
-  * `MinkowskiEngine repository <https://github.com/NVIDIA/MinkowskiEngine>`_
-  * `faiss repository <https://github.com/facebookresearch/faiss>`_
+- **x86_64**:
 
-* Another option is to use the docker image.
-  Quick-start commands to build, start and enter the container:
+  - **CPU**: 6 or more physical cores
+  - **RAM**: at least 8 GB
+  - **GPU**: NVIDIA RTX 2060 or higher (to ensure adequate performance)
+  - **Video memory**: at least 4 GB
+  - **Storage**: SSD recommended for faster loading of data and models
 
-  .. code-block:: bash
+- **NVIDIA Jetson**:
 
-     # from repo root dir
-     bash docker/build_devel.sh
-     bash docker/start.sh [DATASETS_DIR]
-     bash docker/into.sh
+  - We recommend using NVIDIA Jetson Xavier AGX.
+    *The library should be compatible with all newer versions of devices, but we haven't tested them yet.*
 
 
-Library installation
---------------------
+Software
+~~~~~~~~
 
-After the pre-requisites are met, install the Open Place Recognition library with the following command:
+- **Operating System**:
+
+  - **x86_64**: Any OS with support for Docker and CUDA >= 11.1.
+    *Ubuntu 20.04 or later is recommended.*
+  - **NVIDIA Jetson**: Ubuntu 20.04 or later with Jetpack >= 5.0.
+
+- **Dependencies** (if not using Docker): see the `Advanced` section below.
+
+
+Quick-start
+-----------
+
+At first, ensure that you cloned the repository https://github.com/OPR-Project/OpenPlaceRecognition
+and changed the directory to the root of the repository:
 
 .. code-block:: bash
 
-   pip install -e .
+   git clone https://github.com/OPR-Project/OpenPlaceRecognition.git
+   cd OpenPlaceRecognition
+
+   # do not forget to load git submodules
+   git submodule update --init
+
+The recommended and easiest way to use the library is through the provided Docker environment.
+The ``Dockerfile.base`` contains all prerequisites needed to run the library,
+including optional `MinkowskiEngine <https://github.com/NVIDIA/MinkowskiEngine>`_ and `faiss <https://github.com/facebookresearch/faiss>`_ libraries.
+You can either pull this image from Docker Hub (``docker pull alexmelekhin/open-place-recognition:base``),
+or build it manually (``bash docker/build_base.sh``).
+
+The ``Dockerfile.devel`` installs additional requirements from
+``requirements.txt``,
+``requirements-dev.txt``,
+and ``requirements-notebook.txt`` files,
+and creates a non-root user inside the image to avoid permission issues when using the container with mounted volumes.
+
+The ``devel`` version of the image should be built manually by the user:
+
+.. code-block:: bash
+
+   bash docker/build_devel.sh
+
+When starting the container, you must provide a data directory that will be mounted to ``~/Datasets`` inside the container:
+
+.. code-block:: bash
+
+   bash docker/start.sh [DATASETS_DIR]
+
+To enter the container's ``/bin/bash`` terminal, use the ``docker/into.sh`` script:
+
+.. code-block:: bash
+
+   bash docker/into.sh
+
+After you enter the container, install the library (we recommend installing in editable mode with the ``-e`` flag to be able to make modifications to the code):
+
+.. code-block:: bash
+
+   pip install -e ~/OpenPlaceRecognition
 
 
 Third-party packages
 --------------------
+
+Some modules and pipelines require third-party packages to be installed manually. You can install these dependencies with the following commands:
 
 * If you want to use the `GeoTransformer` model for pointcloud registration,
   you should install the package located in the `third_party` directory:
@@ -75,6 +136,14 @@ Third-party packages
      # install the package
      bash setup.sh
 
+  If you are seeing `Permission denied` error, you should run the command with `sudo`:
+
+  .. code-block:: bash
+
+     # ... previous commands are the same
+
+     sudo bash setup.sh
+
 * If you want to use the `HRegNet` model for pointcloud registration,
   you should install the package located in the `third_party` directory:
 
@@ -87,18 +156,99 @@ Third-party packages
      cd third_party/HRegNet/
 
      # at first, install PointUtils dependency
-     python hregnet/PointUtils/setup.py install
+     cd hregnet/PointUtils
+     python setup.py install
 
      # then, install the package hregnet
+     cd ../..  # go back to the third_party/HRegNet/ directory
      pip install .
 
+  If you are seeing `Permission denied` error while trying to install PointUtils, you should run the command with `sudo`:
+
+  .. code-block:: bash
+
+     # ... previous commands are the same
+
+     # install PointUtils dependency
+     cd hregnet/PointUtils
+     sudo python setup.py install
+
+     # then, install the package hregnet
+     cd ../..  # go back to the third_party/HRegNet/ directory
+     sudo pip install .
+
+**Note:** If you are using the provided Docker environment,
+the default password for the user `docker_opr` can be found in the ``Dockerfile.devel`` file:
+
+.. code-block:: bash
+
+   # add user and his password
+   ENV USER=docker_opr
+   ARG UID=1000
+   ARG GID=1000
+   # default password
+   ARG PW=user
+
+You can change the password by providing the `PW` build-time argument in the `docker/build_devel.sh` script:
+
+.. code-block:: bash
+
+   docker build $PROJECT_ROOT_DIR \
+       --build-arg PW=<new_password> \
+       # other arguments
+
+
+Advanced
+--------
+
+For a manual installation, you'll need to install several prerequisite libraries:
+
+* **PyTorch** is the main dependency for our library. We recommend using version ``>=2.1.2``.
+  Please refer to the `PyTorch Get Started <https://pytorch.org/get-started/locally/>`_ documentation for installation instructions.
+* **torchvision** is a PyTorch library that provides datasets, transforms, and models for computer vision.
+  It should be installed with PyTorch. Please refer to the `PyTorch Get Started <https://pytorch.org/get-started/locally/>`_ documentation.
+  If you want to install it separately, please refer to the `torchvision GitHub repository <https://github.com/pytorch/vision>`_.
+* **MinkowskiEngine** is a library for sparse tensor operations. We recommend using the fork of the library, which is compatible with CUDA 12.
+  Please refer to the `Official Installation Guide <https://github.com/NVIDIA/MinkowskiEngine/wiki/Installation>`_,
+  but instead of the official repository, use the fork: `<https://github.com/alexmelekhin/MinkowskiEngine.git>`_.
+* **faiss** is a library for efficient similarity search and clustering of dense vectors.
+  Please refer to the `faiss GitHub repository <https://github.com/facebookresearch/faiss>`_ for installation instructions.
+  The recommended version is ``>=1.7.4``.
+  We recommend using the GPU version of the library because our pipelines use it for better performance.
+* **Open3D** is a library for 3D data processing.
+  Please refer to the `Open3D documentation <https://www.open3d.org/docs/release/getting_started.html>`_ for installation instructions.
+  We recommend using the GPU version of the library because our pipelines use it for better performance.
+* **PaddlePaddle** and **PaddleOCR** are used for text-based place recognition pipelines.
+  Please refer to the `PaddlePaddle Quick Start Guide <https://www.paddlepaddle.org.cn/en/install/quick>`_ for installation instructions.
+  We recommend using the GPU version of the library because our pipelines use it for better performance.
+  After installing PaddlePaddle, you can install PaddleOCR via pip: ``pip install paddleocr``.
+* The library also depends on several performance optimization libraries that should be installed:
+
+  * ONNX: refer to the `ONNX GitHub repository <https://github.com/onnx/onnx?tab=readme-ov-file#installation>`_.
+  * ONNX Runtime: refer to the `Installation Guide <https://onnxruntime.ai/docs/install/#install-onnx-runtime-gpu-cuda-12x>`_.
+  * TensorRT: refer to the `Installation Guide <https://docs.nvidia.com/deeplearning/tensorrt/latest/installing-tensorrt/installing.html#python-package-index-installation>`_.
+  * Torch-TensorRT: refer to the `Installation Guide <https://pytorch.org/TensorRT/getting_started/installation.html>`_.
+  * Polygraphy: refer to the `Polygraphy GitHub repository <https://github.com/NVIDIA/TensorRT/tree/main/tools/Polygraphy#installation>`_.
+
+Please note that the manual installation of the library and its dependencies can be challenging and time-consuming.
+We recommend using the provided Docker environment for a quick start.
+
+If you encounter any issues during the installation process,
+please refer to the `OpenPlaceRecognition Issues <https://github.com/OPR-Project/OpenPlaceRecognition/issues>`_ page.
 
 
 How to load the weights
 -----------------------
 
-You can download the weights from the public
+You can load the weights from the Hugging Face organization
+`OPR-Project <https://huggingface.co/OPR-Project>`_.
+This is the recommended way to load the weights, as you can see the license and the README file for each model group.
+Note that models may have different licenses, depending on the dataset they were trained on.
+
+Alternatively, you can download the weights from the public
 `Google Drive folder <https://drive.google.com/drive/folders/1uRiMe2-I9b5Tgv8mIJLkdGaHXccp_UFJ?usp=sharing>`_.
+But please check the license for each model group on the
+`OPR-Project <https://huggingface.co/OPR-Project>`_ page before using them.
 
 
 ITLP-Campus dataset
@@ -125,7 +275,7 @@ Usage example:
    from opr.datasets import OxfordDataset
 
    train_dataset = OxfordDataset(
-       dataset_root="/home/docker_opr/Datasets/pnvlad_oxford_robotcar_full/",
+       dataset_root="/home/docker_opr/Datasets/OpenPlaceRecognition/pnvlad_oxford_robotcar",
        subset="train",
        data_to_load=["image_stereo_centre", "pointcloud_lidar"]
    )
@@ -137,6 +287,15 @@ The iterator will return a dictionary with the following keys:
 * (optional) ``"image_stereo_centre"``: image Tensor of shape ``(C, H, W)``
 * (optional) ``"pointcloud_lidar_feats"``: point cloud features Tensor of shape ``(N, 1)``
 * (optional) ``"pointcloud_lidar_coords"``: point cloud coordinates Tensor of shape ``(N, 3)``
+
+In this example, we use a pre-processed version of the Oxford RobotCar dataset.
+We use the same subsample of tracks and preprocessed point clouds as described in the
+`PointNetVLAD paper <https://openaccess.thecvf.com/content_cvpr_2018/html/Uy_PointNetVLAD_Deep_Point_CVPR_2018_paper.html>`_.
+Additionally, we created the files "train.csv", "val.csv", and "test.csv."
+
+You can download our version of the dataset via the following link:
+
+* [Kaggle](https://www.kaggle.com/datasets/creatorofuniverses/oxfordrobotcar-iprofi-hack-23)
 
 More details can be found in the `demo_datasets.ipynb <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/notebooks/demo_datasets.ipynb>`_ notebook.
 
@@ -154,7 +313,7 @@ Usage example:
 
    loss_fn = BatchHardTripletMarginLoss(margin=0.2)
 
-   idxs = sample_batch["idxs"]
+   idxs = sample_batch["idxs"].cpu()
    positives_mask = dataset.positives_mask[idxs][:, idxs]
    negatives_mask = dataset.negatives_mask[idxs][:, idxs]
 
@@ -299,7 +458,5 @@ Connected Projects
 
 License
 =======
-
-**the license is subject to change in future versions**
 
 .. include:: ../../LICENSE

@@ -155,7 +155,7 @@ class LocalizationPipeline:
         db_idx = pr_output["idx"]
         out_dict["db_match_idx"] = db_idx
         if not self.precomputed_reg_feats:
-            db_pc_filename = f"{int(self.database_df.iloc[db_idx][self.pc_col])}.bin"
+            db_pc_filename = f"{int(self.database_df[self.pc_col].iloc[db_idx])}.bin"
             db_pc = self._load_pc(
                 self.pointclouds_dir / db_pc_filename, num_point_properties=self.num_points_properties
             )
@@ -166,7 +166,7 @@ class LocalizationPipeline:
                 estimated_transform = self.reg_pipe.infer(query_pc=query_pc, db_pc=db_pc)
         else:
             db_pc_feats = self._load_feats(
-                self.precomputed_reg_feats_dir / f"{int(self.database_df.iloc[db_idx][self.pc_col])}.pt"
+                self.precomputed_reg_feats_dir / f"{int(self.database_df[self.pc_col].iloc[db_idx])}.pt"
             )
             if isinstance(query_pc, list):
                 estimated_transform = self.reg_pipe.infer(query_pc_list=query_pc, db_pc_feats=db_pc_feats)

@@ -36,7 +36,6 @@ templates_path = ["_templates"]
 exclude_patterns = []
 
 
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
@@ -44,5 +43,22 @@ html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     'navigation_depth': 4,  # Ensures deeper levels of the TOC are displayed
     'titles_only': False,   # Shows the full TOC tree, not just section titles
+    'collapse_navigation': False,
+    'sticky_navigation': True,
+    'style_external_links': True,
 }
+
+# Force the html_theme_path to ensure our custom templates are found
+html_theme_path = ["."]
+
+# Add any paths that contain custom static files
 html_static_path = ["_static"]
+
+# HTML context settings for GitHub repository link
+html_context = {
+    "display_github": True,
+    "github_user": "OPR-Project",
+    "github_repo": "OpenPlaceRecognition",
+    "github_version": "main",
+    "conf_py_path": "/docs/source/"
+}
