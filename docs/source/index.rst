@@ -34,6 +34,38 @@ This library is suitable for:
 Installation
 ============
 
+Requirements
+------------
+
+Hardware
+~~~~~~~~
+
+- **x86_64**:
+
+  - **CPU**: 6 or more physical cores
+  - **RAM**: at least 8 GB
+  - **GPU**: NVIDIA RTX 2060 or higher (to ensure adequate performance)
+  - **Video memory**: at least 4 GB
+  - **Storage**: SSD recommended for faster loading of data and models
+
+- **NVIDIA Jetson**:
+
+  - We recommend using NVIDIA Jetson Xavier AGX.
+    *The library should be compatible with all newer versions of devices, but we haven't tested them yet.*
+
+
+Software
+~~~~~~~~
+
+- **Operating System**:
+
+  - **x86_64**: Any OS with support for Docker and CUDA >= 11.1.
+    *Ubuntu 20.04 or later is recommended.*
+  - **NVIDIA Jetson**: Ubuntu 20.04 or later with Jetpack >= 5.0.
+
+- **Dependencies** (if not using Docker): see the `Advanced` section below.
+
+
 Quick-start
 -----------
 
