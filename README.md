@@ -99,10 +99,14 @@ Built for real-world challenges, day or night, floor or field.
 
 You can find more details in the [OPR-Project/ITLP-Campus](https://github.com/OPR-Project/ITLP-Campus) repository.
 
-You can download the dataset from Kaggle:
+You can download the dataset:
 
-- [ITLP Campus Outdoor](https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-outdoor)
-- [ITLP Campus Indoor](https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-indoor)
+- Kaggle:
+  - [ITLP Campus Outdoor](https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-outdoor)
+  - [ITLP Campus Indoor](https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-indoor)
+- Hugging Face:
+  - [ITLP Campus Outdoor](https://huggingface.co/datasets/OPR-Project/ITLP-Campus-Outdoor)
+  - [ITLP Campus Indoor](https://huggingface.co/datasets/OPR-Project/ITLP-Campus-Indoor)
 
 ## Package Structure
 
