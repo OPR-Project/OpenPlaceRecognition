@@ -19,6 +19,35 @@ Our library comes packed with ready-to-use modules that you can use "as-is" or a
 
 ## Installation
 
+### Requirements
+
+#### Hardware
+
+- **x86_64**:
+  - **CPU**: 6 or more physical cores
+  - **RAM**: at least 8 GB
+  - **GPU**: NVIDIA RTX 2060 or higher (to ensure adequate performance)
+  - **Video memory**: at least 4 GB
+  - **Storage**: SSD recommended for faster loading of data and models
+
+- **NVIDIA Jetson**:
+  - We recommend using NVIDIA Jetson Xavier AGX.
+    *The library should be compatible with all newer versions of devices, but we haven't tested them yet.*
+
+#### Software
+
+- **Operating System**:
+  - **x86_64**: Any OS with support for Docker and CUDA >= 11.1.
+    *Ubuntu 20.04 or later is recommended.*
+  - **NVIDIA Jetson**: Ubuntu 20.04 or later with Jetpack >= 5.0.
+
+- **Dependencies** (if not using Docker):
+  - Python >= 3.10
+  - CUDA Toolkit >= 11.1
+  - cuDNN >= 7.5
+
+More details on the installation without Docker can be found in the [Advanced Installation section of our documentation](https://openplacerecognition.readthedocs.io/en/latest/#installation).
+
 ### Quick-start
 
 At first, ensure that you cloned the repository https://github.com/OPR-Project/OpenPlaceRecognition
