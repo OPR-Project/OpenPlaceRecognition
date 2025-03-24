@@ -11,6 +11,8 @@ This library is suitable for:
 - 🔬 **Research and development of computer vision algorithms**, related to multimodal place recognition and localization.
 - 🎓 **Educational purposes and research projects**, involving robotics, autonomous systems, and computer vision.
 
+Documentation: [https://openplacerecognition.readthedocs.io](https://openplacerecognition.readthedocs.io)
+
 ### Featured modules
 
 Our library comes packed with ready-to-use modules that you can use "as-is" or as inspiration for your custom creations. Dive into the details in our [documentation](https://openplacerecognition.readthedocs.io/en/latest/featured_modules/index.html).
