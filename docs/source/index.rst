@@ -240,8 +240,15 @@ please refer to the `OpenPlaceRecognition Issues <https://github.com/OPR-Project
 How to load the weights
 -----------------------
 
-You can download the weights from the public
+You can load the weights from the Hugging Face organization
+`OPR-Project <https://huggingface.co/OPR-Project>`_.
+This is the recommended way to load the weights, as you can see the license and the README file for each model group.
+Note that models may have different licenses, depending on the dataset they were trained on.
+
+Alternatively, you can download the weights from the public
 `Google Drive folder <https://drive.google.com/drive/folders/1uRiMe2-I9b5Tgv8mIJLkdGaHXccp_UFJ?usp=sharing>`_.
+But please check the license for each model group on the
+`OPR-Project <https://huggingface.co/OPR-Project>`_ page before using them.
 
 
 ITLP-Campus dataset
