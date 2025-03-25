@@ -14,8 +14,3 @@ python:
 
 sphinx:
   configuration: docs/source/conf.py
-
-# Declare language versions
-languages:
-  en: docs
-  ru: docs
