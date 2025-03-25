@@ -1,0 +1,396 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/index.rst:2
+msgid "API Reference"
+msgstr ""
+
+#: of opr:1
+msgid "OpenPlaceRecognition package."
+msgstr ""
+
+#: ../../source/api/index.rst:22
+msgid "opr.const"
+msgstr ""
+
+#: of opr.const:1
+msgid "Definition of package-level constants."
+msgstr ""
+
+#: ../../source/api/index.rst:30
+msgid "opr.testing"
+msgstr ""
+
+#: of opr.testing:1
+msgid "Testing functions implementation."
+msgstr ""
+
+#: of opr.testing.get_recalls:1 opr.testing.get_recalls_with_reranking:1
+msgid ""
+"Calculate Recall@N, Recall@1% and mean top-1 distance for the given query"
+" and db embeddings."
+msgstr ""
+
+#: ../../source/api/index.rst of opr.utils.distribute_batch_size
+#: opr.utils.get_start_end_indices_of_local_batch
+msgid "Parameters"
+msgstr ""
+
+#: of opr.testing.get_recalls:3
+msgid "Query embeddings array."
+msgstr ""
+
+#: of opr.testing.get_recalls:5 opr.testing.get_recalls_with_reranking:7
+msgid "Database embeddings array."
+msgstr ""
+
+#: of opr.testing.get_recalls:7 opr.testing.get_recalls_with_reranking:9
+msgid "Distance matrix of shape (query_len, db_len)."
+msgstr ""
+
+#: of opr.testing.get_recalls:9 opr.testing.get_recalls_with_reranking:11
+#: opr.testing.test_image_model_with_reranking:7
+msgid "Distance threshold for positive match. Defaults to 25.0."
+msgstr ""
+
+#: of opr.testing.get_recalls:11 opr.testing.get_recalls_with_reranking:13
+msgid "The maximum N value for the Recall@N metric. Defaults to 25."
+msgstr ""
+
+#: ../../source/api/index.rst of opr.utils.distribute_batch_size
+#: opr.utils.get_start_end_indices_of_local_batch
+msgid "Returns"
+msgstr ""
+
+#: of opr.testing.get_recalls:14 opr.testing.get_recalls_with_reranking:16
+msgid ""
+"(Recall@N, Recall@1%, mean top-1 distance).     The 'mean top-1 distance'"
+" metric may be `None` if Recall@1 = 0."
+msgstr ""
+
+#: of opr.testing.get_recalls:16 opr.testing.get_recalls_with_reranking:18
+msgid "(Recall@N, Recall@1%, mean top-1 distance)."
+msgstr ""
+
+#: of opr.testing.get_recalls:17 opr.testing.get_recalls_with_reranking:19
+msgid "The 'mean top-1 distance' metric may be `None` if Recall@1 = 0."
+msgstr ""
+
+#: ../../source/api/index.rst of opr.utils.distribute_batch_size
+#: opr.utils.get_start_end_indices_of_local_batch
+msgid "Return type"
+msgstr ""
+
+#: of opr.testing.get_recalls_with_reranking:3
+msgid "Query front image embeddings array."
+msgstr ""
+
+#: of opr.testing.get_recalls_with_reranking:5
+msgid "Query back image embeddings array."
+msgstr ""
+
+#: of opr.testing.test_image_model_with_reranking:1
+msgid "Test Place Recognition Average Recall@N metric performance."
+msgstr ""
+
+#: of opr.testing.test_image_model_with_reranking:3
+msgid "The model to test."
+msgstr ""
+
+#: of opr.testing.test_image_model_with_reranking:5
+msgid "Test dataloader object."
+msgstr ""
+
+#: of opr.testing.test_image_model_with_reranking:9
+msgid "Device (\"cpu\" or \"cuda\"). Defaults to \"cuda\"."
+msgstr ""
+
+#: of opr.testing.test_image_model_with_reranking:12
+msgid ""
+"Array of AverageRecall@N (N from 1 to 25), AverageRecall@1%     and mean "
+"top-1 distance."
+msgstr ""
+
+#: of opr.testing.test_image_model_with_reranking:14
+msgid "Array of AverageRecall@N (N from 1 to 25), AverageRecall@1%"
+msgstr ""
+
+#: of opr.testing.test_image_model_with_reranking:15
+msgid "and mean top-1 distance."
+msgstr ""
+
+#: of opr.testing.test_place_recognition:1
+msgid ""
+"Evaluates a place recognition model on the test set with support for "
+"sequences."
+msgstr ""
+
+#: of opr.testing.test_place_recognition:3
+msgid "The model to evaluate."
+msgstr ""
+
+#: of opr.testing.test_place_recognition:5
+msgid "The data loader for the test set."
+msgstr ""
+
+#: of opr.testing.test_place_recognition:7
+msgid "Device to run evaluation on. Defaults to \"cuda\"."
+msgstr ""
+
+#: of opr.testing.test_place_recognition:9
+msgid "The distance threshold for a correct match. Defaults to 25.0."
+msgstr ""
+
+#: of opr.testing.test_place_recognition:12
+msgid "Dictionary containing test metrics."
+msgstr ""
+
+#: ../../source/api/index.rst:38
+msgid "opr.utils"
+msgstr ""
+
+#: of opr.utils:1
+msgid "Package-level utility functions."
+msgstr ""
+
+#: of opr.utils.accumulate_dict:1
+msgid "Updates dst_dict with values from src_dict."
+msgstr ""
+
+#: of opr.utils.accumulate_dict:3
+msgid ""
+"Recursively traverses the src_dict dictionary and appends values to lists"
+" in dst_dict. If a key does not exist in dst_dict, it is created with a "
+"new list containing the corresponding value."
+msgstr ""
+
+#: of opr.utils.accumulate_dict:6 opr.utils.compute_epoch_stats_mean:6
+msgid "A dictionary representing statistics for an epoch."
+msgstr ""
+
+#: of opr.utils.accumulate_dict:8
+msgid "A dictionary representing statistics for a step within an epoch."
+msgstr ""
+
+#: of opr.utils.accumulate_dict:11
+msgid "A dictionary representing updated statistics for an epoch."
+msgstr ""
+
+#: of opr.utils.accumulate_dict:14 opr.utils.compute_epoch_stats_mean:12
+msgid "Example usage:"
+msgstr ""
+
+#: of opr.utils.cartesian_to_spherical:1
+msgid "Converts cartesian coordinates to spherical coordinates."
+msgstr ""
+
+#: of opr.utils.compute_epoch_stats_mean:1
+msgid "Computes the mean value of each list in epoch_stats."
+msgstr ""
+
+#: of opr.utils.compute_epoch_stats_mean:3
+msgid ""
+"Recursively traverses the epoch_stats dictionary and computes the mean "
+"value of each list using np.mean(). If a key does not contain a list, its"
+" value is returned as is."
+msgstr ""
+
+#: of opr.utils.compute_epoch_stats_mean:9
+msgid "A dictionary representing the mean value of each list in epoch_stats."
+msgstr ""
+
+#: of opr.utils.distribute_batch_size:1
+msgid "Distributes the global batch size over the replicas."
+msgstr ""
+
+#: of opr.utils.distribute_batch_size:3 opr.utils.get_local_batch_size:3
+#: opr.utils.get_start_end_indices_of_local_batch:3
+msgid "The global batch size."
+msgstr ""
+
+#: of opr.utils.distribute_batch_size:5 opr.utils.get_local_batch_size:5
+#: opr.utils.get_start_end_indices_of_local_batch:5
+msgid "The number of replicas."
+msgstr ""
+
+#: of opr.utils.distribute_batch_size:8
+msgid "A list of batch sizes for each replica."
+msgstr ""
+
+#: of opr.utils.distribute_batch_size:12
+#: opr.utils.get_start_end_indices_of_local_batch:17
+msgid "Examples"
+msgstr ""
+
+#: of opr.utils.flatten_dict:1
+msgid "Flatten a nested dictionary with keys separated by `sep`."
+msgstr ""
+
+#: of opr.utils.flatten_dict:3
+msgid "A nested dictionary to flatten."
+msgstr ""
+
+#: of opr.utils.flatten_dict:5
+msgid "The string of parent key (used for recursion)."
+msgstr ""
+
+#: of opr.utils.flatten_dict:7
+msgid "The separator to use between keys in the flattened dictionary."
+msgstr ""
+
+#: of opr.utils.flatten_dict:10
+msgid "A flattened dictionary with keys separated by `sep`."
+msgstr ""
+
+#: of opr.utils.get_local_batch_size:1
+msgid "Gets the local batch size on the given rank in the global batch."
+msgstr ""
+
+#: of opr.utils.get_local_batch_size:7
+#: opr.utils.get_start_end_indices_of_local_batch:7
+msgid "The rank of the replica."
+msgstr ""
+
+#: of opr.utils.get_local_batch_size:10
+msgid "The local batch size on the given rank in the global batch."
+msgstr ""
+
+#: of opr.utils.get_start_end_indices_of_local_batch:1
+msgid ""
+"Gets the start and end indices of the local batch on the given rank in "
+"the global batch."
+msgstr ""
+
+#: of opr.utils.get_start_end_indices_of_local_batch:10
+msgid ""
+"A list of tuples containing the start and end indices     of the local "
+"batch in the global batch."
+msgstr ""
+
+#: of opr.utils.get_start_end_indices_of_local_batch:12
+msgid "A list of tuples containing the start and end indices"
+msgstr ""
+
+#: of opr.utils.get_start_end_indices_of_local_batch:13
+msgid "of the local batch in the global batch."
+msgstr ""
+
+#: of opr.utils.in_sorted_array:1
+msgid "Checks whether the given value `e` is in sorted array."
+msgstr ""
+
+#: of opr.utils.in_sorted_array:3
+msgid ""
+"Code adopted from repository: https://github.com/jac99/MinkLocMultimodal,"
+" MIT License"
+msgstr ""
+
+#: of opr.utils.in_sorted_array:5
+msgid "Value to search for."
+msgstr ""
+
+#: of opr.utils.in_sorted_array:7
+msgid "Sorted array to look from."
+msgstr ""
+
+#: of opr.utils.in_sorted_array:10
+msgid "Whether the given value `e` is in sorted `array`."
+msgstr ""
+
+#: of opr.utils.init_model:1
+msgid ""
+"Transfers the model to the device, loads the weights and sets the model "
+"to eval mode."
+msgstr ""
+
+#: of opr.utils.init_model:3
+msgid "Model."
+msgstr ""
+
+#: of opr.utils.init_model:5
+msgid "Path to the model weights. If None, the weights are not loaded."
+msgstr ""
+
+#: of opr.utils.init_model:8
+msgid "Device to use."
+msgstr ""
+
+#: of opr.utils.init_model:11
+msgid "Model in eval mode."
+msgstr ""
+
+#: of opr.utils.merge_nested_dicts:1
+msgid ""
+"Recursively merge two nested dictionaries that have overlapping outer "
+"keys."
+msgstr ""
+
+#: of opr.utils.merge_nested_dicts:3
+msgid "First dictionary object."
+msgstr ""
+
+#: of opr.utils.merge_nested_dicts:5
+msgid "Second dictionary object."
+msgstr ""
+
+#: of opr.utils.merge_nested_dicts:8
+msgid "Merged dictionary."
+msgstr ""
+
+#: of opr.utils.parse_device:1
+msgid "Parse given device argument and return torch.device object."
+msgstr ""
+
+#: of opr.utils.parse_device:3
+msgid "Device argument."
+msgstr ""
+
+#: of opr.utils.parse_device:6
+msgid "Device object."
+msgstr ""
+
+#: ../../source/api/index.rst
+msgid "Raises"
+msgstr ""
+
+#: of opr.utils.parse_device:9
+msgid "If device is not a string, integer or torch.device object."
+msgstr ""
+
+#: of opr.utils.set_seed:1
+msgid ""
+"Set the random seed for the `random`, `numpy`, and `torch` libraries and "
+"enables deterministic mode."
+msgstr ""
+
+#: of opr.utils.set_seed:3
+msgid "The random seed to use. Defaults to 0."
+msgstr ""
+
+#: of opr.utils.set_seed:5
+msgid ""
+"Whether to make PyTorch deterministic. If True, disables PyTorch's "
+"benchmark mode and enables its deterministic mode. If False, leaves "
+"PyTorch's settings unchanged. Defaults to True."
+msgstr ""
+

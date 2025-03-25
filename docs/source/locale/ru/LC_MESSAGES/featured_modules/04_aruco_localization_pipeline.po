@@ -1,0 +1,115 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:2
+msgid "ArucoLocalizationPipeline"
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:4
+msgid ""
+"A module that implements a combination of neural network algorithm for "
+"place recognition and localization using sequences of data from lidars "
+"and cameras and classic Aruco detection using cameras."
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:9
+msgid "Usage example"
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:11
+msgid ""
+"You should start with initializing neural model "
+":class:`opr.models.place_recognition.base.LateFusionModel` with the image"
+" and cloud modules. The recommended way to do this is to use the "
+"`configs/model/place_recognition/multi-image_lidar_late-fusion.yaml "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/place_recognition"
+"/multi-image_lidar_late-fusion.yaml>`_ config file to instantiate the "
+"model with Hydra and load the weights from the "
+"``\"weights/place_recognition/multi-image_lidar_late-fusion_nclt.pth\"`` "
+"or other file."
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:33
+msgid ""
+"In the similar manner you should initialize the registration model with "
+"the `configs/model/registration/hregnet_light_feats.yaml "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/registration/hregnet_light_feats.yaml>`_"
+" config:"
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:46
+msgid ""
+"Then you should define information about camera configuration and markers"
+" in dict-like structure. Sensor to baselink (f. e. front2baselink) can be"
+" used to add additional transformation to pose coordinate system ([x, y, "
+"z, qx, qy, qz, qw])."
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:73
+msgid ""
+"initialize the "
+":class:`opr.pipelines.localization.base.ArucoLocalizationPipeline` which "
+"consists of two sub-pipelines: "
+":class:`opr.pipelines.place_recognition.base.PlaceRecognitionPipeline` "
+"and "
+":class:`opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`."
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:111
+msgid ""
+"Then you can use the pipeline to infer the location of the input query "
+"data:"
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:124
+msgid "The pipeline will return the output dictionary with the following keys:"
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:126
+msgid ""
+"``\"pose_by_aruco\"``: the estimated pose by Aruco detection and GT "
+"marker info. None if no Aruco detected"
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:127
+msgid ""
+"``\"pose_by_place_recognition\"``: the estimated pose of the query data "
+"after registration. Called in case of no Aruco presents detected."
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:129
+msgid "More usage examples can be found in the following notebooks:"
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:131
+msgid ""
+"`notebooks/test_itlp/04_ArucoLocalizationPipeline.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/04_ArucoLocalizationPipeline.ipynb>`_"
+msgstr ""
+
+#: ../../source/featured_modules/04_aruco_localization_pipeline.rst:132
+msgid ""
+"`notebooks/test_cross_season/04_ArucoLocalizationPipeline.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/04_ArucoLocalizationPipeline.ipynb>`_"
+msgstr ""
+

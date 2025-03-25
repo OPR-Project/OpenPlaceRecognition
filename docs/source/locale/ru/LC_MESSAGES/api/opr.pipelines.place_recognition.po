@@ -1,0 +1,295 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.pipelines.place_recognition.rst:2
+msgid "opr.pipelines.place\\_recognition package"
+msgstr ""
+
+#: of opr.pipelines.place_recognition:1
+msgid "Place Recognition pipelines."
+msgstr ""
+
+#: ../../source/api/opr.pipelines.place_recognition.rst:10
+msgid "opr.pipelines.place\\_recognition.base"
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base:1
+msgid "Basic Place Recognition pipelines."
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline:1
+msgid "Bases: :py:class:`object`"
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline:1
+msgid "Basic Place Recognition pipeline."
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:1
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:1
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:1
+msgid "Single sample inference."
+msgstr ""
+
+#: ../../source/api/opr.pipelines.place_recognition.rst
+msgid "Parameters"
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:3
+#, python-brace-format
+msgid ""
+"Input data. Dictionary with keys in the following format:  "
+"\"image_{camera_name}\" for images from cameras,  \"mask_{camera_name}\" "
+"for semantic segmentation masks,  \"pointcloud_lidar_coords\" for "
+"pointcloud coordinates from lidar,  \"pointcloud_lidar_feats\" for "
+"pointcloud features from lidar."
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:3
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:3
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:3
+msgid "Input data. Dictionary with keys in the following format:"
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:5
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:5
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:5
+#, python-brace-format
+msgid "\"image_{camera_name}\" for images from cameras,"
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:7
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:7
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:7
+#, python-brace-format
+msgid "\"mask_{camera_name}\" for semantic segmentation masks,"
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:9
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:9
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:9
+msgid "\"pointcloud_lidar_coords\" for pointcloud coordinates from lidar,"
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:11
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:11
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:11
+msgid "\"pointcloud_lidar_feats\" for pointcloud features from lidar."
+msgstr ""
+
+#: ../../source/api/opr.pipelines.place_recognition.rst
+msgid "Returns"
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:14
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:16
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:18
+msgid ""
+"Inference results. Dictionary with keys:      \"idx\" for predicted index"
+" in the database,      \"pose\" for predicted pose in the format [tx, ty,"
+" tz, qx, qy, qz, qw],      \"descriptor\" for predicted descriptor."
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:16
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:18
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:20
+msgid "Inference results. Dictionary with keys:"
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:18
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:20
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:22
+msgid "\"idx\" for predicted index in the database,"
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:20
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:22
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:24
+msgid "\"pose\" for predicted pose in the format [tx, ty, tz, qx, qy, qz, qw],"
+msgstr ""
+
+#: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:22
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:24
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:26
+msgid "\"descriptor\" for predicted descriptor."
+msgstr ""
+
+#: ../../source/api/opr.pipelines.place_recognition.rst
+msgid "Return type"
+msgstr ""
+
+#: ../../source/api/opr.pipelines.place_recognition.rst:18
+msgid "opr.pipelines.place\\_recognition.text\\_labels"
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline:1
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline:1
+msgid ""
+"Bases: "
+":py:class:`~opr.pipelines.place_recognition.base.PlaceRecognitionPipeline`"
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:1
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.find_most_similar_id:1
+msgid "Finds the most similar ID in the database based on the given query."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:3
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.find_most_similar_id:3
+msgid "The query to compare against the database labels."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:5
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.find_most_similar_id:5
+msgid "Whether to ignore stopwords during comparison. Defaults to False."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:7
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.find_most_similar_id:7
+msgid "Whether to normalize the text before comparison. Defaults to False."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:9
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.find_most_similar_id:9
+msgid ""
+"Whether to print additional information during the process. Defaults to "
+"False."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:12
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.find_most_similar_id:12
+msgid ""
+"A tuple containing the best match ID, the corresponding labels, and the "
+"highest similarity score."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.get_labels_by_id:1
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.get_labels_by_id:1
+msgid "Retrieve all labels associated with a given ID from the labels dictionary."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.get_labels_by_id:3
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.get_labels_by_id:3
+msgid "The list of labels."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.get_labels_by_id:5
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.get_labels_by_id:5
+msgid "The ID to retrieve labels for."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.get_labels_by_id:8
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.get_labels_by_id:8
+msgid "The list of labels associated with the given ID."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:3
+#, python-brace-format
+msgid ""
+"Input data. Dictionary with keys in the following format:  "
+"\"image_{camera_name}\" for images from cameras,  \"mask_{camera_name}\" "
+"for semantic segmentation masks,  \"pointcloud_lidar_coords\" for "
+"pointcloud coordinates from lidar,  \"pointcloud_lidar_feats\" for "
+"pointcloud features from lidar.  \"text_similarity_thresh\"  Text "
+"similarity threshold. Defaults to 50."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:13
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:15
+msgid "\"text_similarity_thresh\"  Text similarity threshold. Defaults to 50."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.normalize_labels:1
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.normalize_labels:1
+msgid ""
+"Normalize a list of labels by converting them to lowercase and removing "
+"leading/trailing whitespace."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.normalize_labels:3
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.normalize_labels:3
+msgid "The list of labels to be normalized."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.normalize_labels:6
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.normalize_labels:6
+msgid "The normalized list of labels."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.remove_stopwords:1
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.remove_stopwords:1
+msgid "Removes stopwords from a list of labels."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.remove_stopwords:3
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.remove_stopwords:3
+msgid "The list of labels to remove stopwords from."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.remove_stopwords:5
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.remove_stopwords:5
+msgid "The list of stopwords to be removed. Defaults to [\"выход\", \"мфти\"]."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.remove_stopwords:8
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.remove_stopwords:8
+msgid "The list of labels with stopwords removed."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:3
+#, python-brace-format
+msgid ""
+"Input data. Dictionary with keys in the following format:  "
+"\"image_{camera_name}\" for images from cameras,  \"mask_{camera_name}\" "
+"for semantic segmentation masks,  \"pointcloud_lidar_coords\" for "
+"pointcloud coordinates from lidar,  \"pointcloud_lidar_feats\" for "
+"pointcloud features from lidar.  \"query_labels\"  List of query labels."
+"  \"text_similarity_thresh\"  Text similarity threshold. Defaults to 50."
+msgstr ""
+
+#: of
+#: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:13
+msgid "\"query_labels\"  List of query labels."
+msgstr ""
+
