@@ -1,0 +1,127 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.losses.rst:2
+msgid "opr.losses package"
+msgstr ""
+
+#: of opr.losses:1
+msgid "Module for losses."
+msgstr ""
+
+#: ../../source/api/opr.losses.rst:10
+msgid "opr.losses.batch\\_hard\\_contrastive"
+msgstr ""
+
+#: of opr.losses.batch_hard_contrastive:1
+msgid "Multimodal contrastive loss implementation."
+msgstr ""
+
+#: of opr.losses.batch_hard_contrastive:3
+#: opr.losses.batch_hard_contrastive.BatchHardContrastiveLoss:3
+#: opr.losses.batch_hard_triplet_margin:3
+#: opr.losses.batch_hard_triplet_margin.BatchHardTripletMarginLoss:3
+msgid ""
+"Code adopted from repository: https://github.com/jac99/MinkLocMultimodal,"
+" MIT License"
+msgstr ""
+
+#: of opr.losses.batch_hard_contrastive.BatchHardContrastiveLoss:1
+#: opr.losses.batch_hard_triplet_margin.BatchHardTripletMarginLoss:1
+#: opr.losses.truncated_smooth_ap.DistributedLossWrapper:1
+#: opr.losses.truncated_smooth_ap.TruncatedSmoothAP:1
+msgid "Bases: :py:class:`~torch.nn.modules.module.Module`"
+msgstr ""
+
+#: of opr.losses.batch_hard_contrastive.BatchHardContrastiveLoss:1
+msgid "Contrastive loss with batch hard triplet miner."
+msgstr ""
+
+#: of opr.losses.batch_hard_contrastive.BatchHardContrastiveLoss.forward:1
+#: opr.losses.batch_hard_triplet_margin.BatchHardTripletMarginLoss.forward:1
+#: opr.losses.truncated_smooth_ap.DistributedLossWrapper.forward:1
+#: opr.losses.truncated_smooth_ap.TruncatedSmoothAP.forward:1
+msgid "Defines the computation performed at every call."
+msgstr ""
+
+#: of opr.losses.batch_hard_contrastive.BatchHardContrastiveLoss.forward:3
+#: opr.losses.batch_hard_triplet_margin.BatchHardTripletMarginLoss.forward:3
+#: opr.losses.truncated_smooth_ap.DistributedLossWrapper.forward:3
+#: opr.losses.truncated_smooth_ap.TruncatedSmoothAP.forward:3
+msgid "Should be overridden by all subclasses."
+msgstr ""
+
+#: of opr.losses.batch_hard_contrastive.BatchHardContrastiveLoss.forward:6
+#: opr.losses.batch_hard_triplet_margin.BatchHardTripletMarginLoss.forward:6
+#: opr.losses.truncated_smooth_ap.DistributedLossWrapper.forward:6
+#: opr.losses.truncated_smooth_ap.TruncatedSmoothAP.forward:6
+msgid ""
+"Although the recipe for forward pass needs to be defined within this "
+"function, one should call the :class:`Module` instance afterwards instead"
+" of this since the former takes care of running the registered hooks "
+"while the latter silently ignores them."
+msgstr ""
+
+#: ../../source/api/opr.losses.rst:18
+msgid "opr.losses.batch\\_hard\\_triplet\\_margin"
+msgstr ""
+
+#: of opr.losses.batch_hard_triplet_margin:1
+msgid "Multimodal triplet margin loss implementation."
+msgstr ""
+
+#: of opr.losses.batch_hard_triplet_margin.BatchHardTripletMarginLoss:1
+msgid "Triplet margin loss with batch hard triplet miner."
+msgstr ""
+
+#: ../../source/api/opr.losses.rst:26
+msgid "opr.losses.truncated\\_smooth\\_ap"
+msgstr ""
+
+#: of opr.losses.truncated_smooth_ap:1
+msgid "Truncated Smooth AP"
+msgstr ""
+
+#: of opr.losses.truncated_smooth_ap:3
+msgid ""
+"Implemented as per \"Recall@k Surrogate Loss with Large Batches and "
+"Similarity Mixup\" paper, but only the fixed number of the closest "
+"positives is considered."
+msgstr ""
+
+#: of opr.losses.truncated_smooth_ap:6
+msgid ""
+"Code adopted from repository https://github.com/jac99/MinkLoc3Dv2, MIT "
+"License"
+msgstr ""
+
+#: of opr.losses.truncated_smooth_ap.compute_aff:1
+msgid "computes the affinity matrix between an input vector and itself"
+msgstr ""
+
+#: of opr.losses.truncated_smooth_ap.sigmoid:1
+msgid ""
+"temperature controlled sigmoid takes as input a torch tensor (tensor) and"
+" passes it through a sigmoid, controlled by temperature: temp"
+msgstr ""
+

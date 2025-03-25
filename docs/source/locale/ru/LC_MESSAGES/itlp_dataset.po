@@ -1,0 +1,676 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/itlp_dataset.rst:3
+msgid "ITLP-Campus Dataset"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:9
+msgid ""
+"Explore multimodal Place Recognition with ITLP Campus — a diverse dataset"
+" of indoor and outdoor university environments featuring synchronized RGB"
+" images, LiDAR point clouds, semantic masks, and rich scene descriptions."
+" Built for real-world challenges, day or night, floor or field."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:13
+msgid ""
+"See also the `OPR-Project/ITLP-Campus <https://github.com/OPR-Project"
+"/ITLP-Campus>`_ repository."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:17
+msgid "Download"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:19
+msgid "You can download the dataset:"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:21
+msgid "Kaggle:"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:23
+msgid ""
+"`ITLP Campus Indoor <https://www.kaggle.com/datasets/alexandermelekhin"
+"/itlp-campus-indoor>`_"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:24
+msgid ""
+"`ITLP Campus Outdoor <https://www.kaggle.com/datasets/alexandermelekhin"
+"/itlp-campus-outdoor>`_"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:26
+msgid "Hugging Face:"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:28
+msgid ""
+"`ITLP Campus Indoor <https://huggingface.co/datasets/OPR-Project/ITLP-"
+"Campus-Indoor>`_"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:29
+msgid ""
+"`ITLP Campus Outdoor <https://huggingface.co/datasets/OPR-Project/ITLP-"
+"Campus-Outdoor>`_"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:31
+msgid "Alternatively, you can download the dataset from the following links:"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:37
+msgid "Cloud Storage"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:38
+msgid "link"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:39
+msgid "Google Drive"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:40
+msgid ""
+"`link1 <https://drive.google.com/drive/folders/14"
+"-0Ew5qVWh607tdFsovbXZsdWX-vU-Vy?usp=sharing>`_"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:41
+msgid "Yandex Disk"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:42
+msgid "`link2 <https://disk.yandex.com/d/tvPdmWTTw5mEQg>`_"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:46
+msgid "Sensors"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:52
+msgid "Sensor"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:53
+msgid "Model"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:54
+msgid "Resolution"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:55
+msgid "Front cam"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:56
+msgid "ZED (stereo)"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:57 ../../source/itlp_dataset.rst:60
+#: ../../source/itlp_dataset.rst:149 ../../source/itlp_dataset.rst:150
+#: ../../source/itlp_dataset.rst:158 ../../source/itlp_dataset.rst:159
+#: ../../source/itlp_dataset.rst:167 ../../source/itlp_dataset.rst:168
+#: ../../source/itlp_dataset.rst:246 ../../source/itlp_dataset.rst:247
+#: ../../source/itlp_dataset.rst:258 ../../source/itlp_dataset.rst:259
+#: ../../source/itlp_dataset.rst:270 ../../source/itlp_dataset.rst:271
+#: ../../source/itlp_dataset.rst:282 ../../source/itlp_dataset.rst:283
+#: ../../source/itlp_dataset.rst:294 ../../source/itlp_dataset.rst:295
+#: ../../source/itlp_dataset.rst:306 ../../source/itlp_dataset.rst:307
+#: ../../source/itlp_dataset.rst:318 ../../source/itlp_dataset.rst:319
+#: ../../source/itlp_dataset.rst:330 ../../source/itlp_dataset.rst:331
+#: ../../source/itlp_dataset.rst:342 ../../source/itlp_dataset.rst:343
+msgid "1280x720"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:58
+msgid "Back cam"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:59
+msgid "RealSense D435"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:61
+msgid "LiDAR"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:62
+msgid "VLP-16"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:63
+msgid "16x1824"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:67
+msgid "Structure"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:69
+msgid ""
+"The data are organized by tracks, the length of one track is about 3 km, "
+"each track includes about 600 frames. The distance between adjacent "
+"frames is ~5 m."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:71
+msgid "The structure of track data storage is as follows:"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:106
+msgid "where"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:108
+msgid ""
+"``####`` - file name, which is the timestamp of the image/scan (virtual "
+"timestamp of the moment when the image/scan was taken)"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:109
+msgid "``.bin`` - files - LiDAR scans in binary format"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:110
+msgid "``.png`` - images and semantic masks"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:111
+msgid "``.csv`` :"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:112
+msgid ""
+"``<cam>_text.csv`` - text description of the scene for both front and "
+"back camera images (image timestamp, text description of the scene)"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:113
+msgid ""
+"``<cam>_aruco_labels.csv`` - information about aruco tags (image "
+"timestamp, tag bboxes and its ID)"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:114
+msgid ""
+"``<cam>_text_labels.csv`` - information only about images with text "
+"markings (image timestamp, marking bbox , text on the marking)"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:115
+msgid "``track.csv`` - timestamp mapping for all data and 6DoF robot poses"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:116
+msgid "``.yml`` - meta information about track"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:118
+msgid "An example of a outdoor track trajectory (track_map.png):"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:122
+msgid "An example of a indoor track trajectory (track_map.png):"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:128
+msgid "ITLP-Campus Indoor"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:132 ../../source/itlp_dataset.rst:225
+msgid "Data"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:138 ../../source/itlp_dataset.rst:231
+msgid "Track"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:139 ../../source/itlp_dataset.rst:234
+msgid "Frames, pcs"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:140 ../../source/itlp_dataset.rst:235
+msgid "Front cam, res"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:141 ../../source/itlp_dataset.rst:236
+msgid "Back cam, res"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:142 ../../source/itlp_dataset.rst:237
+msgid "LiDAR, rays"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:143 ../../source/itlp_dataset.rst:238
+msgid "6 DoF pose"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:144 ../../source/itlp_dataset.rst:239
+msgid "Semantic masks"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:145 ../../source/itlp_dataset.rst:240
+msgid "Aruco tag"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:146 ../../source/itlp_dataset.rst:241
+msgid "OCR Text labels"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:147
+msgid "2023-03-13"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:148
+msgid "3883"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:151 ../../source/itlp_dataset.rst:160
+#: ../../source/itlp_dataset.rst:169 ../../source/itlp_dataset.rst:248
+#: ../../source/itlp_dataset.rst:260 ../../source/itlp_dataset.rst:272
+#: ../../source/itlp_dataset.rst:284 ../../source/itlp_dataset.rst:296
+#: ../../source/itlp_dataset.rst:308 ../../source/itlp_dataset.rst:320
+#: ../../source/itlp_dataset.rst:332 ../../source/itlp_dataset.rst:344
+msgid "16"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:152 ../../source/itlp_dataset.rst:154
+#: ../../source/itlp_dataset.rst:155 ../../source/itlp_dataset.rst:161
+#: ../../source/itlp_dataset.rst:163 ../../source/itlp_dataset.rst:164
+#: ../../source/itlp_dataset.rst:170 ../../source/itlp_dataset.rst:172
+#: ../../source/itlp_dataset.rst:173 ../../source/itlp_dataset.rst:249
+#: ../../source/itlp_dataset.rst:252 ../../source/itlp_dataset.rst:253
+#: ../../source/itlp_dataset.rst:261 ../../source/itlp_dataset.rst:264
+#: ../../source/itlp_dataset.rst:265 ../../source/itlp_dataset.rst:273
+#: ../../source/itlp_dataset.rst:276 ../../source/itlp_dataset.rst:277
+#: ../../source/itlp_dataset.rst:285 ../../source/itlp_dataset.rst:288
+#: ../../source/itlp_dataset.rst:289 ../../source/itlp_dataset.rst:297
+#: ../../source/itlp_dataset.rst:300 ../../source/itlp_dataset.rst:301
+#: ../../source/itlp_dataset.rst:309 ../../source/itlp_dataset.rst:312
+#: ../../source/itlp_dataset.rst:313 ../../source/itlp_dataset.rst:321
+#: ../../source/itlp_dataset.rst:324 ../../source/itlp_dataset.rst:325
+#: ../../source/itlp_dataset.rst:333 ../../source/itlp_dataset.rst:336
+#: ../../source/itlp_dataset.rst:337 ../../source/itlp_dataset.rst:345
+#: ../../source/itlp_dataset.rst:348 ../../source/itlp_dataset.rst:349
+msgid "✓"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:153 ../../source/itlp_dataset.rst:162
+#: ../../source/itlp_dataset.rst:171
+msgid "1280x720x150"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:156
+msgid "00_2023-10-25-night"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:157
+msgid "1233"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:165
+msgid "01_2023-11-09-twilight"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:166
+msgid "1310"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:175
+msgid ""
+"6 DoF poses are obtained using Cartographer SLAM with global localization"
+" in a pre-built map."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:179 ../../source/itlp_dataset.rst:355
+msgid "Semantics"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:181
+msgid ""
+"Semantic masks are obtained using the `Oneformer <https://github.com/SHI-"
+"Labs/OneFormer>`_ pre-trained on the `ADE20K "
+"<https://ade20k.csail.mit.edu/>`_ dataset."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:183 ../../source/itlp_dataset.rst:359
+msgid ""
+"The masks are stored as mono-channel images. Each pixel stores a semantic"
+" label. Examples of semantic information are shown in the table below:"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:189 ../../source/itlp_dataset.rst:365
+msgid "Label"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:190 ../../source/itlp_dataset.rst:366
+msgid "Semantic class"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:191 ../../source/itlp_dataset.rst:367
+msgid "Color, [r, g, b]"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:192 ../../source/itlp_dataset.rst:193
+#: ../../source/itlp_dataset.rst:194 ../../source/itlp_dataset.rst:207
+#: ../../source/itlp_dataset.rst:208 ../../source/itlp_dataset.rst:209
+#: ../../source/itlp_dataset.rst:368 ../../source/itlp_dataset.rst:369
+#: ../../source/itlp_dataset.rst:370 ../../source/itlp_dataset.rst:383
+#: ../../source/itlp_dataset.rst:384 ../../source/itlp_dataset.rst:385
+msgid "..."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:195
+msgid "14"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:196
+msgid "door; double door"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:197
+msgid "[8, 255, 51]"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:198
+msgid "23"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:199
+msgid "sofa; couch; lounge"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:200
+msgid "[11, 102, 255]"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:201
+msgid "67"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:202
+msgid "book"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:203
+msgid "[255, 163, 0]"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:204
+msgid "124"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:205
+msgid "microwave; microwave; oven"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:206
+msgid "[255, 0, 235]"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:211
+msgid ""
+"The semantic markup contains a total of 150 classes. A complete table of "
+"all semantic classes is given in the table - "
+"`cfg/indoor_anno_description.md <https://github.com/OPR-Project/ITLP-"
+"Campus/blob/main/cfg/indoor_anno_description.md>`_. To map the ID labels "
+"with RGB colors you should use the configuration file - "
+"`cfg/indoor_anno_config.json <https://github.com/OPR-Project/ITLP-"
+"Campus/blob/main/cfg/indoor_anno_config.json>`_."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:213 ../../source/itlp_dataset.rst:389
+msgid "An example of a mask over the image:"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:219
+msgid "ITLP-Campus Outdoor"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:221
+msgid ""
+"The outdoor part of this dataset was recorded on the Husky robotics "
+"platform on the university campus and consists of 5 tracks recorded at "
+"different times of day (day/dusk/night) and different seasons "
+"(winter/spring)."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:232
+msgid "Season"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:233
+msgid "Time of day"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:242
+msgid "00_2023-02-21"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:243 ../../source/itlp_dataset.rst:255
+#: ../../source/itlp_dataset.rst:267
+msgid "winter"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:244 ../../source/itlp_dataset.rst:280
+#: ../../source/itlp_dataset.rst:304 ../../source/itlp_dataset.rst:328
+msgid "day"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:245
+msgid "620"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:250 ../../source/itlp_dataset.rst:262
+#: ../../source/itlp_dataset.rst:274 ../../source/itlp_dataset.rst:286
+#: ../../source/itlp_dataset.rst:298 ../../source/itlp_dataset.rst:310
+#: ../../source/itlp_dataset.rst:322 ../../source/itlp_dataset.rst:334
+#: ../../source/itlp_dataset.rst:346
+msgid "front + back 1280x720x65 classes"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:254
+msgid "01_2023-03-15"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:256 ../../source/itlp_dataset.rst:292
+#: ../../source/itlp_dataset.rst:316 ../../source/itlp_dataset.rst:340
+msgid "night"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:257
+msgid "626"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:266
+msgid "02_2023-02-10"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:268
+msgid "twilight"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:269
+msgid "609"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:278
+msgid "03_2023-04-11"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:279 ../../source/itlp_dataset.rst:291
+msgid "spring"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:281
+msgid "638"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:290
+msgid "04_2023-04-13"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:293
+msgid "631"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:302
+msgid "05_2023-08-15"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:303 ../../source/itlp_dataset.rst:315
+msgid "summer"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:305
+msgid "833"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:314
+msgid "06_2023-08-18"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:317
+msgid "831"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:326
+msgid "07_2023-10-04"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:327 ../../source/itlp_dataset.rst:339
+msgid "autumn"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:329
+msgid "896"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:338
+msgid "08_2023-10-11"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:341
+msgid "895"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:351
+msgid ""
+"6 DoF poses are obtained using ALeGO-LOAM localization method refined "
+"with Interactive SLAM."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:357
+msgid ""
+"Semantic masks are obtained using the `Oneformer <https://github.com/SHI-"
+"Labs/OneFormer>`_ pre-trained on the `Mapillary "
+"<https://paperswithcode.com/dataset/mapillary-vistas-dataset>`_ dataset."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:371
+msgid "10"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:372
+msgid "Parking"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:373
+msgid "[250, 170, 160]"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:374
+msgid "11"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:375
+msgid "Pedestrian Area"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:376
+msgid "[96, 96, 96]"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:377
+msgid "12"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:378
+msgid "Rail Track"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:379
+msgid "[230, 150, 140]"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:380
+msgid "13"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:381
+msgid "Road"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:382
+msgid "[128, 64, 128]"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:387
+msgid ""
+"The semantic markup contains a total of 65 classes. A complete table of "
+"all semantic classes is given in the table - "
+"`cfg/outdoor_anno_description.md <https://github.com/OPR-Project/ITLP-"
+"Campus/blob/main/cfg/outdoor_anno_description.md>`_. To map the ID labels"
+" with RGB colors you should use the configuration file - "
+"`cfg/outdoor_anno_config.json <https://github.com/OPR-Project/ITLP-"
+"Campus/blob/main/cfg/outdoor_anno_config.json>`_."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:395
+msgid "PyTorch dataset API"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:397
+msgid ""
+"Implementation of PyTorch's dataset class for ITLP-Campus track is "
+"provided in the `src/opr/datasets/itlp.py <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/src/opr/datasets/itlp.py>`_ file."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:399
+msgid ""
+"That class can be used for loading the track's data in the format of "
+"``torch.Tensor``."
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:403
+msgid "Outdoor data"
+msgstr ""
+
+#: ../../source/itlp_dataset.rst:405
+msgid "Usage example:"
+msgstr ""
+

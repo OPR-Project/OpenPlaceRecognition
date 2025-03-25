@@ -10,6 +10,11 @@ project = "opr"
 author = "Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin, Sergey Linok, Kirill Muravyev, Dmitry Yudin"
 copyright = f"2024, {author}"
 
+# -- Internationalization options --------------------------------------------
+locale_dirs = ['locale/']
+gettext_compact = False
+language = 'en'            # default language
+
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 

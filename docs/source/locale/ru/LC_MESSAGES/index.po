@@ -1,0 +1,1142 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/index.rst:24
+msgid "Introduction"
+msgstr "Введение"
+
+#: ../../source/index.rst:24
+msgid "Contents:"
+msgstr "Содержание:"
+
+#: ../../source/index.rst:8
+msgid "Open Place Recognition library"
+msgstr "Библиотека Open Place Recognition"
+
+#: ../../source/index.rst:12
+msgid ""
+"*An overview of a typical place recognition pipeline. At first, the input"
+" data is encoded into a query descriptor. Then, a K-nearest neighbors "
+"search is performed between the query and the database. Finally, the "
+"position of the closest database descriptor found is considered as the "
+"answer.*"
+msgstr ""
+"*Обзор типичного пайплайна распознавания мест. Сначала входные данные "
+"кодируются в дескриптор запроса. Затем выполняется поиск K ближайших "
+"соседей между запросом и базой данных. В конце позиция ближайшего найденного "
+"дескриптора в базе данных считается ответом.*"
+
+#: ../../source/index.rst:17
+msgid "This library is suitable for:"
+msgstr "Эта библиотека подходит для:"
+
+#: ../../source/index.rst:19
+msgid ""
+"🚗 **Navigation of autonomous cars, robots, and drones** using cameras and"
+" lidars, especially in areas with limited or unavailable GPS signals."
+msgstr ""
+"🚗 **Навигации автономных автомобилей, роботов и дронов**, использующих камеры "
+"и лидары, особенно в зонах с ограниченным или недоступным сигналом GPS."
+
+#: ../../source/index.rst:20
+msgid ""
+"📦 **Localization of delivery robots** needing reliable positioning both "
+"indoors and outdoors."
+msgstr ""
+"📦 **Локализации роботов-доставщиков**, требующих надежного позиционирования "
+"как внутри помещений, так и на открытых пространствах."
+
+#: ../../source/index.rst:21
+msgid ""
+"🔬 **Research and development of computer vision algorithms**, related to "
+"multimodal place recognition and localization."
+msgstr ""
+"🔬 **Исследований и разработки алгоритмов компьютерного зрения**, связанных с "
+"мультимодальным распознаванием и локализацией мест."
+
+#: ../../source/index.rst:22
+msgid ""
+"🎓 **Educational purposes and research projects**, involving robotics, "
+"autonomous systems, and computer vision."
+msgstr ""
+"🎓 **Учебных и исследовательских проектов**, включающих робототехнику, "
+"автономные системы и компьютерное зрение."
+
+#: ../../source/index.rst:35
+msgid "Installation"
+msgstr "Установка"
+
+#: ../../source/index.rst:38
+msgid "Requirements"
+msgstr "Требования"
+
+#: ../../source/index.rst:41
+msgid "Hardware"
+msgstr "Аппаратное обеспечение"
+
+#: ../../source/index.rst:43
+msgid "**x86_64**:"
+msgstr "**x86_64**:"
+
+#: ../../source/index.rst:45
+msgid "**CPU**: 6 or more physical cores"
+msgstr "**CPU**: 6 или более физических ядер"
+
+#: ../../source/index.rst:46
+msgid "**RAM**: at least 8 GB"
+msgstr "**RAM**: не менее 8 ГБ"
+
+#: ../../source/index.rst:47
+msgid "**GPU**: NVIDIA RTX 2060 or higher (to ensure adequate performance)"
+msgstr "**GPU**: NVIDIA RTX 2060 или выше (для обеспечения достаточной производительности)"
+
+#: ../../source/index.rst:48
+msgid "**Video memory**: at least 4 GB"
+msgstr "**Видеопамять**: не менее 4 ГБ"
+
+#: ../../source/index.rst:49
+msgid "**Storage**: SSD recommended for faster loading of data and models"
+msgstr "**Хранилище**: рекомендуется SSD для более быстрой загрузки данных и моделей"
+
+#: ../../source/index.rst:51
+msgid "**NVIDIA Jetson**:"
+msgstr "**NVIDIA Jetson**:"
+
+#: ../../source/index.rst:53
+msgid ""
+"We recommend using NVIDIA Jetson Xavier AGX. *The library should be "
+"compatible with all newer versions of devices, but we haven't tested them"
+" yet.*"
+msgstr ""
+"Мы рекомендуем использовать NVIDIA Jetson Xavier AGX. *Библиотека должна "
+"быть совместима с новыми версиями устройств, но мы пока их не тестировали.*"
+
+#: ../../source/index.rst:58
+msgid "Software"
+msgstr "Программное обеспечение"
+
+#: ../../source/index.rst:60
+msgid "**Operating System**:"
+msgstr "**Операционная система**:"
+
+#: ../../source/index.rst:62
+msgid ""
+"**x86_64**: Any OS with support for Docker and CUDA >= 11.1. *Ubuntu "
+"20.04 or later is recommended.*"
+msgstr ""
+"**x86_64**: Любая ОС с поддержкой Docker и CUDA >= 11.1. *Рекомендуется "
+"Ubuntu 20.04 и новее.*"
+
+#: ../../source/index.rst:64
+msgid "**NVIDIA Jetson**: Ubuntu 20.04 or later with Jetpack >= 5.0."
+msgstr "**NVIDIA Jetson**: Ubuntu 20.04 и новее с Jetpack >= 5.0."
+
+#: ../../source/index.rst:66
+msgid "**Dependencies** (if not using Docker): see the `Advanced` section below."
+msgstr "**Зависимости** (если не используется Docker): см. раздел `Advanced` ниже."
+
+#: ../../source/index.rst:70
+msgid "Quick-start"
+msgstr "Быстрый старт"
+
+#: ../../source/index.rst:72
+msgid ""
+"At first, ensure that you cloned the repository https://github.com/OPR-"
+"Project/OpenPlaceRecognition and changed the directory to the root of the"
+" repository:"
+msgstr ""
+"Сначала убедитесь, что вы клонировали репозиторий https://github.com/OPR-"
+"Project/OpenPlaceRecognition и перешли в корневую директорию репозитория:"
+
+#: ../../source/index.rst:83
+msgid ""
+"The recommended and easiest way to use the library is through the "
+"provided Docker environment. The ``Dockerfile.base`` contains all "
+"prerequisites needed to run the library, including optional "
+"`MinkowskiEngine <https://github.com/NVIDIA/MinkowskiEngine>`_ and `faiss"
+" <https://github.com/facebookresearch/faiss>`_ libraries. You can either "
+"pull this image from Docker Hub (``docker pull alexmelekhin/open-place-"
+"recognition:base``), or build it manually (``bash "
+"docker/build_base.sh``)."
+msgstr ""
+"Рекомендуемый и самый простой способ использовать библиотеку — это "
+"предоставляемое Docker-окружение. Файл ``Dockerfile.base`` содержит все "
+"необходимые компоненты для запуска библиотеки, включая опциональные "
+"библиотеки `MinkowskiEngine <https://github.com/NVIDIA/MinkowskiEngine>`_ и "
+"`faiss <https://github.com/facebookresearch/faiss>`_. Вы можете либо загрузить "
+"этот образ из Docker Hub (``docker pull alexmelekhin/open-place-recognition:base``), "
+"либо собрать его вручную (``bash docker/build_base.sh``)."
+
+#: ../../source/index.rst:89
+msgid ""
+"The ``Dockerfile.devel`` installs additional requirements from "
+"``requirements.txt``, ``requirements-dev.txt``, and ``requirements-"
+"notebook.txt`` files, and creates a non-root user inside the image to "
+"avoid permission issues when using the container with mounted volumes."
+msgstr ""
+"Файл ``Dockerfile.devel`` устанавливает дополнительные требования из файлов "
+"``requirements.txt``, ``requirements-dev.txt`` и ``requirements-notebook.txt``, "
+"а также создаёт пользователя без root-прав для предотвращения проблем с правами "
+"при использовании контейнера с подключёнными томами."
+
+#: ../../source/index.rst:95
+msgid "The ``devel`` version of the image should be built manually by the user:"
+msgstr ""
+"Версия образа ``devel`` должна быть собрана вручную пользователем:"
+
+#: ../../source/index.rst:101
+msgid ""
+"When starting the container, you must provide a data directory that will "
+"be mounted to ``~/Datasets`` inside the container:"
+msgstr ""
+"При запуске контейнера необходимо указать директорию с данными, которая будет "
+"подключена в ``~/Datasets`` внутри контейнера:"
+
+#: ../../source/index.rst:107
+msgid ""
+"To enter the container's ``/bin/bash`` terminal, use the "
+"``docker/into.sh`` script:"
+msgstr ""
+"Чтобы войти в терминал контейнера ``/bin/bash``, используйте скрипт "
+"``docker/into.sh``:"
+
+#: ../../source/index.rst:113
+msgid ""
+"After you enter the container, install the library (we recommend "
+"installing in editable mode with the ``-e`` flag to be able to make "
+"modifications to the code):"
+msgstr ""
+"После входа в контейнер установите библиотеку (рекомендуется устанавливать "
+"в редактируемом режиме с флагом ``-e``, чтобы иметь возможность вносить "
+"изменения в код):"
+
+#: ../../source/index.rst:121
+msgid "Third-party packages"
+msgstr "Сторонние пакеты"
+
+#: ../../source/index.rst:123
+msgid ""
+"Some modules and pipelines require third-party packages to be installed "
+"manually. You can install these dependencies with the following commands:"
+msgstr ""
+"Некоторые модули и пайплайны требуют ручной установки сторонних пакетов. "
+"Вы можете установить эти зависимости с помощью следующих команд:"
+
+#: ../../source/index.rst:125
+msgid ""
+"If you want to use the `GeoTransformer` model for pointcloud "
+"registration, you should install the package located in the `third_party`"
+" directory:"
+msgstr ""
+"Если вы хотите использовать модель `GeoTransformer` для регистрации облаков "
+"точек, вам следует установить пакет из директории `third_party`:"
+
+#: ../../source/index.rst:139
+msgid ""
+"If you are seeing `Permission denied` error, you should run the command "
+"with `sudo`:"
+msgstr ""
+"Если вы столкнулись с ошибкой `Permission denied`, выполните команду через "
+"`sudo`:"
+
+#: ../../source/index.rst:147
+msgid ""
+"If you want to use the `HRegNet` model for pointcloud registration, you "
+"should install the package located in the `third_party` directory:"
+msgstr ""
+"Если вы хотите использовать модель `HRegNet` для регистрации облаков точек, "
+"вам следует установить пакет из директории `third_party`:"
+
+#: ../../source/index.rst:166
+msgid ""
+"If you are seeing `Permission denied` error while trying to install "
+"PointUtils, you should run the command with `sudo`:"
+msgstr ""
+"Если вы столкнулись с ошибкой `Permission denied` при попытке установки "
+"PointUtils, выполните команду через `sudo`:"
+
+#: ../../source/index.rst:180
+msgid ""
+"**Note:** If you are using the provided Docker environment, the default "
+"password for the user `docker_opr` can be found in the "
+"``Dockerfile.devel`` file:"
+msgstr ""
+"**Примечание:** Если вы используете предоставленное Docker-окружение, пароль "
+"по умолчанию для пользователя `docker_opr` можно найти в файле ``Dockerfile.devel``:"
+
+#: ../../source/index.rst:192
+msgid ""
+"You can change the password by providing the `PW` build-time argument in "
+"the `docker/build_devel.sh` script:"
+msgstr ""
+"Вы можете изменить пароль, указав аргумент `PW` при сборке образа с помощью "
+"скрипта `docker/build_devel.sh`:"
+
+#: ../../source/index.rst:202
+msgid "Advanced"
+msgstr "Расширенная установка"
+
+#: ../../source/index.rst:204
+msgid ""
+"For a manual installation, you'll need to install several prerequisite "
+"libraries:"
+msgstr ""
+"Для ручной установки необходимо установить несколько библиотек-зависимостей:"
+
+#: ../../source/index.rst:206
+msgid ""
+"**PyTorch** is the main dependency for our library. We recommend using "
+"version ``>=2.1.2``. Please refer to the `PyTorch Get Started "
+"<https://pytorch.org/get-started/locally/>`_ documentation for "
+"installation instructions."
+msgstr ""
+"**PyTorch** — главная зависимость нашей библиотеки. Мы рекомендуем использовать "
+"версию ``>=2.1.2``. Подробности установки см. в документации `PyTorch Get Started "
+"<https://pytorch.org/get-started/locally/>`_."
+
+#: ../../source/index.rst:208
+msgid ""
+"**torchvision** is a PyTorch library that provides datasets, transforms, "
+"and models for computer vision. It should be installed with PyTorch. "
+"Please refer to the `PyTorch Get Started <https://pytorch.org/get-"
+"started/locally/>`_ documentation. If you want to install it separately, "
+"please refer to the `torchvision GitHub repository "
+"<https://github.com/pytorch/vision>`_."
+msgstr ""
+"**torchvision** — библиотека PyTorch, предоставляющая наборы данных, трансформации "
+"и модели для компьютерного зрения. Обычно она устанавливается вместе с PyTorch. "
+"Подробнее см. документацию `PyTorch Get Started <https://pytorch.org/get-started/locally/>`_. "
+"Если хотите установить её отдельно, обратитесь к репозиторию `torchvision GitHub "
+"<https://github.com/pytorch/vision>`_."
+
+#: ../../source/index.rst:211
+msgid ""
+"**MinkowskiEngine** is a library for sparse tensor operations. We "
+"recommend using the fork of the library, which is compatible with CUDA "
+"12. Please refer to the `Official Installation Guide "
+"<https://github.com/NVIDIA/MinkowskiEngine/wiki/Installation>`_, but "
+"instead of the official repository, use the fork: "
+"`<https://github.com/alexmelekhin/MinkowskiEngine.git>`_."
+msgstr ""
+"**MinkowskiEngine** — библиотека для операций с разреженными тензорами. Мы рекомендуем "
+"использовать форк библиотеки, совместимый с CUDA 12. Инструкцию по установке можно найти в "
+"`Official Installation Guide <https://github.com/NVIDIA/MinkowskiEngine/wiki/Installation>`_, "
+"но вместо официального репозитория используйте форк: `<https://github.com/alexmelekhin/MinkowskiEngine.git>`_."
+
+#: ../../source/index.rst:214
+msgid ""
+"**faiss** is a library for efficient similarity search and clustering of "
+"dense vectors. Please refer to the `faiss GitHub repository "
+"<https://github.com/facebookresearch/faiss>`_ for installation "
+"instructions. The recommended version is ``>=1.7.4``. We recommend using "
+"the GPU version of the library because our pipelines use it for better "
+"performance."
+msgstr ""
+"**faiss** — библиотека для эффективного поиска похожих элементов и кластеризации плотных векторов. "
+"Подробнее см. репозиторий `faiss GitHub <https://github.com/facebookresearch/faiss>`_. "
+"Рекомендуемая версия — ``>=1.7.4``. Рекомендуется использовать GPU-версию библиотеки для "
+"лучшей производительности наших пайплайнов."
+
+#: ../../source/index.rst:218
+msgid ""
+"**Open3D** is a library for 3D data processing. Please refer to the "
+"`Open3D documentation "
+"<https://www.open3d.org/docs/release/getting_started.html>`_ for "
+"installation instructions. We recommend using the GPU version of the "
+"library because our pipelines use it for better performance."
+msgstr ""
+"**Open3D** — библиотека для обработки 3D-данных. Подробнее см. документацию "
+"`Open3D documentation <https://www.open3d.org/docs/release/getting_started.html>`_. "
+"Рекомендуется использовать GPU-версию библиотеки для улучшения производительности наших пайплайнов."
+
+#: ../../source/index.rst:221
+msgid ""
+"**PaddlePaddle** and **PaddleOCR** are used for text-based place "
+"recognition pipelines. Please refer to the `PaddlePaddle Quick Start "
+"Guide <https://www.paddlepaddle.org.cn/en/install/quick>`_ for "
+"installation instructions. We recommend using the GPU version of the "
+"library because our pipelines use it for better performance. After "
+"installing PaddlePaddle, you can install PaddleOCR via pip: ``pip install"
+" paddleocr``."
+msgstr ""
+"**PaddlePaddle** и **PaddleOCR** используются для пайплайнов распознавания мест на основе текста. "
+"Подробнее см. инструкцию `PaddlePaddle Quick Start Guide "
+"<https://www.paddlepaddle.org.cn/en/install/quick>`_. Рекомендуется GPU-версия библиотеки. "
+"После установки PaddlePaddle вы можете установить PaddleOCR через pip: ``pip install paddleocr``."
+
+#: ../../source/index.rst:225
+msgid ""
+"The library also depends on several performance optimization libraries "
+"that should be installed:"
+msgstr ""
+"Библиотека также зависит от нескольких библиотек для оптимизации производительности, которые необходимо установить:"
+
+#: ../../source/index.rst:227
+msgid ""
+"ONNX: refer to the `ONNX GitHub repository "
+"<https://github.com/onnx/onnx?tab=readme-ov-file#installation>`_."
+msgstr ""
+"ONNX: подробнее см. репозиторий `ONNX GitHub "
+"<https://github.com/onnx/onnx?tab=readme-ov-file#installation>`_."
+
+#: ../../source/index.rst:228
+msgid ""
+"ONNX Runtime: refer to the `Installation Guide "
+"<https://onnxruntime.ai/docs/install/#install-onnx-runtime-gpu-cuda-"
+"12x>`_."
+msgstr ""
+"ONNX Runtime: подробнее см. `Installation Guide "
+"<https://onnxruntime.ai/docs/install/#install-onnx-runtime-gpu-cuda-12x>`_."
+
+#: ../../source/index.rst:229
+msgid ""
+"TensorRT: refer to the `Installation Guide "
+"<https://docs.nvidia.com/deeplearning/tensorrt/latest/installing-"
+"tensorrt/installing.html#python-package-index-installation>`_."
+msgstr ""
+"TensorRT: подробнее см. `Installation Guide "
+"<https://docs.nvidia.com/deeplearning/tensorrt/latest/installing-tensorrt/installing.html#python-package-index-installation>`_."
+
+#: ../../source/index.rst:230
+msgid ""
+"Torch-TensorRT: refer to the `Installation Guide "
+"<https://pytorch.org/TensorRT/getting_started/installation.html>`_."
+msgstr ""
+"Torch-TensorRT: подробнее см. `Installation Guide "
+"<https://pytorch.org/TensorRT/getting_started/installation.html>`_."
+
+#: ../../source/index.rst:231
+msgid ""
+"Polygraphy: refer to the `Polygraphy GitHub repository "
+"<https://github.com/NVIDIA/TensorRT/tree/main/tools/Polygraphy#installation>`_."
+msgstr ""
+"Polygraphy: подробнее см. репозиторий `Polygraphy GitHub "
+"<https://github.com/NVIDIA/TensorRT/tree/main/tools/Polygraphy#installation>`_."
+
+#: ../../source/index.rst:233
+msgid ""
+"Please note that the manual installation of the library and its "
+"dependencies can be challenging and time-consuming. We recommend using "
+"the provided Docker environment for a quick start."
+msgstr ""
+"Обратите внимание, что ручная установка библиотеки и её зависимостей "
+"может быть сложной и трудоёмкой. Мы рекомендуем использовать "
+"предоставленное Docker-окружение для быстрого старта."
+
+#: ../../source/index.rst:236
+msgid ""
+"If you encounter any issues during the installation process, please refer"
+" to the `OpenPlaceRecognition Issues <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/issues>`_ page."
+msgstr ""
+"Если у вас возникнут какие-либо проблемы в процессе установки, обратитесь "
+"на страницу `OpenPlaceRecognition Issues <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/issues>`_."
+
+#: ../../source/index.rst:241
+msgid "How to load the weights"
+msgstr "Как загрузить веса моделей"
+
+#: ../../source/index.rst:243
+msgid ""
+"You can load the weights from the Hugging Face organization `OPR-Project "
+"<https://huggingface.co/OPR-Project>`_. This is the recommended way to "
+"load the weights, as you can see the license and the README file for each"
+" model group. Note that models may have different licenses, depending on "
+"the dataset they were trained on."
+msgstr ""
+"Вы можете загрузить веса моделей из организации Hugging Face `OPR-Project "
+"<https://huggingface.co/OPR-Project>`_. Это рекомендуемый способ загрузки весов, "
+"так как там указаны лицензии и файлы README для каждой группы моделей. "
+"Обратите внимание, что лицензии моделей могут различаться в зависимости от "
+"датасетов, на которых они обучались."
+
+#: ../../source/index.rst:248
+msgid ""
+"Alternatively, you can download the weights from the public `Google Drive"
+" folder "
+"<https://drive.google.com/drive/folders/1uRiMe2-I9b5Tgv8mIJLkdGaHXccp_UFJ?usp=sharing>`_."
+" But please check the license for each model group on the `OPR-Project "
+"<https://huggingface.co/OPR-Project>`_ page before using them."
+msgstr ""
+"Альтернативно вы можете скачать веса из общедоступной папки на "
+"`Google Drive "
+"<https://drive.google.com/drive/folders/1uRiMe2-I9b5Tgv8mIJLkdGaHXccp_UFJ?usp=sharing>`_. "
+"Однако перед использованием обязательно проверьте лицензию каждой группы моделей "
+"на странице `OPR-Project <https://huggingface.co/OPR-Project>`_."
+
+#: ../../source/index.rst:255
+msgid "ITLP-Campus dataset"
+msgstr "Датасет ITLP-Campus"
+
+#: ../../source/index.rst:257
+msgid ""
+"We introduce the ITLP-Campus dataset. The dataset was recorded on the "
+"Husky wheeled robotic platform on the university campus and consists of "
+"tracks recorded at different times of day (day/dusk/night) and different "
+"seasons (winter/spring). You can find more details in the `OPR-Project"
+"/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_ repository."
+msgstr ""
+"Мы представляем датасет ITLP-Campus. Данные были записаны с использованием "
+"роботизированной платформы Husky на территории университетского кампуса и "
+"включают маршруты, записанные в разное время суток (день/сумерки/ночь) и "
+"в разное время года (зима/весна). Подробности доступны в репозитории "
+"`OPR-Project/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_."
+
+#: ../../source/index.rst:264
+msgid "Package Structure"
+msgstr "Структура пакета"
+
+#: ../../source/index.rst:267
+msgid "opr.datasets"
+msgstr "opr.datasets"
+
+#: ../../source/index.rst:269
+msgid "Subpackage containing dataset classes and functions."
+msgstr "Подпакет, содержащий классы и функции для работы с датасетами."
+
+#: ../../source/index.rst:271 ../../source/index.rst:308
+#: ../../source/index.rst:343 ../../source/index.rst:377
+#: ../../source/index.rst:407
+msgid "Usage example:"
+msgstr "Пример использования:"
+
+#: ../../source/index.rst:283
+msgid "The iterator will return a dictionary with the following keys:"
+msgstr "Итератор вернёт словарь со следующими ключами:"
+
+#: ../../source/index.rst:285
+msgid "``\"idx\"``: index of the sample in the dataset, single number Tensor"
+msgstr "``\"idx\"``: индекс образца в датасете, тензор из одного числа"
+
+#: ../../source/index.rst:286
+msgid "``\"utm\"``: UTM coordinates of the sample, Tensor of shape ``(2)``"
+msgstr "``\"utm\"``: UTM-координаты образца, тензор размерности ``(2)``"
+
+#: ../../source/index.rst:287
+msgid ""
+"(optional) ``\"image_stereo_centre\"``: image Tensor of shape ``(C, H, "
+"W)``"
+msgstr ""
+"(опционально) ``\"image_stereo_centre\"``: изображение, тензор размерности ``(C, H, W)``"
+
+#: ../../source/index.rst:288
+msgid ""
+"(optional) ``\"pointcloud_lidar_feats\"``: point cloud features Tensor of"
+" shape ``(N, 1)``"
+msgstr ""
+"(опционально) ``\"pointcloud_lidar_feats\"``: признаки облака точек, "
+"тензор размерности ``(N, 1)``"
+
+#: ../../source/index.rst:289
+msgid ""
+"(optional) ``\"pointcloud_lidar_coords\"``: point cloud coordinates "
+"Tensor of shape ``(N, 3)``"
+msgstr ""
+"(опционально) ``\"pointcloud_lidar_coords\"``: координаты облака точек, "
+"тензор размерности ``(N, 3)``"
+
+#: ../../source/index.rst:291
+msgid ""
+"In this example, we use a pre-processed version of the Oxford RobotCar "
+"dataset. We use the same subsample of tracks and preprocessed point "
+"clouds as described in the `PointNetVLAD paper "
+"<https://openaccess.thecvf.com/content_cvpr_2018/html/Uy_PointNetVLAD_Deep_Point_CVPR_2018_paper.html>`_."
+" Additionally, we created the files \"train.csv\", \"val.csv\", and "
+"\"test.csv.\""
+msgstr ""
+"В этом примере используется предварительно обработанная версия датасета Oxford RobotCar. "
+"Используется та же выборка маршрутов и предобработанные облака точек, что и в статье "
+"`PointNetVLAD <https://openaccess.thecvf.com/content_cvpr_2018/html/Uy_PointNetVLAD_Deep_Point_CVPR_2018_paper.html>`_. "
+"Дополнительно созданы файлы \"train.csv\", \"val.csv\" и \"test.csv\"."
+
+
+#: ../../source/index.rst:296
+msgid "You can download our version of the dataset via the following link:"
+msgstr "Вы можете скачать нашу версию датасета по следующей ссылке:"
+
+#: ../../source/index.rst:298
+msgid ""
+"[Kaggle](https://www.kaggle.com/datasets/creatorofuniverses"
+"/oxfordrobotcar-iprofi-hack-23)"
+msgstr ""
+"[Kaggle](https://www.kaggle.com/datasets/creatorofuniverses"
+"/oxfordrobotcar-iprofi-hack-23)"
+
+#: ../../source/index.rst:300
+msgid ""
+"More details can be found in the `demo_datasets.ipynb <https://github.com"
+"/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/demo_datasets.ipynb>`_ "
+"notebook."
+msgstr ""
+"Дополнительные подробности можно найти в ноутбуке `demo_datasets.ipynb <https://github.com"
+"/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/demo_datasets.ipynb>`_."
+
+#: ../../source/index.rst:304
+msgid "opr.losses"
+msgstr "opr.losses"
+
+#: ../../source/index.rst:306
+msgid ""
+"The ``opr.losses`` subpackage contains ready-to-use loss functions "
+"implemented in PyTorch, featuring a common interface."
+msgstr ""
+"Подпакет ``opr.losses`` содержит готовые функции потерь, реализованные в PyTorch, "
+"с единым интерфейсом."
+
+#: ../../source/index.rst:322
+msgid "The loss functions introduce a unified interface:"
+msgstr "Функции потерь реализуют унифицированный интерфейс:"
+
+#: ../../source/index.rst:324
+msgid "**Input:**"
+msgstr "**Вход:**"
+
+#: ../../source/index.rst:326
+msgid "``embeddings``: descriptor Tensor of shape ``(B, D)``"
+msgstr "``embeddings``: дескриптор, тензор размерности ``(B, D)``"
+
+#: ../../source/index.rst:327
+msgid "``positives_mask``: boolean mask Tensor of shape ``(B, B)``"
+msgstr "``positives_mask``: булева маска, тензор размерности ``(B, B)``"
+
+#: ../../source/index.rst:328
+msgid "``negatives_mask``: boolean mask Tensor of shape ``(B, B)``"
+msgstr "``negatives_mask``: булева маска, тензор размерности ``(B, B)``"
+
+#: ../../source/index.rst:330
+msgid "**Output:**"
+msgstr "**Выход:**"
+
+#: ../../source/index.rst:332
+msgid "``loss``: loss value Tensor"
+msgstr "``loss``: значение функции потерь, тензор"
+
+#: ../../source/index.rst:333
+msgid "``stats``: dictionary with additional statistics"
+msgstr "``stats``: словарь с дополнительной статистикой"
+
+#: ../../source/index.rst:335
+msgid ""
+"More details can be found in the `demo_losses.ipynb <https://github.com"
+"/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/demo_losses.ipynb>`_ "
+"notebook."
+msgstr ""
+"Дополнительные подробности можно найти в ноутбуке `demo_losses.ipynb <https://github.com"
+"/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/demo_losses.ipynb>`_."
+
+#: ../../source/index.rst:339
+msgid "opr.models"
+msgstr "opr.models"
+
+#: ../../source/index.rst:341
+msgid ""
+"The ``opr.models`` subpackage contains ready-to-use neural networks "
+"implemented in PyTorch, featuring a common interface."
+msgstr ""
+"Подпакет ``opr.models`` содержит готовые нейронные сети, реализованные в PyTorch, "
+"с единым интерфейсом."
+
+#: ../../source/index.rst:354
+msgid "The models introduce unified input and output formats:"
+msgstr "Модели имеют унифицированные форматы входных и выходных данных:"
+
+#: ../../source/index.rst:356
+msgid ""
+"**Input:** a ``batch`` dictionary with the following keys (all keys are "
+"optional, depending on the model and dataset):"
+msgstr ""
+"**Вход:** словарь ``batch`` со следующими ключами (все ключи опциональны, "
+"зависят от модели и датасета):"
+
+#: ../../source/index.rst:359
+msgid "``\"images_<camera_name>\"``: images Tensor of shape ``(B, 3, H, W)``"
+msgstr "``\"images_<camera_name>\"``: изображения, тензор размерности ``(B, 3, H, W)``"
+
+#: ../../source/index.rst:360
+msgid ""
+"``\"masks_<camera_name>\"``: semantic segmentation masks Tensor of shape "
+"``(B, 1, H, W)``"
+msgstr ""
+"``\"masks_<camera_name>\"``: маски семантической сегментации, тензор размерности "
+"``(B, 1, H, W)``"
+
+#: ../../source/index.rst:361
+msgid ""
+"``\"pointclouds_lidar_coords\"``: point cloud coordinates Tensor of shape"
+" ``(B * N_points, 4)``"
+msgstr ""
+"``\"pointclouds_lidar_coords\"``: координаты облаков точек, тензор размерности "
+"``(B * N_points, 4)``"
+
+#: ../../source/index.rst:362
+msgid ""
+"``\"pointclouds_lidar_feats\"``: point cloud features Tensor of shape "
+"``(B * N_points, C)``"
+msgstr ""
+"``\"pointclouds_lidar_feats\"``: признаки облаков точек, тензор размерности "
+"``(B * N_points, C)``"
+
+#: ../../source/index.rst:364
+msgid ""
+"**Output:** a dictionary with the requiered key ``\"final_descriptor\"`` "
+"and optional keys for intermediate descriptors:"
+msgstr ""
+"**Выход:** словарь с обязательным ключом ``\"final_descriptor\"`` и опциональными "
+"ключами для промежуточных дескрипторов:"
+
+#: ../../source/index.rst:367
+msgid "``\"final_descriptor\"``: final descriptor Tensor of shape ``(B, D)``"
+msgstr "``\"final_descriptor\"``: итоговый дескриптор, тензор размерности ``(B, D)``"
+
+#: ../../source/index.rst:369
+msgid ""
+"More details can be found in the `demo_models.ipynb <https://github.com"
+"/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/demo_models.ipynb>`_ "
+"notebook."
+msgstr ""
+"Дополнительные подробности можно найти в ноутбуке `demo_models.ipynb <https://github.com"
+"/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/demo_models.ipynb>`_."
+
+#: ../../source/index.rst:373
+msgid "opr.trainers"
+msgstr "opr.trainers"
+
+#: ../../source/index.rst:375
+msgid "The ``opr.trainers`` subpackage contains ready-to-use training algorithms."
+msgstr "Подпакет ``opr.trainers`` содержит готовые алгоритмы обучения."
+
+#: ../../source/index.rst:403
+msgid "opr.pipelines"
+msgstr "opr.pipelines"
+
+#: ../../source/index.rst:405
+msgid ""
+"The ``opr.pipelines`` subpackage contains ready-to-use pipelines for "
+"model inference."
+msgstr ""
+"Подпакет ``opr.pipelines`` содержит готовые пайплайны для инференса моделей."
+
+#: ../../source/index.rst:423
+msgid "The pipeline introduces a unified interface for model inference:"
+msgstr "Пайплайн реализует унифицированный интерфейс для инференса моделей:"
+
+#: ../../source/index.rst:425
+msgid ""
+"**Input:** a dictionary with the following keys (all keys are optional, "
+"depending on the model and dataset):"
+msgstr ""
+"**Вход:** словарь со следующими ключами (все ключи опциональны, зависят от модели и датасета):"
+
+#: ../../source/index.rst:428
+msgid "``\"image_<camera_name>\"``: image Tensor of shape ``(3, H, W)``"
+msgstr "``\"image_<camera_name>\"``: изображение, тензор размерности ``(3, H, W)``"
+
+#: ../../source/index.rst:429
+msgid ""
+"``\"mask_<camera_name>\"``: semantic segmentation mask Tensor of shape "
+"``(1, H, W)``"
+msgstr ""
+"``\"mask_<camera_name>\"``: маска семантической сегментации, тензор размерности ``(1, H, W)``"
+
+#: ../../source/index.rst:430
+msgid ""
+"``\"pointcloud_lidar_coords\"``: point cloud coordinates Tensor of shape "
+"``(N_points, 4)``"
+msgstr ""
+"``\"pointcloud_lidar_coords\"``: координаты облака точек, тензор размерности ``(N_points, 4)``"
+
+#: ../../source/index.rst:431
+msgid ""
+"``\"pointcloud_lidar_feats\"``: point cloud features Tensor of shape "
+"``(N_points, C)``"
+msgstr ""
+"``\"pointcloud_lidar_feats\"``: признаки облака точек, тензор размерности ``(N_points, C)``"
+
+#: ../../source/index.rst:433
+msgid "**Output:** a dictionary with keys:"
+msgstr "**Выход:** словарь с ключами:"
+
+#: ../../source/index.rst:435
+msgid "``\"idx\"`` for predicted index in the database,"
+msgstr "``\"idx\"`` — предсказанный индекс в базе данных,"
+
+#: ../../source/index.rst:436
+msgid ""
+"``\"pose\"`` for predicted pose in the format ``[tx, ty, tz, qx, qy, qz, "
+"qw]``,"
+msgstr ""
+"``\"pose\"`` — предсказанная поза в формате ``[tx, ty, tz, qx, qy, qz, qw]``,"
+
+#: ../../source/index.rst:437
+msgid "``\"descriptor\"`` for predicted descriptor."
+msgstr "``\"descriptor\"`` — предсказанный дескриптор."
+
+#: ../../source/index.rst:439
+msgid ""
+"More details can be found in the `demo_pipelines.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/demo_pipelines.ipynb>`_ "
+"notebook."
+msgstr ""
+"Дополнительные подробности можно найти в ноутбуке `demo_pipelines.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/demo_pipelines.ipynb>`_."
+
+#: ../../source/index.rst:443
+msgid "Model Zoo"
+msgstr "Model Zoo"
+
+#: ../../source/index.rst:445
+msgid "*WIP*"
+msgstr "*В разработке*"
+
+#: ../../source/index.rst:449
+msgid "Connected Projects"
+msgstr "Связанные проекты"
+
+#: ../../source/index.rst:451
+msgid ""
+"`OPR-Project/OpenPlaceRecognition-ROS2 <https://github.com/OPR-Project"
+"/OpenPlaceRecognition-ROS2>`_ - ROS-2 implementation of "
+"OpenPlaceRecognition modules"
+msgstr ""
+"`OPR-Project/OpenPlaceRecognition-ROS2 <https://github.com/OPR-Project"
+"/OpenPlaceRecognition-ROS2>`_ — реализация модулей OpenPlaceRecognition для ROS-2."
+
+#: ../../source/index.rst:453
+msgid ""
+"`OPR-Project/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_ -"
+" ITLP-Campus dataset tools."
+msgstr ""
+"`OPR-Project/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_ — инструменты для работы с датасетом ITLP-Campus."
+
+#: ../../source/index.rst:455
+msgid ""
+"`KirillMouraviev/simple_toposlam_model "
+"<https://github.com/KirillMouraviev/simple_toposlam_model>`_ - An "
+"implementation of the Topological SLAM method that uses the OPR library."
+msgstr ""
+"`KirillMouraviev/simple_toposlam_model "
+"<https://github.com/KirillMouraviev/simple_toposlam_model>`_ — реализация метода Topological SLAM, использующая библиотеку OPR."
+
+#: ../../source/index.rst:460
+msgid "License"
+msgstr ""
+
+#: ../../../LICENSE:1
+msgid "Apache License"
+msgstr ""
+
+#: ../../../LICENSE:2
+msgid "Version 2.0, January 2004"
+msgstr ""
+
+#: ../../../LICENSE:3
+msgid "http://www.apache.org/licenses/"
+msgstr ""
+
+#: ../../../LICENSE:5
+msgid "TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION"
+msgstr ""
+
+#: ../../../LICENSE:7
+msgid "Definitions."
+msgstr ""
+
+#: ../../../LICENSE:9
+msgid ""
+"\"License\" shall mean the terms and conditions for use, reproduction, "
+"and distribution as defined by Sections 1 through 9 of this document."
+msgstr ""
+
+#: ../../../LICENSE:12
+msgid ""
+"\"Licensor\" shall mean the copyright owner or entity authorized by the "
+"copyright owner that is granting the License."
+msgstr ""
+
+#: ../../../LICENSE:15
+msgid ""
+"\"Legal Entity\" shall mean the union of the acting entity and all other "
+"entities that control, are controlled by, or are under common control "
+"with that entity. For the purposes of this definition, \"control\" means "
+"(i) the power, direct or indirect, to cause the direction or management "
+"of such entity, whether by contract or otherwise, or (ii) ownership of "
+"fifty percent (50%) or more of the outstanding shares, or (iii) "
+"beneficial ownership of such entity."
+msgstr ""
+
+#: ../../../LICENSE:23
+msgid ""
+"\"You\" (or \"Your\") shall mean an individual or Legal Entity exercising"
+" permissions granted by this License."
+msgstr ""
+
+#: ../../../LICENSE:26
+msgid ""
+"\"Source\" form shall mean the preferred form for making modifications, "
+"including but not limited to software source code, documentation source, "
+"and configuration files."
+msgstr ""
+
+#: ../../../LICENSE:30
+msgid ""
+"\"Object\" form shall mean any form resulting from mechanical "
+"transformation or translation of a Source form, including but not limited"
+" to compiled object code, generated documentation, and conversions to "
+"other media types."
+msgstr ""
+
+#: ../../../LICENSE:35
+msgid ""
+"\"Work\" shall mean the work of authorship, whether in Source or Object "
+"form, made available under the License, as indicated by a copyright "
+"notice that is included in or attached to the work (an example is "
+"provided in the Appendix below)."
+msgstr ""
+
+#: ../../../LICENSE:40
+msgid ""
+"\"Derivative Works\" shall mean any work, whether in Source or Object "
+"form, that is based on (or derived from) the Work and for which the "
+"editorial revisions, annotations, elaborations, or other modifications "
+"represent, as a whole, an original work of authorship. For the purposes "
+"of this License, Derivative Works shall not include works that remain "
+"separable from, or merely link (or bind by name) to the interfaces of, "
+"the Work and Derivative Works thereof."
+msgstr ""
+
+#: ../../../LICENSE:48
+msgid ""
+"\"Contribution\" shall mean any work of authorship, including the "
+"original version of the Work and any modifications or additions to that "
+"Work or Derivative Works thereof, that is intentionally submitted to "
+"Licensor for inclusion in the Work by the copyright owner or by an "
+"individual or Legal Entity authorized to submit on behalf of the "
+"copyright owner. For the purposes of this definition, \"submitted\" means"
+" any form of electronic, verbal, or written communication sent to the "
+"Licensor or its representatives, including but not limited to "
+"communication on electronic mailing lists, source code control systems, "
+"and issue tracking systems that are managed by, or on behalf of, the "
+"Licensor for the purpose of discussing and improving the Work, but "
+"excluding communication that is conspicuously marked or otherwise "
+"designated in writing by the copyright owner as \"Not a Contribution.\""
+msgstr ""
+
+#: ../../../LICENSE:62
+msgid ""
+"\"Contributor\" shall mean Licensor and any individual or Legal Entity on"
+" behalf of whom a Contribution has been received by Licensor and "
+"subsequently incorporated within the Work."
+msgstr ""
+
+#: ../../../LICENSE:66
+msgid ""
+"Grant of Copyright License. Subject to the terms and conditions of this "
+"License, each Contributor hereby grants to You a perpetual, worldwide, "
+"non-exclusive, no-charge, royalty-free, irrevocable copyright license to "
+"reproduce, prepare Derivative Works of, publicly display, publicly "
+"perform, sublicense, and distribute the Work and such Derivative Works in"
+" Source or Object form."
+msgstr ""
+
+#: ../../../LICENSE:73
+msgid ""
+"Grant of Patent License. Subject to the terms and conditions of this "
+"License, each Contributor hereby grants to You a perpetual, worldwide, "
+"non-exclusive, no-charge, royalty-free, irrevocable (except as stated in "
+"this section) patent license to make, have made, use, offer to sell, "
+"sell, import, and otherwise transfer the Work, where such license applies"
+" only to those patent claims licensable by such Contributor that are "
+"necessarily infringed by their Contribution(s) alone or by combination of"
+" their Contribution(s) with the Work to which such Contribution(s) was "
+"submitted. If You institute patent litigation against any entity "
+"(including a cross-claim or counterclaim in a lawsuit) alleging that the "
+"Work or a Contribution incorporated within the Work constitutes direct or"
+" contributory patent infringement, then any patent licenses granted to "
+"You under this License for that Work shall terminate as of the date such "
+"litigation is filed."
+msgstr ""
+
+#: ../../../LICENSE:89
+msgid ""
+"Redistribution. You may reproduce and distribute copies of the Work or "
+"Derivative Works thereof in any medium, with or without modifications, "
+"and in Source or Object form, provided that You meet the following "
+"conditions:"
+msgstr ""
+
+#: ../../../LICENSE:94
+msgid ""
+"You must give any other recipients of the Work or Derivative Works a copy"
+" of this License; and"
+msgstr ""
+
+#: ../../../LICENSE:97
+msgid ""
+"You must cause any modified files to carry prominent notices stating that"
+" You changed the files; and"
+msgstr ""
+
+#: ../../../LICENSE:100
+msgid ""
+"You must retain, in the Source form of any Derivative Works that You "
+"distribute, all copyright, patent, trademark, and attribution notices "
+"from the Source form of the Work, excluding those notices that do not "
+"pertain to any part of the Derivative Works; and"
+msgstr ""
+
+#: ../../../LICENSE:106
+msgid ""
+"If the Work includes a \"NOTICE\" text file as part of its distribution, "
+"then any Derivative Works that You distribute must include a readable "
+"copy of the attribution notices contained within such NOTICE file, "
+"excluding those notices that do not pertain to any part of the Derivative"
+" Works, in at least one of the following places: within a NOTICE text "
+"file distributed as part of the Derivative Works; within the Source form "
+"or documentation, if provided along with the Derivative Works; or, within"
+" a display generated by the Derivative Works, if and wherever such third-"
+"party notices normally appear. The contents of the NOTICE file are for "
+"informational purposes only and do not modify the License. You may add "
+"Your own attribution notices within Derivative Works that You distribute,"
+" alongside or as an addendum to the NOTICE text from the Work, provided "
+"that such additional attribution notices cannot be construed as modifying"
+" the License."
+msgstr ""
+
+#: ../../../LICENSE:123
+msgid ""
+"You may add Your own copyright statement to Your modifications and may "
+"provide additional or different license terms and conditions for use, "
+"reproduction, or distribution of Your modifications, or for any such "
+"Derivative Works as a whole, provided Your use, reproduction, and "
+"distribution of the Work otherwise complies with the conditions stated in"
+" this License."
+msgstr ""
+
+#: ../../../LICENSE:130
+msgid ""
+"Submission of Contributions. Unless You explicitly state otherwise, any "
+"Contribution intentionally submitted for inclusion in the Work by You to "
+"the Licensor shall be under the terms and conditions of this License, "
+"without any additional terms or conditions. Notwithstanding the above, "
+"nothing herein shall supersede or modify the terms of any separate "
+"license agreement you may have executed with Licensor regarding such "
+"Contributions."
+msgstr ""
+
+#: ../../../LICENSE:138
+msgid ""
+"Trademarks. This License does not grant permission to use the trade "
+"names, trademarks, service marks, or product names of the Licensor, "
+"except as required for reasonable and customary use in describing the "
+"origin of the Work and reproducing the content of the NOTICE file."
+msgstr ""
+
+#: ../../../LICENSE:143
+msgid ""
+"Disclaimer of Warranty. Unless required by applicable law or agreed to in"
+" writing, Licensor provides the Work (and each Contributor provides its "
+"Contributions) on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF"
+" ANY KIND, either express or implied, including, without limitation, any "
+"warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or "
+"FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for "
+"determining the appropriateness of using or redistributing the Work and "
+"assume any risks associated with Your exercise of permissions under this "
+"License."
+msgstr ""
+
+#: ../../../LICENSE:153
+msgid ""
+"Limitation of Liability. In no event and under no legal theory, whether "
+"in tort (including negligence), contract, or otherwise, unless required "
+"by applicable law (such as deliberate and grossly negligent acts) or "
+"agreed to in writing, shall any Contributor be liable to You for damages,"
+" including any direct, indirect, special, incidental, or consequential "
+"damages of any character arising as a result of this License or out of "
+"the use or inability to use the Work (including but not limited to "
+"damages for loss of goodwill, work stoppage, computer failure or "
+"malfunction, or any and all other commercial damages or losses), even if "
+"such Contributor has been advised of the possibility of such damages."
+msgstr ""
+
+#: ../../../LICENSE:165
+msgid ""
+"Accepting Warranty or Additional Liability. While redistributing the Work"
+" or Derivative Works thereof, You may choose to offer, and charge a fee "
+"for, acceptance of support, warranty, indemnity, or other liability "
+"obligations and/or rights consistent with this License. However, in "
+"accepting such obligations, You may act only on Your own behalf and on "
+"Your sole responsibility, not on behalf of any other Contributor, and "
+"only if You agree to indemnify, defend, and hold each Contributor "
+"harmless for any liability incurred by, or claims asserted against, such "
+"Contributor by reason of your accepting any such warranty or additional "
+"liability."
+msgstr ""
+
+#: ../../../LICENSE:176
+msgid "END OF TERMS AND CONDITIONS"
+msgstr ""
+
+#: ../../../LICENSE:178
+msgid "APPENDIX: How to apply the Apache License to your work."
+msgstr ""
+
+#: ../../../LICENSE:180
+msgid ""
+"To apply the Apache License to your work, attach the following "
+"boilerplate notice, with the fields enclosed by brackets \"[]\" replaced "
+"with your own identifying information. (Don't include the brackets!)  The"
+" text should be enclosed in the appropriate comment syntax for the file "
+"format. We also recommend that a file or class name and description of "
+"purpose be included on the same \"printed page\" as the copyright notice "
+"for easier identification within third-party archives."
+msgstr ""
+
+#: ../../../LICENSE:189
+msgid "Copyright [yyyy] [name of copyright owner]"
+msgstr ""
+
+#: ../../../LICENSE:191
+msgid ""
+"Licensed under the Apache License, Version 2.0 (the \"License\"); you may"
+" not use this file except in compliance with the License. You may obtain "
+"a copy of the License at"
+msgstr ""
+
+#: ../../../LICENSE:195
+msgid "http://www.apache.org/licenses/LICENSE-2.0"
+msgstr ""
+
+#: ../../../LICENSE:197
+msgid ""
+"Unless required by applicable law or agreed to in writing, software "
+"distributed under the License is distributed on an \"AS IS\" BASIS, "
+"WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. "
+"See the License for the specific language governing permissions and "
+"limitations under the License."
+msgstr ""
+

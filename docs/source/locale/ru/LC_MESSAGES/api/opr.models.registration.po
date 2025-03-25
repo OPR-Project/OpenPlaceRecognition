@@ -1,0 +1,102 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.models.registration.rst:2
+msgid "opr.models.registration package"
+msgstr ""
+
+#: of opr.models.registration:1
+msgid "Module for Registration models."
+msgstr ""
+
+#: ../../source/api/opr.models.registration.rst:10
+msgid "opr.models.registration.geotransformer"
+msgstr ""
+
+#: of opr.models.registration.geotransformer:1
+#: opr.models.registration.geotransformer.GeoTransformer:1
+msgid "GeoTransformer model for registration."
+msgstr ""
+
+#: of opr.models.registration.geotransformer:3
+msgid "Paper: https://arxiv.org/abs/2202.06688"
+msgstr ""
+
+#: of opr.models.registration.geotransformer:5
+msgid ""
+"Code is adopted from original repository: "
+"https://github.com/qinzheng93/GeoTransformer, MIT License"
+msgstr ""
+
+#: of opr.models.registration.geotransformer.GeoTransformer:1
+#: opr.models.registration.geotransformer.KPConvFPN:1
+msgid "Bases: :py:class:`~torch.nn.modules.module.Module`"
+msgstr ""
+
+#: of opr.models.registration.geotransformer.GeoTransformer.forward:1
+#: opr.models.registration.geotransformer.KPConvFPN.forward:1
+msgid "Defines the computation performed at every call."
+msgstr ""
+
+#: of opr.models.registration.geotransformer.GeoTransformer.forward:3
+#: opr.models.registration.geotransformer.KPConvFPN.forward:3
+msgid "Should be overridden by all subclasses."
+msgstr ""
+
+#: of opr.models.registration.geotransformer.GeoTransformer.forward:6
+#: opr.models.registration.geotransformer.KPConvFPN.forward:6
+msgid ""
+"Although the recipe for forward pass needs to be defined within this "
+"function, one should call the :class:`Module` instance afterwards instead"
+" of this since the former takes care of running the registered hooks "
+"while the latter silently ignores them."
+msgstr ""
+
+#: of opr.models.registration.geotransformer.KPConvFPN:1
+msgid "Feature Pyramid Network with KPConv backbone."
+msgstr ""
+
+#: ../../source/api/opr.models.registration.rst:18
+msgid "opr.models.registration.hregnet"
+msgstr ""
+
+#: of opr.models.registration.hregnet:1
+msgid "Implementation of HRegNet point cloud registration model."
+msgstr ""
+
+#: of opr.models.registration.hregnet.HRegNet:1
+msgid "Bases: :py:class:`~hregnet.models.HRegNet`"
+msgstr ""
+
+#: of opr.models.registration.hregnet.HRegNet:1
+msgid ""
+"HRegNet: A Hierarchical Network for Large-scale Outdoor LiDAR Point Cloud"
+" Registration."
+msgstr ""
+
+#: of opr.models.registration.hregnet.HRegNet:3
+msgid ""
+"Paper: https://arxiv.org/abs/2107.11992 Code is adopted from the original"
+" repository: https://github.com/ispc-lab/HRegNet, MIT License"
+msgstr ""
+

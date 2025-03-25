@@ -1,0 +1,117 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:2
+msgid "TextLabelsPlaceRecognition"
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:4
+msgid ""
+"A module that implements a neural network algorithm for searching a "
+"database of places already visited by a vehicle for the most similar "
+"records using data from lidars, cameras and text label detections."
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:9
+msgid "Usage example"
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:11
+msgid ""
+"You should start with initializing neural model "
+":class:`opr.models.place_recognition.base.LateFusionModel` with the image"
+" and cloud modules. The recommended way to do this is to use the "
+"`configs/model/place_recognition/multi-image_lidar_late-fusion.yaml "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/place_recognition"
+"/multi-image_lidar_late-fusion.yaml>`_ config file to instantiate the "
+"model with Hydra and load the weights from the "
+"``\"weights/place_recognition/multi-image_lidar_late-fusion_nclt.pth\"`` "
+"or other file."
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:33
+msgid ""
+"With pr_model you should create pr_pipeline "
+":class:`opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline`"
+" and intialize text detection and recognition model "
+":class:`opr.models.ocr.paddle.PaddleOcrPipeline` :"
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:54
+msgid ""
+"In the similar manner you should initialize the registration model with "
+"the `configs/model/registration/hregnet_light_feats.yaml "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/registration/hregnet_light_feats.yaml>`_"
+" config:"
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:67
+msgid ""
+"Then you should initialize the "
+":class:`opr.pipelines.localization.base.LocalizationPipeline` which "
+"consists of two sub-pipelines: "
+":class:`opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline`"
+" and "
+":class:`opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`."
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:74
+msgid ""
+"Then you can use the pipeline to infer the location of the input query "
+"data:"
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:96
+msgid "The pipeline will return the output dictionary with the following keys:"
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:98
+msgid "``\"db_match_pose\"``: the pose of the most similar record in the database"
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:99
+msgid "``\"db_match_idx\"``: the index of the most similar record in the database"
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:100
+msgid ""
+"``\"estimated_pose\"``: the estimated pose of the query data after "
+"registration"
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:102
+msgid "More usage examples can be found in the following notebooks:"
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:104
+msgid ""
+"`notebooks/test_itlp/08_TextLabelsPlaceRecognition.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/08_TextLabelsPlaceRecognition.ipynb>`_"
+msgstr ""
+
+#: ../../source/featured_modules/08_text_labels_place_recognition.rst:105
+msgid ""
+"`notebooks/test_cross_season/08_TextLabelsPlaceRecognition.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/08_TextLabelsPlaceRecognition.ipynb>`_"
+msgstr ""
+
