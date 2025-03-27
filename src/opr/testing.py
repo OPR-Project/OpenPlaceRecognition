@@ -91,6 +91,9 @@ def test(
             and mean top-1 distance.
     """
     device = parse_device(device)
+
+    model = model.to(device)
+
     with torch.no_grad():
         embeddings_list = []
         for batch in tqdm(dataloader, desc="Calculating test set descriptors", leave=False):
