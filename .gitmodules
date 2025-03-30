@@ -13,3 +13,6 @@
 [submodule "third_party/PointMamba"]
 	path = third_party/PointMamba
 	url = https://github.com/alexmelekhin/PointMamba.git
+[submodule "third_party/simple_toposlam_model"]
+	path = third_party/simple_toposlam_model
+	url = https://github.com/KirillMouraviev/simple_toposlam_model
