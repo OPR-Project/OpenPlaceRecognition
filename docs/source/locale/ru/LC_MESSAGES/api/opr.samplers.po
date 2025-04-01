@@ -23,34 +23,36 @@ msgstr ""
 
 #: ../../source/api/opr.samplers.rst:2
 msgid "opr.samplers package"
-msgstr ""
+msgstr "Пакет opr.samplers"
 
 #: of opr.samplers:1
 msgid "Module for samplers."
-msgstr ""
+msgstr "Модуль для сэмплеров."
 
 #: ../../source/api/opr.samplers.rst:10
 msgid "opr.samplers.batch\\_sampler"
-msgstr ""
+msgstr "opr.samplers.batch\\_sampler"
 
 #: of opr.samplers.batch_sampler:1
 msgid "Batch sampler from MinkLoc method."
-msgstr ""
+msgstr "Batch sampler из метода MinkLoc."
 
 #: of opr.samplers.batch_sampler:3
 msgid ""
 "Code adopted from repository: https://github.com/jac99/MinkLocMultimodal,"
 " MIT License"
 msgstr ""
+"Код взят из репозитория: https://github.com/jac99/MinkLocMultimodal,"
+" MIT License"
 
 #: of opr.samplers.batch_sampler.BatchSampler:1
 #: opr.samplers.batch_sampler.DistributedBatchSamplerWrapper:1
 msgid "Bases: :py:class:`~torch.utils.data.sampler.Sampler`"
-msgstr ""
+msgstr "Основы: :py:class:`~torch.utils.data.sampler.Sampler`"
 
 #: of opr.samplers.batch_sampler.BatchSampler:1
 msgid "Sampler returning list of indices to form a mini-batch."
-msgstr ""
+msgstr "Сэмплер, возвращающий список индексов для формирования мини-пакета."
 
 #: of opr.samplers.batch_sampler.BatchSampler:3
 msgid ""
@@ -58,18 +60,21 @@ msgid ""
 " Batch has the following structure: item1_1, ..., item1_k, item2_1, ... "
 "item2_k, itemn_1, ..., itemn_k"
 msgstr ""
+"Выбирает элементы группами, состоящими из k=2 похожих элементов (положительных)"
+" Пакет имеет следующую структуру: item1_1, ..., item1_k, item2_1, ... "
+"item2_k, itemn_1, ..., itemn_k"
 
 #: of opr.samplers.batch_sampler.BatchSampler.expand_batch:1
 msgid ""
 "Batch expansion method. See MinkLoc paper for details about dynamic batch"
 " sizing."
 msgstr ""
+"Метод расширения батча. См. статью MinkLoc для получения подробной информации о динамическом размере батча."
 
 #: of opr.samplers.batch_sampler.BatchSampler.generate_batches:1
 msgid "Generate training/evaluation batches."
-msgstr ""
+msgstr "Создание батчей для обучения/оценки."
 
 #: of opr.samplers.batch_sampler.DistributedBatchSamplerWrapper:1
 msgid "Wrapper for BatchSampler that supports distributed batch sampling."
-msgstr ""
-
+msgstr "Обертка для BatchSampler, поддерживающая распределенную выборку батчей."

@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:2
 msgid "DepthEstimationPipeline"
-msgstr ""
+msgstr "DepthEstimationPipeline"
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:4
 msgid ""
@@ -27,10 +27,12 @@ msgid ""
 "by a neural network and scaling of the reconstructed depth map using a "
 "sparse lidar point cloud."
 msgstr ""
+"Модуль, реализующий алгоритм восстановления карты глубин монокулярного изображения "
+"с учетом разреженного облака точек лидара транспортного средства."
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:7
 msgid "Usage example"
-msgstr ""
+msgstr "Пример использования"
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:9
 msgid ""
@@ -41,12 +43,21 @@ msgid ""
 "<https://github.com/DepthAnything/Depth-"
 "Anything-V2/tree/28ad5a0797dfb8ac76d1e3dcddbe2160cbcc6c8d>`_:"
 msgstr ""
+"Это пример реконструкции глубины внутри помещения с использованием "
+"современной (2024 г.) нейросетевой модели DepthAnything-v2. В начале "
+"следует инициализировать нейросетевую модель оценки глубины, которую можно "
+"импортировать из `пакета DepthAnything-v2, добавленного в OPR в качестве "
+"подмодуля "
+"<https://github.com/DepthAnything/Depth-"
+"Anything-V2/tree/28ad5a0797dfb8ac76d1e3dcddbe2160cbcc6c8d>`_:"
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:18
 msgid ""
 "For the best performance, we recommend to use version \"small\" of the "
 "model:"
 msgstr ""
+"Для наилучшей производительности рекомендуется использовать версию \"small\" "
+"модели:"
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:37
 msgid ""
@@ -55,22 +66,30 @@ msgid ""
 "matrix for correct operation. This is an example of the matrices for "
 "ITLP-Campus dataset:"
 msgstr ""
+"Далее следует создать экземпляр DepthEstimationPipeline. Для корректной "
+"работы требуются матрица внутренних параметров камеры и матрица "
+"преобразования лидара в камеру. Это пример матриц для набора данных "
+"ITLP-Campus:"
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:53
 msgid "Create the DepthEstimationPipeline with these matrices:"
-msgstr ""
+msgstr "Создайте DepthEstimationPipeline с этими матрицами:"
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:61
 msgid ""
 "Now you can run the pipeline on a pair of an RGB image and a lidar point "
 "cloud:"
 msgstr ""
+"Теперь вы можете запустить конвейер на паре RGB-изображения и облака точек "
+"лидара:"
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:67
 msgid ""
 "``\"test_img\"`` is an RGB image stored as numpy.ndarray of shape (h, w, "
 "3) and uint8 data type"
 msgstr ""
+"``\"test_img\"`` - это RGB-изображение, хранящееся в виде numpy.ndarray с "
+"формой (h, w, 3) и типом данных uint8"
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:68
 msgid ""
@@ -78,6 +97,9 @@ msgid ""
 "shape (N, 3) and float data type (the values are (x, y, z) coordinates in"
 " meters)"
 msgstr ""
+"``\"test_cloud\"`` - это облако точек лидара, хранящееся в виде "
+"numpy.ndarray с формой (N, 3) и типом данных float (значениями являются "
+"координаты (x, y, z) в метрах)"
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:69
 msgid ""
@@ -85,6 +107,9 @@ msgid ""
 "numpy.ndarray of shape (h, w) and float data type. The values of the "
 "array are depths in meters."
 msgstr ""
+"``\"predicted_depth\"`` - это реконструированная глубина, хранящаяся в виде "
+"numpy.ndarray с формой (h, w) и типом данных float. Значениями массива "
+"являются глубины в метрах."
 
 #: ../../source/featured_modules/10_depth_estimation_pipeline.rst:71
 msgid ""
@@ -92,4 +117,7 @@ msgid ""
 "in `the demo notebook <https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/depth_reconstruction_nclt/notebooks/test_depth_reconstruction.ipynb>`_"
 msgstr ""
-
+"Иллюстрированную демонстрацию работы DepthEstimationPipeline можно найти в "
+"`демонстрационном блокноте "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/depth_reconstruction_nclt/notebooks/test_depth_reconstruction.ipynb>`_"

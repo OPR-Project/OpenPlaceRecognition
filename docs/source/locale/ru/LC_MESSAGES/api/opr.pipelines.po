@@ -23,19 +23,19 @@ msgstr ""
 
 #: ../../source/api/opr.pipelines.rst:2
 msgid "opr.pipelines package"
-msgstr ""
+msgstr "Пакет opr.pipelines"
 
 #: of opr.pipelines:1
 msgid "Module for pipelines."
-msgstr ""
+msgstr "Модуль для пайплайнов."
 
 #: ../../source/api/opr.pipelines.rst:18
 msgid "opr.pipelines.depth\\_estimation"
-msgstr ""
+msgstr "opr.pipelines.depth\\_estimation"
 
 #: of opr.pipelines.depth_estimation.DepthEstimationPipeline:1
 msgid "Bases: :py:class:`object`"
-msgstr ""
+msgstr "Основы: :py:class:`object`"
 
 #: of
 #: opr.pipelines.depth_estimation.DepthEstimationPipeline.get_depth_with_lidar:1
@@ -44,10 +44,13 @@ msgid ""
 ":param image: np.ndarray - monocular image :param point_cloud: np.ndarray"
 " - sparse lidar point cloud"
 msgstr ""
+"Получение оценки глубины по предоставленному изображению и данным облака "
+"точек. :param image: np.ndarray - монокулярное изображение :param "
+"point_cloud: np.ndarray - разреженное облако точек лидара"
 
 #: ../../source/api/opr.pipelines.rst
 msgid "Returns"
-msgstr ""
+msgstr "Возвращает"
 
 #: of
 #: opr.pipelines.depth_estimation.DepthEstimationPipeline.get_depth_with_lidar:5
@@ -59,18 +62,23 @@ msgid ""
 "rel_errors: np.ndarray - relative errors of depth reconstruction for the "
 "points of the projected lidar point cloud"
 msgstr ""
+"np.ndarray - восстановленная карта глубины с той же высотой и шириной, что и"
+" входное изображение zs: np.ndarray - значения z облака точек лидара,"
+" спроецированные на изображение errors: np.ndarray - абсолютные ошибки"
+" восстановления глубины для точек спроецированного облака точек лидара"
+" rel_errors: np.ndarray - относительные ошибки восстановления глубины для"
+" точек спроецированного облака точек лидара"
 
 #: ../../source/api/opr.pipelines.rst
 msgid "Return type"
-msgstr ""
+msgstr "Тип возвращаемого значения"
 
 #: of
 #: opr.pipelines.depth_estimation.DepthEstimationPipeline.set_camera_matrix:1
 msgid "Set the camera intrinsic matrix for calculations."
-msgstr ""
+msgstr "Установите матрицу внутренних параметров камеры для расчетов."
 
 #: of
 #: opr.pipelines.depth_estimation.DepthEstimationPipeline.set_lidar_to_camera_transform:1
 msgid "Set lidar to camera transform"
-msgstr ""
-
+msgstr "Установите преобразование лидара в камеру"

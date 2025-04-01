@@ -19,42 +19,42 @@ msgstr ""
 
 #: ../../source/api/opr.pipelines.registration.rst:2
 msgid "opr.pipelines.registration package"
-msgstr ""
+msgstr "Пакет opr.pipelines.registration"
 
 #: of opr.pipelines.registration:1
 msgid "Registration pipelines."
-msgstr ""
+msgstr "Пайплайны регистрации."
 
 #: ../../source/api/opr.pipelines.registration.rst:10
 msgid "opr.pipelines.registration.pointcloud"
-msgstr ""
+msgstr "opr.pipelines.registration.pointcloud"
 
 #: of opr.pipelines.registration.pointcloud:1
 #: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline:1
 msgid "Pointcloud registration pipeline."
-msgstr ""
+msgstr "Пайплайн регистрации облака точек."
 
 #: of opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline:1
 #: opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline:1
 msgid "Bases: :py:class:`object`"
-msgstr ""
+msgstr "Основы: :py:class:`object`"
 
 #: of
 #: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:1
 #: opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline.infer:1
 #: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline.infer:1
 msgid "Infer the transformation between the query and the database pointclouds."
-msgstr ""
+msgstr "Вывод преобразования между query и database облаками точек."
 
 #: ../../source/api/opr.pipelines.registration.rst
 msgid "Parameters"
-msgstr ""
+msgstr "Параметры"
 
 #: of
 #: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:3
 #: opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline.infer:3
 msgid "Query pointcloud. Coordinates array of shape (N, 3)."
-msgstr ""
+msgstr "Query облако точек. Массив координат формы (N, 3)."
 
 #: of
 #: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:5
@@ -63,6 +63,8 @@ msgid ""
 "Database pointcloud. Coordinates array of shape (M, 3). If None, "
 "`db_pc_feats` must be provided. Defaults to None."
 msgstr ""
+"Database облако точек. Массив координат формы (M, 3). Если None, "
+"должен быть предоставлен `db_pc_feats`. По умолчанию None."
 
 #: of
 #: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:8
@@ -71,25 +73,27 @@ msgid ""
 "Database pointcloud features. If None, `db_pc` must be provided. Defaults"
 " to None."
 msgstr ""
+"Database признаки облака точек. Если None, должен быть предоставлен `db_pc`."
+" По умолчанию None."
 
 #: ../../source/api/opr.pipelines.registration.rst
 msgid "Returns"
-msgstr ""
+msgstr "Возвращает"
 
 #: of
 #: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:12
 #: opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline.infer:8
 #: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline.infer:13
 msgid "Transformation matrix."
-msgstr ""
+msgstr "Матрица преобразования."
 
 #: ../../source/api/opr.pipelines.registration.rst
 msgid "Return type"
-msgstr ""
+msgstr "Тип возвращаемого значения"
 
 #: ../../source/api/opr.pipelines.registration.rst
 msgid "Raises"
-msgstr ""
+msgstr "Вызывает"
 
 #: of
 #: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:15
@@ -97,15 +101,17 @@ msgid ""
 "If both `db_pc` and `db_pc_feats` are provided or if none of them are "
 "provided."
 msgstr ""
+"Если предоставлены и `db_pc`, и `db_pc_feats`, или если ни один из них не"
+" предоставлен."
 
 #: of opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline:1
 msgid "Pointcloud registration pipeline using RANSAC."
-msgstr ""
+msgstr "Пайплайн регистрации облака точек с использованием RANSAC."
 
 #: of
 #: opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline.infer:5
 msgid "Database pointcloud. Coordinates array of shape (M, 3)."
-msgstr ""
+msgstr "Database облако точек. Массив координат формы (M, 3)."
 
 #: of
 #: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline:1
@@ -113,11 +119,13 @@ msgid ""
 "Bases: "
 ":py:class:`~opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`"
 msgstr ""
+"Основы: "
+":py:class:`~opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`"
 
 #: of
 #: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline:1
 msgid "Pointcloud registration pipeline that supports sequences."
-msgstr ""
+msgstr "Пайплайн регистрации облака точек, поддерживающий последовательности."
 
 #: of
 #: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline.infer:3
@@ -125,4 +133,5 @@ msgid ""
 "List of query pointclouds. Each pointcloud is a coordinates array of "
 "shape (N, 3)."
 msgstr ""
-
+"Список query облаков точек. Каждое облако точек - это массив координат формы"
+" (N, 3)."
