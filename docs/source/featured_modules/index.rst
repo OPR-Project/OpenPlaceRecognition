@@ -17,3 +17,4 @@ This page provides a brief description of featured library modules.
    09_multimodal_place_recognition_trainer
    10_depth_estimation_pipeline
    11_latefusion_with_semantics
+   12_itlp_dataset_reader
