@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opr \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"POT-Creation-Date: 2025-04-01 12:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -25,85 +25,64 @@ msgstr ""
 msgid "opr.trainers.place\\_recognition package"
 msgstr ""
 
-#: of opr.trainers.place_recognition:1
-msgid "Module for Place Recognition trainers."
-msgstr ""
-
 #: ../../source/api/opr.trainers.place_recognition.rst:10
 msgid "opr.trainers.place\\_recognition.multimodal"
-msgstr ""
-
-#: of opr.trainers.place_recognition.multimodal:1
-#: opr.trainers.place_recognition.multimodal.MultimodalPlaceRecognitionTrainer:1
-msgid "Multimodal Place Recognition Trainer."
-msgstr ""
-
-#: of
-#: opr.trainers.place_recognition.multimodal.MultimodalPlaceRecognitionTrainer:1
-msgid ""
-"Bases: "
-":py:class:`~opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer`"
 msgstr ""
 
 #: ../../source/api/opr.trainers.place_recognition.rst:18
 msgid "opr.trainers.place\\_recognition.unimodal"
 msgstr ""
 
-#: of opr.trainers.place_recognition.unimodal:1
-msgid "Pointcloud Place Recognition trainer."
-msgstr ""
+#~ msgid "Module for Place Recognition trainers."
+#~ msgstr ""
 
-#: of opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer:1
-msgid "Bases: :py:class:`object`"
-msgstr ""
+#~ msgid "Multimodal Place Recognition Trainer."
+#~ msgstr ""
 
-#: of opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer:1
-msgid "Single modality Place Recognition trainer."
-msgstr ""
+#~ msgid ""
+#~ "Bases: "
+#~ ":py:class:`~opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer`"
+#~ msgstr ""
 
-#: of
-#: opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer.stats:1
-msgid "Dictionary with statistics for the last epoch."
-msgstr ""
+#~ msgid "Pointcloud Place Recognition trainer."
+#~ msgstr ""
 
-#: of
-#: opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer.test:1
-msgid "Evaluates the model on the test set with support for sequences."
-msgstr ""
+#~ msgid "Bases: :py:class:`object`"
+#~ msgstr ""
 
-#: of
-#: opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer.train:1
-msgid ""
-"Trains the single modal Place Recognition model for the specified number "
-"of epochs."
-msgstr ""
+#~ msgid "Single modality Place Recognition trainer."
+#~ msgstr ""
 
-#: ../../source/api/opr.trainers.place_recognition.rst
-msgid "Parameters"
-msgstr ""
+#~ msgid "Dictionary with statistics for the last epoch."
+#~ msgstr ""
 
-#: of
-#: opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer.train:3
-msgid "The number of epochs to train for."
-msgstr ""
+#~ msgid "Evaluates the model on the test set with support for sequences."
+#~ msgstr ""
 
-#: of
-#: opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer.train:5
-msgid "The data loader for the training set."
-msgstr ""
+#~ msgid ""
+#~ "Trains the single modal Place "
+#~ "Recognition model for the specified "
+#~ "number of epochs."
+#~ msgstr ""
 
-#: of
-#: opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer.train:7
-msgid "The data loader for the validation set."
-msgstr ""
+#~ msgid "Parameters"
+#~ msgstr ""
 
-#: of
-#: opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer.train:9
-msgid "The data loader for the test set."
-msgstr ""
+#~ msgid "The number of epochs to train for."
+#~ msgstr ""
 
-#: of
-#: opr.trainers.place_recognition.unimodal.UnimodalPlaceRecognitionTrainer.train:11
-msgid "The frequency (in epochs) at which to evaluate the model on the test set."
-msgstr ""
+#~ msgid "The data loader for the training set."
+#~ msgstr ""
+
+#~ msgid "The data loader for the validation set."
+#~ msgstr ""
+
+#~ msgid "The data loader for the test set."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The frequency (in epochs) at which "
+#~ "to evaluate the model on the test"
+#~ " set."
+#~ msgstr ""
 

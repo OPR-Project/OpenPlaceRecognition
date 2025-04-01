@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opr \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"POT-Creation-Date: 2025-04-01 12:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -109,60 +109,54 @@ msgstr ""
 msgid "Query back image embeddings array."
 msgstr ""
 
-#: of opr.testing.test_image_model_with_reranking:1
-msgid "Test Place Recognition Average Recall@N metric performance."
+#: of opr.testing.test:1
+msgid "Evaluates the model on the test set."
 msgstr ""
 
-#: of opr.testing.test_image_model_with_reranking:3
+#: of opr.testing.test:3 opr.testing.test_image_model_with_reranking:3
 msgid "The model to test."
 msgstr ""
 
-#: of opr.testing.test_image_model_with_reranking:5
-msgid "Test dataloader object."
+#: of opr.testing.test:5
+msgid "The data loader for the test set."
 msgstr ""
 
-#: of opr.testing.test_image_model_with_reranking:9
+#: of opr.testing.test:7
+msgid "The distance threshold for a correct match. Defaults to 25.0."
+msgstr ""
+
+#: of opr.testing.test:9 opr.testing.test_image_model_with_reranking:9
 msgid "Device (\"cpu\" or \"cuda\"). Defaults to \"cuda\"."
 msgstr ""
 
-#: of opr.testing.test_image_model_with_reranking:12
+#: of opr.testing.test:12 opr.testing.test_image_model_with_reranking:12
 msgid ""
 "Array of AverageRecall@N (N from 1 to 25), AverageRecall@1%     and mean "
 "top-1 distance."
 msgstr ""
 
-#: of opr.testing.test_image_model_with_reranking:14
+#: of opr.testing.test:14 opr.testing.test_image_model_with_reranking:14
 msgid "Array of AverageRecall@N (N from 1 to 25), AverageRecall@1%"
 msgstr ""
 
-#: of opr.testing.test_image_model_with_reranking:15
+#: of opr.testing.test:15 opr.testing.test_image_model_with_reranking:15
 msgid "and mean top-1 distance."
 msgstr ""
 
-#: of opr.testing.test_place_recognition:1
-msgid ""
-"Evaluates a place recognition model on the test set with support for "
-"sequences."
+#: ../../source/api/index.rst
+msgid "Raises"
 msgstr ""
 
-#: of opr.testing.test_place_recognition:3
-msgid "The model to evaluate."
+#: of opr.testing.test:18
+msgid "If the required coordinate columns are not found in the dataset."
 msgstr ""
 
-#: of opr.testing.test_place_recognition:5
-msgid "The data loader for the test set."
+#: of opr.testing.test_image_model_with_reranking:1
+msgid "Test Place Recognition Average Recall@N metric performance."
 msgstr ""
 
-#: of opr.testing.test_place_recognition:7
-msgid "Device to run evaluation on. Defaults to \"cuda\"."
-msgstr ""
-
-#: of opr.testing.test_place_recognition:9
-msgid "The distance threshold for a correct match. Defaults to 25.0."
-msgstr ""
-
-#: of opr.testing.test_place_recognition:12
-msgid "Dictionary containing test metrics."
+#: of opr.testing.test_image_model_with_reranking:5
+msgid "Test dataloader object."
 msgstr ""
 
 #: ../../source/api/index.rst:38
@@ -369,10 +363,6 @@ msgstr ""
 msgid "Device object."
 msgstr ""
 
-#: ../../source/api/index.rst
-msgid "Raises"
-msgstr ""
-
 #: of opr.utils.parse_device:9
 msgid "If device is not a string, integer or torch.device object."
 msgstr ""
@@ -393,4 +383,19 @@ msgid ""
 "benchmark mode and enables its deterministic mode. If False, leaves "
 "PyTorch's settings unchanged. Defaults to True."
 msgstr ""
+
+#~ msgid ""
+#~ "Evaluates a place recognition model on"
+#~ " the test set with support for "
+#~ "sequences."
+#~ msgstr ""
+
+#~ msgid "The model to evaluate."
+#~ msgstr ""
+
+#~ msgid "Device to run evaluation on. Defaults to \"cuda\"."
+#~ msgstr ""
+
+#~ msgid "Dictionary containing test metrics."
+#~ msgstr ""
 
