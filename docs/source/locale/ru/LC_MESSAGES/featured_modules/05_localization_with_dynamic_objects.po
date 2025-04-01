@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:2
 msgid "LocalizationPipeline with dynamic objects"
-msgstr ""
+msgstr "LocalizationPipeline с динамическими объектами"
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:4
 msgid ""
@@ -27,10 +27,13 @@ msgid ""
 "dynamic environments you can consider to add objects masking (both on "
 "lidar and images) to prevent feature extraction in those regions."
 msgstr ""
+"Модуль, реализующий нейросетевой алгоритм глобальной локализации, "
+"позволяющего исключить наличие в мультимодальных данных динамических объектов "
+"(людей, животных, транспортных средств)."
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:9
 msgid "Usage example"
-msgstr ""
+msgstr "Пример использования"
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:11
 msgid ""
@@ -45,6 +48,17 @@ msgid ""
 "``\"weights/place_recognition/multi-image_lidar_late-fusion_nclt.pth\"`` "
 "or other file."
 msgstr ""
+"Начните с инициализации нейронной модели "
+":class:`opr.models.place_recognition.base.LateFusionModel` с модулями "
+"изображений и облаков. Рекомендуемый способ сделать это - использовать файл "
+"конфигурации "
+"`configs/model/place_recognition/multi-image_lidar_late-fusion.yaml "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/place_recognition"
+"/multi-image_lidar_late-fusion.yaml>`_ для создания экземпляра модели с "
+"помощью Hydra и загрузки весов из файла "
+"``\"weights/place_recognition/multi-image_lidar_late-fusion_nclt.pth\"`` "
+"или другого файла."
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:33
 msgid ""
@@ -54,6 +68,10 @@ msgid ""
 "Project/OpenPlaceRecognition/blob/main/configs/model/registration/hregnet_light_feats.yaml>`_"
 " config:"
 msgstr ""
+"Аналогичным образом следует инициализировать модель регистрации с помощью "
+"конфигурации `configs/model/registration/hregnet_light_feats.yaml "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/registration/hregnet_light_feats.yaml>`_:"
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:46
 msgid ""
@@ -64,12 +82,19 @@ msgid ""
 "and "
 ":class:`opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`."
 msgstr ""
+"Затем следует инициализировать "
+":class:`opr.pipelines.localization.base.LocalizationPipeline`, который "
+"состоит из двух под-пайплайнов: "
+":class:`opr.pipelines.place_recognition.base.PlaceRecognitionPipeline` и "
+":class:`opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`."
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:82
 msgid ""
 "To apply masking you should extract segmentation results and place them "
 "in data folder."
 msgstr ""
+"Чтобы применить маскирование, следует извлечь результаты сегментации и "
+"поместить их в папку с данными."
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:98
 msgid ""
@@ -79,6 +104,11 @@ msgid ""
 "`opr.datasets.base.BasePlaceRecognitionDataset`. You can find example in "
 "`opr.datasets.itlp.ITLPCampus`."
 msgstr ""
+"Во время getitem данные изображения и лидара будут автоматически "
+"маскироваться по выбранным индексам. Для правильного маскирования лидара "
+"в `opr.datasets.base.BasePlaceRecognitionDataset` следует установить внешнее "
+"преобразование между датчиками. Пример можно найти в "
+"`opr.datasets.itlp.ITLPCampus`."
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:102
 msgid ""
@@ -86,24 +116,27 @@ msgid ""
 "data as a usual "
 ":class:`opr.pipelines.localization.base.LocalizationPipeline` :"
 msgstr ""
+"Затем вы можете использовать пайплайн для определения местоположения входных "
+"данных запроса как обычный "
+":class:`opr.pipelines.localization.base.LocalizationPipeline`:"
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:117
 msgid "The pipeline will return the output dictionary with the following keys:"
-msgstr ""
+msgstr "Пайплайн вернет выходной словарь со следующими ключами:"
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:119
 msgid "``\"db_match_pose\"``: the pose of the most similar record in the database"
-msgstr ""
+msgstr "``\"db_match_pose\"``: поза наиболее похожей записи в базе данных"
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:120
 msgid ""
 "``\"estimated_pose\"``: the estimated pose of the query data after "
 "registration"
-msgstr ""
+msgstr "``\"estimated_pose\"``: оценочная поза данных запроса после регистрации"
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:122
 msgid "More usage examples can be found in the following notebooks:"
-msgstr ""
+msgstr "Больше примеров использования можно найти в следующих ноутбуках:"
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:124
 msgid ""
@@ -111,6 +144,9 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/05_LocalizationPipeline_with_dynamic.ipynb>`_"
 msgstr ""
+"`notebooks/test_itlp/05_LocalizationPipeline_with_dynamic.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/05_LocalizationPipeline_with_dynamic.ipynb>`_"
 
 #: ../../source/featured_modules/05_localization_with_dynamic_objects.rst:125
 msgid ""
@@ -118,4 +154,6 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/05_LocalizationPipeline_with_dynamic.ipynb>`_"
 msgstr ""
-
+"`notebooks/test_cross_season/05_LocalizationPipeline_with_dynamic.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/05_LocalizationPipeline_with_dynamic.ipynb>`_"

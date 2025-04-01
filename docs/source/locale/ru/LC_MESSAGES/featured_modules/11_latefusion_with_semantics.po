@@ -23,17 +23,19 @@ msgstr ""
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:2
 msgid "LateFusionModel with semantics"
-msgstr ""
+msgstr "LateFusionModel с семантикой"
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:4
 msgid ""
 "A module that implements a neural network algorithm for encoding records "
 "using sequences of data from lidars and cameras."
 msgstr ""
+"Модуль, реализующий алгоритм формирования единого векторного представления "
+"изображений и трехмерных облаков точек с учетом их семантической сегментации."
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:9
 msgid "Usage example"
-msgstr ""
+msgstr "Пример использования"
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:11
 msgid ""
@@ -48,44 +50,66 @@ msgid ""
 "``\"weights/place_recognition/multi-image_multi-semantic_lidar_late-"
 "fusion_nclt.pth\"`` or other file."
 msgstr ""
+"Начните с инициализации нейронной модели "
+":class:`opr.models.place_recognition.base.LateFusionModel` с модулями "
+"изображений, семантики и облаков. Рекомендуемый способ сделать это - "
+"использовать файл конфигурации "
+"`configs/model/place_recognition/multi-image_multi-semantic_lidar_late-"
+"fusion.yaml <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/place_recognition"
+"/multi-image_multi-semantic_lidar_late-fusion.yaml>`_ для создания "
+"экземпляра модели с помощью Hydra и загрузки весов из файла "
+"``\"weights/place_recognition/multi-image_multi-semantic_lidar_late-"
+"fusion_nclt.pth\"`` или другого файла."
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:33
 msgid "Then you can use the ``pr_model`` to infer the sensor's data:"
-msgstr ""
+msgstr "Затем вы можете использовать ``pr_model`` для получения данных датчика:"
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:48
 msgid ""
 "The ``pr_model`` will return the ``output`` dictionary with the following"
 " keys:"
 msgstr ""
+"``pr_model`` вернет словарь ``output`` со следующими ключами:"
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:50
 msgid ""
 "``\"final_descriptor\"``: fused descriptor (torch.tensor) of all sensor's"
 " data"
 msgstr ""
+"``\"final_descriptor\"``: объединенный дескриптор (torch.tensor) всех данных "
+"датчика"
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:51
 msgid "``\"image\"`` (optional): descriptor (torch.tensor) of image in sequence"
 msgstr ""
+"``\"image\"`` (опционально): дескриптор (torch.tensor) изображения в "
+"последовательности"
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:52
 msgid ""
 "``\"semantic\"`` (optional): descriptor (torch.tensor) of image semantic "
 "mask in sequence"
 msgstr ""
+"``\"semantic\"`` (опционально): дескриптор (torch.tensor) семантической маски "
+"изображения в последовательности"
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:53
 msgid ""
 "``\"cloud\"`` (optional): descriptor (torch.tensor) of lidar point cloud "
 "in sequence"
 msgstr ""
+"``\"cloud\"`` (опционально): дескриптор (torch.tensor) облака точек лидара в "
+"последовательности"
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:55
 msgid ""
 "More usage examples of ``LateFusionModel`` can be found in the following "
 "notebooks as a part of ``pr_model``:"
 msgstr ""
+"Больше примеров использования ``LateFusionModel`` можно найти в следующих "
+"ноутбуках как часть ``pr_model``:"
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:57
 msgid ""
@@ -93,6 +117,9 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/11_LateFusionModel_with_semantics.ipynb>`_"
 msgstr ""
+"`notebooks/test_itlp/11_LateFusionModel_with_semantics.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/11_LateFusionModel_with_semantics.ipynb>`_"
 
 #: ../../source/featured_modules/11_latefusion_with_semantics.rst:58
 msgid ""
@@ -100,4 +127,6 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/11_LateFusionModel_with_semantics.ipynb>`_"
 msgstr ""
-
+"`notebooks/test_cross_season/11_LateFusionModel_with_semantics.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/11_LateFusionModel_with_semantics.ipynb>`_"

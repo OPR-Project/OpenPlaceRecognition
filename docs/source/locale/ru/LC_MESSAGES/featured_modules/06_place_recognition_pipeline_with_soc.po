@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:2
 msgid "PlaceRecognitionPipeline with SOC"
-msgstr ""
+msgstr "PlaceRecognitionPipeline с SOC"
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:4
 msgid ""
@@ -29,10 +29,14 @@ msgid ""
 "elements of a three-dimensional scene (doors, buildings, street signs, "
 "etc.)."
 msgstr ""
+"Модуль, реализующий нейросетевой алгоритм поиска в базе данных уже посещенных "
+"транспортным средством мест наиболее похожих записей с использованием данных лидаров и камер "
+"и выделением на них особых элементов трехмерной сцены "
+"(дверей, зданий, уличных знаков и указателей и т.п.)."
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:8
 msgid "Usage example"
-msgstr ""
+msgstr "Пример использования"
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:10
 msgid ""
@@ -47,6 +51,16 @@ msgid ""
 "``\"weights/place_recognition/multimodal_with_soc_outdoor_nclt.pth\"`` or"
 " other file."
 msgstr ""
+"Начните с инициализации нейронной модели "
+":class:`opr.models.place_recognition.base.LateFusionModel` с модулями "
+"изображений, облаков и SOC. Рекомендуемый способ сделать это - "
+"использовать файл конфигурации "
+"`configs/model/place_recognition/multimodal_with_soc_outdoor.yaml "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/place_recognition/multimodal_with_soc_outdoor.yaml>`_ "
+"для создания экземпляра модели с помощью Hydra и загрузки весов из файла "
+"``\"weights/place_recognition/multimodal_with_soc_outdoor_nclt.pth\"`` "
+"или другого файла."
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:32
 msgid ""
@@ -56,6 +70,10 @@ msgid ""
 "Project/OpenPlaceRecognition/blob/main/configs/model/registration/hregnet_light_feats.yaml>`_"
 " config:"
 msgstr ""
+"Аналогичным образом следует инициализировать модель регистрации с помощью "
+"конфигурации `configs/model/registration/hregnet_light_feats.yaml "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/registration/hregnet_light_feats.yaml>`_:"
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:45
 msgid ""
@@ -66,34 +84,39 @@ msgid ""
 "and "
 ":class:`opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`."
 msgstr ""
+"Затем следует инициализировать "
+":class:`opr.pipelines.localization.base.LocalizationPipeline`, который "
+"состоит из двух под-пайплайнов: "
+":class:`opr.pipelines.place_recognition.base.PlaceRecognitionPipeline` и "
+":class:`opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`."
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:81
 msgid ""
 "Then you can use the pipeline to infer the location of the input query "
 "data:"
-msgstr ""
+msgstr "Затем вы можете использовать пайплайн для определения местоположения входных данных запроса:"
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:96
 msgid "The pipeline will return the output dictionary with the following keys:"
-msgstr ""
+msgstr "Пайплайн вернет выходной словарь со следующими ключами:"
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:98
 msgid "``\"db_match_pose\"``: the pose of the most similar record in the database"
-msgstr ""
+msgstr "``\"db_match_pose\"``: поза наиболее похожей записи в базе данных"
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:99
 msgid "``\"db_match_idx\"``: the index of the most similar record in the database"
-msgstr ""
+msgstr "``\"db_match_idx\"``: индекс наиболее похожей записи в базе данных"
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:100
 msgid ""
 "``\"estimated_pose\"``: the estimated pose of the query data after "
 "registration"
-msgstr ""
+msgstr "``\"estimated_pose\"``: оценочная поза данных запроса после регистрации"
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:102
 msgid "More usage examples can be found in the following notebooks:"
-msgstr ""
+msgstr "Больше примеров использования можно найти в следующих ноутбуках:"
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:104
 msgid ""
@@ -101,6 +124,9 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/06_PlaceRecognitionPipeline_with_SOC.ipynb>`_"
 msgstr ""
+"`notebooks/test_itlp/06_PlaceRecognitionPipeline_with_SOC.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/06_PlaceRecognitionPipeline_with_SOC.ipynb>`_"
 
 #: ../../source/featured_modules/06_place_recognition_pipeline_with_soc.rst:105
 msgid ""
@@ -108,4 +134,6 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/06_PlaceRecognitionPipeline_with_SOC.ipynb>`_"
 msgstr ""
-
+"`notebooks/test_cross_season/06_PlaceRecognitionPipeline_with_SOC.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/06_PlaceRecognitionPipeline_with_SOC.ipynb>`_"

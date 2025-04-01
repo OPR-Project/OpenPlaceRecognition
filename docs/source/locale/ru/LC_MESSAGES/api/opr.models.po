@@ -19,9 +19,8 @@ msgstr ""
 
 #: ../../source/api/opr.models.rst:2
 msgid "opr.models package"
-msgstr ""
+msgstr "Пакет opr.models"
 
 #: of opr.models:1
 msgid "Module for models."
-msgstr ""
-
+msgstr "Модуль для моделей."

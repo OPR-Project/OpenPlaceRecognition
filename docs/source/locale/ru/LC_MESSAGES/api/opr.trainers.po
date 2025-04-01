@@ -19,9 +19,8 @@ msgstr ""
 
 #: ../../source/api/opr.trainers.rst:2
 msgid "opr.trainers package"
-msgstr ""
+msgstr "Пакет opr.trainers"
 
 #: of opr.trainers:1
 msgid "Module for trainers."
-msgstr ""
-
+msgstr "Модуль для классов обучения."

@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:2
 msgid "MultimodalPlaceRecognitionTrainer"
-msgstr ""
+msgstr "MultimodalPlaceRecognitionTrainer"
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:4
 msgid ""
@@ -27,10 +27,12 @@ msgid ""
 "network model of global localization based on the contrastive learning "
 "approach."
 msgstr ""
+"Модуль, реализующий алгоритм обучения мультимодальной нейросетевой модели "
+"глобальной локализации на основе подхода контрастивного обучения."
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:9
 msgid "Usage example"
-msgstr ""
+msgstr "Пример использования"
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:11
 msgid ""
@@ -38,6 +40,9 @@ msgid ""
 ":class:`opr.trainers.place_recognition.multimodal.MultimodalPlaceRecognitionTrainer`"
 " class with the desired parameters:"
 msgstr ""
+"Следует инициализировать класс "
+":class:`opr.trainers.place_recognition.multimodal.MultimodalPlaceRecognitionTrainer`"
+" с желаемыми параметрами:"
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:31
 msgid ""
@@ -45,6 +50,8 @@ msgid ""
 ":meth:`opr.trainers.place_recognition.multimodal.MultimodalPlaceRecognitionTrainer.train`"
 " method:"
 msgstr ""
+"Чтобы начать обучение, следует вызвать метод "
+":meth:`opr.trainers.place_recognition.multimodal.MultimodalPlaceRecognitionTrainer.train`:"
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:44
 msgid ""
@@ -52,10 +59,12 @@ msgid ""
 ":meth:`opr.trainers.place_recognition.multimodal.MultimodalPlaceRecognitionTrainer.test`"
 " method:"
 msgstr ""
+"Чтобы протестировать модель на тестовом наборе данных, следует вызвать метод "
+":meth:`opr.trainers.place_recognition.multimodal.MultimodalPlaceRecognitionTrainer.test`:"
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:52
 msgid "More usage examples can be found in the following scripts and notebooks:"
-msgstr ""
+msgstr "Больше примеров использования можно найти в следующих скриптах и ноутбуках:"
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:54
 msgid ""
@@ -63,6 +72,9 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/scripts/training/place_recognition/train_multimodal.py>`_"
 msgstr ""
+"`scripts/training/place_recognition/train_multimodal.py "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/scripts/training/place_recognition/train_multimodal.py>`_"
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:55
 msgid ""
@@ -70,6 +82,9 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/scripts/training/place_recognition/find_parameters_multimodal.py>`_"
 msgstr ""
+"`scripts/training/place_recognition/find_parameters_multimodal.py "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/scripts/training/place_recognition/find_parameters_multimodal.py>`_"
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:56
 msgid ""
@@ -77,6 +92,9 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/finetune_itlp/finetune_itlp_multimodal.ipynb>`_"
 msgstr ""
+"`notebooks/finetune_itlp/finetune_itlp_multimodal.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/finetune_itlp/finetune_itlp_multimodal.ipynb>`_"
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:57
 msgid ""
@@ -84,6 +102,9 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/finetune_itlp/finetune_itlp_multimodal_semantic.ipynb>`_"
 msgstr ""
+"`notebooks/finetune_itlp/finetune_itlp_multimodal_semantic.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/finetune_itlp/finetune_itlp_multimodal_semantic.ipynb>`_"
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:58
 msgid ""
@@ -91,6 +112,9 @@ msgid ""
 " <https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/finetune_itlp/finetune_itlp_multimodal_semantic_with_soc_outdoor.ipynb>`_"
 msgstr ""
+"`notebooks/finetune_itlp/finetune_itlp_multimodal_semantic_with_soc_outdoor.ipynb"
+" <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/finetune_itlp/finetune_itlp_multimodal_semantic_with_soc_outdoor.ipynb>`_"
 
 #: ../../source/featured_modules/09_multimodal_place_recognition_trainer.rst:59
 msgid ""
@@ -98,4 +122,6 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/finetune_itlp/finetune_itlp_multimodal_with_soc_outdoor.ipynb>`_"
 msgstr ""
-
+"`notebooks/finetune_itlp/finetune_itlp_multimodal_with_soc_outdoor.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/finetune_itlp/finetune_itlp_multimodal_with_soc_outdoor.ipynb>`_"

@@ -23,37 +23,37 @@ msgstr ""
 
 #: ../../source/api/opr.pipelines.place_recognition.rst:2
 msgid "opr.pipelines.place\\_recognition package"
-msgstr ""
+msgstr "Пакет opr.pipelines.place\\_recognition"
 
 #: of opr.pipelines.place_recognition:1
 msgid "Place Recognition pipelines."
-msgstr ""
+msgstr "Пайплайны распознавания мест."
 
 #: ../../source/api/opr.pipelines.place_recognition.rst:10
 msgid "opr.pipelines.place\\_recognition.base"
-msgstr ""
+msgstr "opr.pipelines.place\\_recognition.base"
 
 #: of opr.pipelines.place_recognition.base:1
 msgid "Basic Place Recognition pipelines."
-msgstr ""
+msgstr "Базовые пайплайны распознавания мест."
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline:1
 msgid "Bases: :py:class:`object`"
-msgstr ""
+msgstr "Основы: :py:class:`object`"
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline:1
 msgid "Basic Place Recognition pipeline."
-msgstr ""
+msgstr "Базовый пайплайн распознавания мест."
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:1
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:1
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:1
 msgid "Single sample inference."
-msgstr ""
+msgstr "Вывод для одного образца."
 
 #: ../../source/api/opr.pipelines.place_recognition.rst
 msgid "Parameters"
-msgstr ""
+msgstr "Параметры"
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:3
 #, python-brace-format
@@ -64,42 +64,47 @@ msgid ""
 "pointcloud coordinates from lidar,  \"pointcloud_lidar_feats\" for "
 "pointcloud features from lidar."
 msgstr ""
+"Входные данные. Словарь с ключами в следующем формате:  "
+"\"image_{camera_name}\" для изображений с камер,  \"mask_{camera_name}\" для"
+" масок семантической сегментации,  \"pointcloud_lidar_coords\" для координат"
+" облака точек с лидара,  \"pointcloud_lidar_feats\" для признаков облака"
+" точек с лидара."
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:3
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:3
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:3
 msgid "Input data. Dictionary with keys in the following format:"
-msgstr ""
+msgstr "Входные данные. Словарь с ключами в следующем формате:"
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:5
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:5
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:5
 #, python-brace-format
 msgid "\"image_{camera_name}\" for images from cameras,"
-msgstr ""
+msgstr "\"image_{camera_name}\" для изображений с камер,"
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:7
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:7
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:7
 #, python-brace-format
 msgid "\"mask_{camera_name}\" for semantic segmentation masks,"
-msgstr ""
+msgstr "\"mask_{camera_name}\" для масок семантической сегментации,"
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:9
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:9
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:9
 msgid "\"pointcloud_lidar_coords\" for pointcloud coordinates from lidar,"
-msgstr ""
+msgstr "\"pointcloud_lidar_coords\" для координат облака точек с лидара,"
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:11
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:11
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:11
 msgid "\"pointcloud_lidar_feats\" for pointcloud features from lidar."
-msgstr ""
+msgstr "\"pointcloud_lidar_feats\" для признаков облака точек с лидара."
 
 #: ../../source/api/opr.pipelines.place_recognition.rst
 msgid "Returns"
-msgstr ""
+msgstr "Возвращает"
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:14
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:16
@@ -109,38 +114,41 @@ msgid ""
 " in the database,      \"pose\" for predicted pose in the format [tx, ty,"
 " tz, qx, qy, qz, qw],      \"descriptor\" for predicted descriptor."
 msgstr ""
+"Результаты вывода. Словарь с ключами:      \"idx\" для предсказанного индекса"
+" в базе данных,      \"pose\" для предсказанной позы в формате [tx, ty, tz,"
+" qx, qy, qz, qw],      \"descriptor\" для предсказанного дескриптора."
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:16
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:18
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:20
 msgid "Inference results. Dictionary with keys:"
-msgstr ""
+msgstr "Результаты вывода. Словарь с ключами:"
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:18
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:20
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:22
 msgid "\"idx\" for predicted index in the database,"
-msgstr ""
+msgstr "\"idx\" для предсказанного индекса в базе данных,"
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:20
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:22
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:24
 msgid "\"pose\" for predicted pose in the format [tx, ty, tz, qx, qy, qz, qw],"
-msgstr ""
+msgstr "\"pose\" для предсказанной позы в формате [tx, ty, tz, qx, qy, qz, qw],"
 
 #: of opr.pipelines.place_recognition.base.PlaceRecognitionPipeline.infer:22
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:24
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:26
 msgid "\"descriptor\" for predicted descriptor."
-msgstr ""
+msgstr "\"descriptor\" для предсказанного дескриптора."
 
 #: ../../source/api/opr.pipelines.place_recognition.rst
 msgid "Return type"
-msgstr ""
+msgstr "Тип возвращаемого значения"
 
 #: ../../source/api/opr.pipelines.place_recognition.rst:18
 msgid "opr.pipelines.place\\_recognition.text\\_labels"
-msgstr ""
+msgstr "opr.pipelines.place\\_recognition.text\\_labels"
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline:1
@@ -149,30 +157,33 @@ msgid ""
 "Bases: "
 ":py:class:`~opr.pipelines.place_recognition.base.PlaceRecognitionPipeline`"
 msgstr ""
+"Основы: "
+":py:class:`~opr.pipelines.place_recognition.base.PlaceRecognitionPipeline`"
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:1
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.find_most_similar_id:1
 msgid "Finds the most similar ID in the database based on the given query."
-msgstr ""
+msgstr "Находит наиболее похожий ID в базе данных на основе заданного запроса."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:3
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.find_most_similar_id:3
 msgid "The query to compare against the database labels."
-msgstr ""
+msgstr "Запрос для сравнения с метками базы данных."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:5
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.find_most_similar_id:5
 msgid "Whether to ignore stopwords during comparison. Defaults to False."
 msgstr ""
+"Следует ли игнорировать стоп-слова во время сравнения. По умолчанию False."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:7
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.find_most_similar_id:7
 msgid "Whether to normalize the text before comparison. Defaults to False."
-msgstr ""
+msgstr "Следует ли нормализовать текст перед сравнением. По умолчанию False."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:9
@@ -181,6 +192,8 @@ msgid ""
 "Whether to print additional information during the process. Defaults to "
 "False."
 msgstr ""
+"Следует ли печатать дополнительную информацию во время процесса. По"
+" умолчанию False."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.find_most_similar_id:12
@@ -189,30 +202,32 @@ msgid ""
 "A tuple containing the best match ID, the corresponding labels, and the "
 "highest similarity score."
 msgstr ""
+"Кортеж, содержащий лучший ID соответствия, соответствующие метки и наивысший"
+" показатель сходства."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.get_labels_by_id:1
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.get_labels_by_id:1
 msgid "Retrieve all labels associated with a given ID from the labels dictionary."
-msgstr ""
+msgstr "Извлеките все метки, связанные с заданным ID, из словаря меток."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.get_labels_by_id:3
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.get_labels_by_id:3
 msgid "The list of labels."
-msgstr ""
+msgstr "Список меток."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.get_labels_by_id:5
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.get_labels_by_id:5
 msgid "The ID to retrieve labels for."
-msgstr ""
+msgstr "ID для извлечения меток."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.get_labels_by_id:8
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.get_labels_by_id:8
 msgid "The list of labels associated with the given ID."
-msgstr ""
+msgstr "Список меток, связанных с заданным ID."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:3
@@ -225,12 +240,18 @@ msgid ""
 "pointcloud features from lidar.  \"text_similarity_thresh\"  Text "
 "similarity threshold. Defaults to 50."
 msgstr ""
+"Входные данные. Словарь с ключами в следующем формате:  "
+"\"image_{camera_name}\" для изображений с камер,  \"mask_{camera_name}\" для"
+" масок семантической сегментации,  \"pointcloud_lidar_coords\" для координат"
+" облака точек с лидара,  \"pointcloud_lidar_feats\" для признаков облака"
+" точек с лидара.  \"text_similarity_thresh\"  Порог сходства текста."
+" По умолчанию 50."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.infer:13
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:15
 msgid "\"text_similarity_thresh\"  Text similarity threshold. Defaults to 50."
-msgstr ""
+msgstr "\"text_similarity_thresh\"  Порог сходства текста. По умолчанию 50."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.normalize_labels:1
@@ -239,42 +260,45 @@ msgid ""
 "Normalize a list of labels by converting them to lowercase and removing "
 "leading/trailing whitespace."
 msgstr ""
+"Нормализуйте список меток, преобразовав их в нижний регистр и удалив"
+" начальные/конечные пробелы."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.normalize_labels:3
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.normalize_labels:3
 msgid "The list of labels to be normalized."
-msgstr ""
+msgstr "Список меток для нормализации."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.normalize_labels:6
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.normalize_labels:6
 msgid "The normalized list of labels."
-msgstr ""
+msgstr "Нормализованный список меток."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.remove_stopwords:1
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.remove_stopwords:1
 msgid "Removes stopwords from a list of labels."
-msgstr ""
+msgstr "Удаляет стоп-слова из списка меток."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.remove_stopwords:3
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.remove_stopwords:3
 msgid "The list of labels to remove stopwords from."
-msgstr ""
+msgstr "Список меток для удаления стоп-слов."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.remove_stopwords:5
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.remove_stopwords:5
 msgid "The list of stopwords to be removed. Defaults to [\"выход\", \"мфти\"]."
 msgstr ""
+"Список стоп-слов для удаления. По умолчанию [\"выход\", \"мфти\"]."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionOCRPipeline.remove_stopwords:8
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.remove_stopwords:8
 msgid "The list of labels with stopwords removed."
-msgstr ""
+msgstr "Список меток с удаленными стоп-словами."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:3
@@ -287,9 +311,14 @@ msgid ""
 "pointcloud features from lidar.  \"query_labels\"  List of query labels."
 "  \"text_similarity_thresh\"  Text similarity threshold. Defaults to 50."
 msgstr ""
+"Входные данные. Словарь с ключами в следующем формате:  "
+"\"image_{camera_name}\" для изображений с камер,  \"mask_{camera_name}\" для"
+" масок семантической сегментации,  \"pointcloud_lidar_coords\" для координат"
+" облака точек с лидара,  \"pointcloud_lidar_feats\" для признаков облака"
+" точек с лидара.  \"query_labels\"  Список меток запроса.  "
+"\"text_similarity_thresh\"  Порог сходства текста. По умолчанию 50."
 
 #: of
 #: opr.pipelines.place_recognition.text_labels.TextLabelsPlaceRecognitionPipeline.infer:13
 msgid "\"query_labels\"  List of query labels."
-msgstr ""
-
+msgstr "\"query_labels\"  Список меток запроса."

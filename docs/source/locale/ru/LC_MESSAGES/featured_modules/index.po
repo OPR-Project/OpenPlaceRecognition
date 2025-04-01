@@ -23,9 +23,8 @@ msgstr ""
 
 #: ../../source/featured_modules/index.rst:2
 msgid "Featured modules"
-msgstr ""
+msgstr "Избранные модули"
 
 #: ../../source/featured_modules/index.rst:4
 msgid "This page provides a brief description of featured library modules."
-msgstr ""
-
+msgstr "На этой странице представлено краткое описание избранных модулей библиотеки."

@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../source/featured_modules/02_sequence_pointcloud_registration_pipeline.rst:2
 msgid "SequencePointcloudRegistrationPipeline"
-msgstr ""
+msgstr "SequencePointcloudRegistrationPipeline"
 
 #: ../../source/featured_modules/02_sequence_pointcloud_registration_pipeline.rst:4
 msgid ""
@@ -27,10 +27,13 @@ msgid ""
 "orientation of a vehicle in space based on a sequence of multimodal data "
 "using neural network methods."
 msgstr ""
+"Модуль, реализующий алгоритм оптимизации положения и ориентации транспортного "
+"средства в пространстве на основе последовательности мультимодальных данных с "
+"применением нейросетевых методов."
 
 #: ../../source/featured_modules/02_sequence_pointcloud_registration_pipeline.rst:9
 msgid "Usage example"
-msgstr ""
+msgstr "Пример использования"
 
 #: ../../source/featured_modules/02_sequence_pointcloud_registration_pipeline.rst:11
 msgid ""
@@ -42,32 +45,43 @@ msgid ""
 "Project/OpenPlaceRecognition/blob/main/configs/model/registration/hregnet_light_feats.yaml>`_"
 " config:"
 msgstr ""
+"Начните с инициализации нейронной модели "
+":class:`opr.models.registration.hregnet.HRegNet` с желаемой конфигурацией и "
+"весами. Например, вы можете использовать "
+"`configs/model/registration/hregnet_light_feats.yaml <https://github.com"
+"/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/registration/hregnet_light_feats.yaml>`_"
+" конфиг:"
 
 #: ../../source/featured_modules/02_sequence_pointcloud_registration_pipeline.rst:27
 msgid ""
 "Then you should initialize the "
 ":class:`opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline`."
 msgstr ""
+"Затем следует инициализировать "
+":class:`opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline`."
 
 #: ../../source/featured_modules/02_sequence_pointcloud_registration_pipeline.rst:44
 msgid ""
 "Then you can use the pipeline to infer transformation between two point "
 "clouds:"
 msgstr ""
+"Затем вы можете использовать пайплайн для вывода преобразования между двумя облаками точек:"
 
 #: ../../source/featured_modules/02_sequence_pointcloud_registration_pipeline.rst:56
 msgid "Alternatively, you can use precomputed features for database point clouds:"
-msgstr ""
+msgstr "В качестве альтернативы, вы можете использовать предварительно вычисленные признаки для облаков точек базы данных:"
 
 #: ../../source/featured_modules/02_sequence_pointcloud_registration_pipeline.rst:69
 msgid ""
 "The pipeline will return the 4x4 `np.ndarray` transformation matrix "
 "between the query and database point clouds."
 msgstr ""
+"Пайплайн вернет матрицу преобразования 4x4 `np.ndarray` между облаками точек запроса и базы данных."
 
 #: ../../source/featured_modules/02_sequence_pointcloud_registration_pipeline.rst:71
 msgid "More usage examples can be found in the following notebooks:"
-msgstr ""
+msgstr "Больше примеров использования можно найти в следующих ноутбуках:"
 
 #: ../../source/featured_modules/02_sequence_pointcloud_registration_pipeline.rst:73
 msgid ""
@@ -75,6 +89,9 @@ msgid ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/01_PlaceRecognitionPipeline.ipynb>`_"
 msgstr ""
+"`notebooks/test_cross_season/01_PlaceRecognitionPipeline.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/01_PlaceRecognitionPipeline.ipynb>`_"
 
 #: ../../source/featured_modules/02_sequence_pointcloud_registration_pipeline.rst:74
 msgid ""
@@ -82,4 +99,6 @@ msgid ""
 " <https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/notebooks/test_public_datasets_v2/02_SequencePointcloudRegistrationPipeline.ipynb>`_"
 msgstr ""
-
+"`notebooks/test_public_datasets_v2/02_SequencePointcloudRegistrationPipeline.ipynb"
+" <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/notebooks/test_public_datasets_v2/02_SequencePointcloudRegistrationPipeline.ipynb>`_"

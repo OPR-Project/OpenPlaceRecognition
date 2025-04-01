@@ -19,7 +19,7 @@ msgstr ""
 
 #: ../../source/itlp_dataset.rst:3
 msgid "ITLP-Campus Dataset"
-msgstr ""
+msgstr "Датасет ITLP-Campus"
 
 #: ../../source/itlp_dataset.rst:9
 msgid ""
@@ -28,106 +28,122 @@ msgid ""
 " images, LiDAR point clouds, semantic masks, and rich scene descriptions."
 " Built for real-world challenges, day or night, floor or field."
 msgstr ""
+"Изучайте мультимодальное распознавание мест с ITLP Campus — разнообразным "
+"датасетом университетских помещений и открытых пространств, включающим синхронизированные "
+"RGB-изображения, облака точек LiDAR, семантические маски и подробные описания сцен. "
+"Создан для решения реальных задач в любое время суток и в любых условиях."
 
 #: ../../source/itlp_dataset.rst:13
 msgid ""
 "See also the `OPR-Project/ITLP-Campus <https://github.com/OPR-Project"
 "/ITLP-Campus>`_ repository."
 msgstr ""
+"См. также репозиторий `OPR-Project/ITLP-Campus <https://github.com/OPR-Project"
+"/ITLP-Campus>`_."
 
 #: ../../source/itlp_dataset.rst:17
 msgid "Download"
-msgstr ""
+msgstr "Скачать"
 
 #: ../../source/itlp_dataset.rst:19
 msgid "You can download the dataset:"
-msgstr ""
+msgstr "Вы можете скачать датасет:"
 
 #: ../../source/itlp_dataset.rst:21
 msgid "Kaggle:"
-msgstr ""
+msgstr "Kaggle:"
 
 #: ../../source/itlp_dataset.rst:23
 msgid ""
 "`ITLP Campus Indoor <https://www.kaggle.com/datasets/alexandermelekhin"
 "/itlp-campus-indoor>`_"
 msgstr ""
+"`ITLP Campus Indoor <https://www.kaggle.com/datasets/alexandermelekhin"
+"/itlp-campus-indoor>`_"
 
 #: ../../source/itlp_dataset.rst:24
 msgid ""
 "`ITLP Campus Outdoor <https://www.kaggle.com/datasets/alexandermelekhin"
 "/itlp-campus-outdoor>`_"
 msgstr ""
+"`ITLP Campus Outdoor <https://www.kaggle.com/datasets/alexandermelekhin"
+"/itlp-campus-outdoor>`_"
 
 #: ../../source/itlp_dataset.rst:26
 msgid "Hugging Face:"
-msgstr ""
+msgstr "Hugging Face:"
 
 #: ../../source/itlp_dataset.rst:28
 msgid ""
 "`ITLP Campus Indoor <https://huggingface.co/datasets/OPR-Project/ITLP-"
 "Campus-Indoor>`_"
 msgstr ""
+"`ITLP Campus Indoor <https://huggingface.co/datasets/OPR-Project/ITLP-"
+"Campus-Indoor>`_"
 
 #: ../../source/itlp_dataset.rst:29
 msgid ""
 "`ITLP Campus Outdoor <https://huggingface.co/datasets/OPR-Project/ITLP-"
 "Campus-Outdoor>`_"
 msgstr ""
+"`ITLP Campus Outdoor <https://huggingface.co/datasets/OPR-Project/ITLP-"
+"Campus-Outdoor>`_"
 
 #: ../../source/itlp_dataset.rst:31
 msgid "Alternatively, you can download the dataset from the following links:"
-msgstr ""
+msgstr "Или вы можете скачать датасет по следующим ссылкам:"
 
 #: ../../source/itlp_dataset.rst:37
 msgid "Cloud Storage"
-msgstr ""
+msgstr "Облачное хранилище"
 
 #: ../../source/itlp_dataset.rst:38
 msgid "link"
-msgstr ""
+msgstr "ссылка"
 
 #: ../../source/itlp_dataset.rst:39
 msgid "Google Drive"
-msgstr ""
+msgstr "Google Диск"
 
 #: ../../source/itlp_dataset.rst:40
 msgid ""
 "`link1 <https://drive.google.com/drive/folders/14"
 "-0Ew5qVWh607tdFsovbXZsdWX-vU-Vy?usp=sharing>`_"
 msgstr ""
+"`ссылка1 <https://drive.google.com/drive/folders/14"
+"-0Ew5qVWh607tdFsovbXZsdWX-vU-Vy?usp=sharing>`_"
 
 #: ../../source/itlp_dataset.rst:41
 msgid "Yandex Disk"
-msgstr ""
+msgstr "Яндекс Диск"
 
 #: ../../source/itlp_dataset.rst:42
 msgid "`link2 <https://disk.yandex.com/d/tvPdmWTTw5mEQg>`_"
-msgstr ""
+msgstr "`ссылка2 <https://disk.yandex.com/d/tvPdmWTTw5mEQg>`_"
 
 #: ../../source/itlp_dataset.rst:46
 msgid "Sensors"
-msgstr ""
+msgstr "Сенсоры"
 
 #: ../../source/itlp_dataset.rst:52
 msgid "Sensor"
-msgstr ""
+msgstr "Сенсор"
 
 #: ../../source/itlp_dataset.rst:53
 msgid "Model"
-msgstr ""
+msgstr "Модель"
 
 #: ../../source/itlp_dataset.rst:54
 msgid "Resolution"
-msgstr ""
+msgstr "Разрешение"
 
 #: ../../source/itlp_dataset.rst:55
 msgid "Front cam"
-msgstr ""
+msgstr "Фронтальная камера"
 
 #: ../../source/itlp_dataset.rst:56
 msgid "ZED (stereo)"
-msgstr ""
+msgstr "ZED (стерео)"
 
 #: ../../source/itlp_dataset.rst:57 ../../source/itlp_dataset.rst:60
 #: ../../source/itlp_dataset.rst:149 ../../source/itlp_dataset.rst:150
@@ -143,31 +159,31 @@ msgstr ""
 #: ../../source/itlp_dataset.rst:330 ../../source/itlp_dataset.rst:331
 #: ../../source/itlp_dataset.rst:342 ../../source/itlp_dataset.rst:343
 msgid "1280x720"
-msgstr ""
+msgstr "1280x720"
 
 #: ../../source/itlp_dataset.rst:58
 msgid "Back cam"
-msgstr ""
+msgstr "Тыловая камера"
 
 #: ../../source/itlp_dataset.rst:59
 msgid "RealSense D435"
-msgstr ""
+msgstr "RealSense D435"
 
 #: ../../source/itlp_dataset.rst:61
 msgid "LiDAR"
-msgstr ""
+msgstr "LiDAR"
 
 #: ../../source/itlp_dataset.rst:62
 msgid "VLP-16"
-msgstr ""
+msgstr "VLP-16"
 
 #: ../../source/itlp_dataset.rst:63
 msgid "16x1824"
-msgstr ""
+msgstr "16x1824"
 
 #: ../../source/itlp_dataset.rst:67
 msgid "Structure"
-msgstr ""
+msgstr "Структура"
 
 #: ../../source/itlp_dataset.rst:69
 msgid ""
@@ -175,66 +191,76 @@ msgid ""
 "each track includes about 600 frames. The distance between adjacent "
 "frames is ~5 m."
 msgstr ""
+"Данные организованы по трекам, длина одного трека составляет около 3 км, "
+"каждый трек включает около 600 кадров. Расстояние между соседними кадрами ~5 м."
 
 #: ../../source/itlp_dataset.rst:71
 msgid "The structure of track data storage is as follows:"
-msgstr ""
+msgstr "Структура хранения данных трека следующая:"
 
 #: ../../source/itlp_dataset.rst:106
 msgid "where"
-msgstr ""
+msgstr "где"
 
 #: ../../source/itlp_dataset.rst:108
 msgid ""
 "``####`` - file name, which is the timestamp of the image/scan (virtual "
 "timestamp of the moment when the image/scan was taken)"
 msgstr ""
+"``####`` - имя файла, представляющее временную метку изображения/скана (виртуальная "
+"временная метка момента, когда было сделано изображение/скан)"
 
 #: ../../source/itlp_dataset.rst:109
 msgid "``.bin`` - files - LiDAR scans in binary format"
-msgstr ""
+msgstr "``.bin`` - файлы - сканы LiDAR в бинарном формате"
 
 #: ../../source/itlp_dataset.rst:110
 msgid "``.png`` - images and semantic masks"
-msgstr ""
+msgstr "``.png`` - изображения и семантические маски"
 
 #: ../../source/itlp_dataset.rst:111
 msgid "``.csv`` :"
-msgstr ""
+msgstr "``.csv`` :"
 
 #: ../../source/itlp_dataset.rst:112
 msgid ""
 "``<cam>_text.csv`` - text description of the scene for both front and "
 "back camera images (image timestamp, text description of the scene)"
 msgstr ""
+"``<cam>_text.csv`` - текстовое описание сцены для изображений с фронтальной и "
+"тыловой камер (временная метка изображения, текстовое описание сцены)"
 
 #: ../../source/itlp_dataset.rst:113
 msgid ""
 "``<cam>_aruco_labels.csv`` - information about aruco tags (image "
 "timestamp, tag bboxes and its ID)"
 msgstr ""
+"``<cam>_aruco_labels.csv`` - информация о метках aruco (временная метка изображения, "
+"границы меток и их ID)"
 
 #: ../../source/itlp_dataset.rst:114
 msgid ""
 "``<cam>_text_labels.csv`` - information only about images with text "
 "markings (image timestamp, marking bbox , text on the marking)"
 msgstr ""
+"``<cam>_text_labels.csv`` - информация только об изображениях с текстовыми "
+"обозначениями (временная метка изображения, границы обозначений, текст на обозначении)"
 
 #: ../../source/itlp_dataset.rst:115
 msgid "``track.csv`` - timestamp mapping for all data and 6DoF robot poses"
-msgstr ""
+msgstr "``track.csv`` - сопоставление временных меток для всех данных и позы робота в 6 степенях свободы"
 
 #: ../../source/itlp_dataset.rst:116
 msgid "``.yml`` - meta information about track"
-msgstr ""
+msgstr "``.yml`` - метаинформация о треке"
 
 #: ../../source/itlp_dataset.rst:118
 msgid "An example of a outdoor track trajectory (track_map.png):"
-msgstr ""
+msgstr "Пример траектории трека на открытом воздухе (track_map.png):"
 
 #: ../../source/itlp_dataset.rst:122
 msgid "An example of a indoor track trajectory (track_map.png):"
-msgstr ""
+msgstr "Пример траектории трека в помещении (track_map.png):"
 
 #: ../../source/itlp_dataset.rst:128
 msgid "ITLP-Campus Indoor"
@@ -242,51 +268,51 @@ msgstr ""
 
 #: ../../source/itlp_dataset.rst:132 ../../source/itlp_dataset.rst:225
 msgid "Data"
-msgstr ""
+msgstr "Данные"
 
 #: ../../source/itlp_dataset.rst:138 ../../source/itlp_dataset.rst:231
 msgid "Track"
-msgstr ""
+msgstr "Трек"
 
 #: ../../source/itlp_dataset.rst:139 ../../source/itlp_dataset.rst:234
 msgid "Frames, pcs"
-msgstr ""
+msgstr "Кадры, шт"
 
 #: ../../source/itlp_dataset.rst:140 ../../source/itlp_dataset.rst:235
 msgid "Front cam, res"
-msgstr ""
+msgstr "Фронтальная камера, разрешение"
 
 #: ../../source/itlp_dataset.rst:141 ../../source/itlp_dataset.rst:236
 msgid "Back cam, res"
-msgstr ""
+msgstr "Тыловая камера, разрешение"
 
 #: ../../source/itlp_dataset.rst:142 ../../source/itlp_dataset.rst:237
 msgid "LiDAR, rays"
-msgstr ""
+msgstr "LiDAR, лучи"
 
 #: ../../source/itlp_dataset.rst:143 ../../source/itlp_dataset.rst:238
 msgid "6 DoF pose"
-msgstr ""
+msgstr "Поза в 6 степенях свободы"
 
 #: ../../source/itlp_dataset.rst:144 ../../source/itlp_dataset.rst:239
 msgid "Semantic masks"
-msgstr ""
+msgstr "Семантические маски"
 
 #: ../../source/itlp_dataset.rst:145 ../../source/itlp_dataset.rst:240
 msgid "Aruco tag"
-msgstr ""
+msgstr "Метка Aruco"
 
 #: ../../source/itlp_dataset.rst:146 ../../source/itlp_dataset.rst:241
 msgid "OCR Text labels"
-msgstr ""
+msgstr "Текстовые метки OCR"
 
 #: ../../source/itlp_dataset.rst:147
 msgid "2023-03-13"
-msgstr ""
+msgstr "2023-03-13"
 
 #: ../../source/itlp_dataset.rst:148
 msgid "3883"
-msgstr ""
+msgstr "3883"
 
 #: ../../source/itlp_dataset.rst:151 ../../source/itlp_dataset.rst:160
 #: ../../source/itlp_dataset.rst:169 ../../source/itlp_dataset.rst:248
@@ -295,7 +321,7 @@ msgstr ""
 #: ../../source/itlp_dataset.rst:308 ../../source/itlp_dataset.rst:320
 #: ../../source/itlp_dataset.rst:332 ../../source/itlp_dataset.rst:344
 msgid "16"
-msgstr ""
+msgstr "16"
 
 #: ../../source/itlp_dataset.rst:152 ../../source/itlp_dataset.rst:154
 #: ../../source/itlp_dataset.rst:155 ../../source/itlp_dataset.rst:161
@@ -316,38 +342,39 @@ msgstr ""
 #: ../../source/itlp_dataset.rst:337 ../../source/itlp_dataset.rst:345
 #: ../../source/itlp_dataset.rst:348 ../../source/itlp_dataset.rst:349
 msgid "✓"
-msgstr ""
+msgstr "✓"
 
 #: ../../source/itlp_dataset.rst:153 ../../source/itlp_dataset.rst:162
 #: ../../source/itlp_dataset.rst:171
 msgid "1280x720x150"
-msgstr ""
+msgstr "1280x720x150"
 
 #: ../../source/itlp_dataset.rst:156
 msgid "00_2023-10-25-night"
-msgstr ""
+msgstr "00_2023-10-25-ночь"
 
 #: ../../source/itlp_dataset.rst:157
 msgid "1233"
-msgstr ""
+msgstr "1233"
 
 #: ../../source/itlp_dataset.rst:165
 msgid "01_2023-11-09-twilight"
-msgstr ""
+msgstr "01_2023-11-09-сумерки"
 
 #: ../../source/itlp_dataset.rst:166
 msgid "1310"
-msgstr ""
+msgstr "1310"
 
 #: ../../source/itlp_dataset.rst:175
 msgid ""
 "6 DoF poses are obtained using Cartographer SLAM with global localization"
 " in a pre-built map."
 msgstr ""
+"Позы в 6 степенях свободы получены с использованием Cartographer SLAM с глобальной локализацией на предварительно построенной карте."
 
 #: ../../source/itlp_dataset.rst:179 ../../source/itlp_dataset.rst:355
 msgid "Semantics"
-msgstr ""
+msgstr "Семантика"
 
 #: ../../source/itlp_dataset.rst:181
 msgid ""
@@ -355,20 +382,22 @@ msgid ""
 "Labs/OneFormer>`_ pre-trained on the `ADE20K "
 "<https://ade20k.csail.mit.edu/>`_ dataset."
 msgstr ""
+"Семантические маски получены с использованием `Oneformer <https://github.com/SHI-Labs/OneFormer>`_, предварительно обученного на датасете `ADE20K <https://ade20k.csail.mit.edu/>`_."
 
 #: ../../source/itlp_dataset.rst:183 ../../source/itlp_dataset.rst:359
 msgid ""
 "The masks are stored as mono-channel images. Each pixel stores a semantic"
 " label. Examples of semantic information are shown in the table below:"
 msgstr ""
+"Маски хранятся как одноканальные изображения. Каждый пиксель хранит семантическую метку. Примеры семантической информации показаны в таблице ниже:"
 
 #: ../../source/itlp_dataset.rst:189 ../../source/itlp_dataset.rst:365
 msgid "Label"
-msgstr ""
+msgstr "Метка"
 
 #: ../../source/itlp_dataset.rst:190 ../../source/itlp_dataset.rst:366
 msgid "Semantic class"
-msgstr ""
+msgstr "Семантический класс"
 
 #: ../../source/itlp_dataset.rst:191 ../../source/itlp_dataset.rst:367
 msgid "Color, [r, g, b]"
@@ -441,10 +470,17 @@ msgid ""
 "`cfg/indoor_anno_config.json <https://github.com/OPR-Project/ITLP-"
 "Campus/blob/main/cfg/indoor_anno_config.json>`_."
 msgstr ""
+"Семантическая разметка содержит в общей сложности 150 классов. Полная таблица "
+"всех семантических классов приведена в таблице - "
+"`cfg/indoor_anno_description.md <https://github.com/OPR-Project/ITLP-"
+"Campus/blob/main/cfg/indoor_anno_description.md>`_. Чтобы сопоставить метки ID "
+"с цветами RGB, следует использовать файл конфигурации - "
+"`cfg/indoor_anno_config.json <https://github.com/OPR-Project/ITLP-"
+"Campus/blob/main/cfg/indoor_anno_config.json>`_."
 
 #: ../../source/itlp_dataset.rst:213 ../../source/itlp_dataset.rst:389
 msgid "An example of a mask over the image:"
-msgstr ""
+msgstr "Пример маски поверх изображения:"
 
 #: ../../source/itlp_dataset.rst:219
 msgid "ITLP-Campus Outdoor"
@@ -457,10 +493,14 @@ msgid ""
 "different times of day (day/dusk/night) and different seasons "
 "(winter/spring)."
 msgstr ""
+"Внешняя часть этого датасета была записана с использованием роботизированной "
+"платформы Husky на территории университетского кампуса и включает 5 треков, "
+"записанных в разное время суток (день/сумерки/ночь) и в разные сезоны "
+"(зима/весна)."
 
 #: ../../source/itlp_dataset.rst:232
 msgid "Season"
-msgstr ""
+msgstr "Сезон"
 
 #: ../../source/itlp_dataset.rst:233
 msgid "Time of day"
@@ -473,7 +513,7 @@ msgstr ""
 #: ../../source/itlp_dataset.rst:243 ../../source/itlp_dataset.rst:255
 #: ../../source/itlp_dataset.rst:267
 msgid "winter"
-msgstr ""
+msgstr "зима"
 
 #: ../../source/itlp_dataset.rst:244 ../../source/itlp_dataset.rst:280
 #: ../../source/itlp_dataset.rst:304 ../../source/itlp_dataset.rst:328
@@ -582,6 +622,8 @@ msgid ""
 "6 DoF poses are obtained using ALeGO-LOAM localization method refined "
 "with Interactive SLAM."
 msgstr ""
+"Позиции в 6 степенях свободы получены с использованием метода локализации "
+"ALeGO-LOAM, уточнённого с помощью Interactive SLAM."
 
 #: ../../source/itlp_dataset.rst:357
 msgid ""
@@ -589,6 +631,7 @@ msgid ""
 "Labs/OneFormer>`_ pre-trained on the `Mapillary "
 "<https://paperswithcode.com/dataset/mapillary-vistas-dataset>`_ dataset."
 msgstr ""
+"Семантические маски получены с использованием `Oneformer <https://github.com/SHI-Labs/OneFormer>`_, предварительно обученного на датасете `Mapillary <https://paperswithcode.com/dataset/mapillary-vistas-dataset>`_."
 
 #: ../../source/itlp_dataset.rst:371
 msgid "10"
@@ -648,10 +691,17 @@ msgid ""
 "`cfg/outdoor_anno_config.json <https://github.com/OPR-Project/ITLP-"
 "Campus/blob/main/cfg/outdoor_anno_config.json>`_."
 msgstr ""
+"Семантическая разметка содержит в общей сложности 65 классов. Полная таблица "
+"всех семантических классов приведена в таблице - "
+"`cfg/outdoor_anno_description.md <https://github.com/OPR-Project/ITLP-"
+"Campus/blob/main/cfg/outdoor_anno_description.md>`_. Чтобы сопоставить метки ID "
+"с цветами RGB, следует использовать файл конфигурации - "
+"`cfg/outdoor_anno_config.json <https://github.com/OPR-Project/ITLP-"
+"Campus/blob/main/cfg/outdoor_anno_config.json>`_."
 
 #: ../../source/itlp_dataset.rst:395
 msgid "PyTorch dataset API"
-msgstr ""
+msgstr "API датасета PyTorch"
 
 #: ../../source/itlp_dataset.rst:397
 msgid ""
@@ -659,18 +709,22 @@ msgid ""
 "provided in the `src/opr/datasets/itlp.py <https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/src/opr/datasets/itlp.py>`_ file."
 msgstr ""
+"Реализация класса датасета PyTorch для трека ITLP-Campus предоставлена в "
+"файле `src/opr/datasets/itlp.py <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/src/opr/datasets/itlp.py>`_."
 
 #: ../../source/itlp_dataset.rst:399
 msgid ""
 "That class can be used for loading the track's data in the format of "
 "``torch.Tensor``."
 msgstr ""
+"Этот класс можно использовать для загрузки данных трека в формате "
+"``torch.Tensor``."
 
 #: ../../source/itlp_dataset.rst:403
 msgid "Outdoor data"
-msgstr ""
+msgstr "Outdoor данные"
 
 #: ../../source/itlp_dataset.rst:405
 msgid "Usage example:"
-msgstr ""
-
+msgstr "Пример использования:"

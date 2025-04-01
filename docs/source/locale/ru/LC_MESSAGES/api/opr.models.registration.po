@@ -23,45 +23,47 @@ msgstr ""
 
 #: ../../source/api/opr.models.registration.rst:2
 msgid "opr.models.registration package"
-msgstr ""
+msgstr "Пакет opr.models.registration"
 
 #: of opr.models.registration:1
 msgid "Module for Registration models."
-msgstr ""
+msgstr "Модуль для моделей регистрации."
 
 #: ../../source/api/opr.models.registration.rst:10
 msgid "opr.models.registration.geotransformer"
-msgstr ""
+msgstr "opr.models.registration.geotransformer"
 
 #: of opr.models.registration.geotransformer:1
 #: opr.models.registration.geotransformer.GeoTransformer:1
 msgid "GeoTransformer model for registration."
-msgstr ""
+msgstr "Модель GeoTransformer для регистрации."
 
 #: of opr.models.registration.geotransformer:3
 msgid "Paper: https://arxiv.org/abs/2202.06688"
-msgstr ""
+msgstr "Статья: https://arxiv.org/abs/2202.06688"
 
 #: of opr.models.registration.geotransformer:5
 msgid ""
 "Code is adopted from original repository: "
 "https://github.com/qinzheng93/GeoTransformer, MIT License"
 msgstr ""
+"Код взят из оригинального репозитория:"
+" https://github.com/qinzheng93/GeoTransformer, MIT License"
 
 #: of opr.models.registration.geotransformer.GeoTransformer:1
 #: opr.models.registration.geotransformer.KPConvFPN:1
 msgid "Bases: :py:class:`~torch.nn.modules.module.Module`"
-msgstr ""
+msgstr "Основы: :py:class:`~torch.nn.modules.module.Module`"
 
 #: of opr.models.registration.geotransformer.GeoTransformer.forward:1
 #: opr.models.registration.geotransformer.KPConvFPN.forward:1
 msgid "Defines the computation performed at every call."
-msgstr ""
+msgstr "Определяет вычисление, выполняемое при каждом вызове."
 
 #: of opr.models.registration.geotransformer.GeoTransformer.forward:3
 #: opr.models.registration.geotransformer.KPConvFPN.forward:3
 msgid "Should be overridden by all subclasses."
-msgstr ""
+msgstr "Должен быть переопределен всеми подклассами."
 
 #: of opr.models.registration.geotransformer.GeoTransformer.forward:6
 #: opr.models.registration.geotransformer.KPConvFPN.forward:6
@@ -71,32 +73,37 @@ msgid ""
 " of this since the former takes care of running the registered hooks "
 "while the latter silently ignores them."
 msgstr ""
+"Хотя рецепт для прямого прохода должен быть определен внутри этой функции,"
+" следует вызывать экземпляр :class:`Module` после этого, поскольку первый"
+" заботится о запуске зарегистрированных хуков, а второй молча игнорирует их."
 
 #: of opr.models.registration.geotransformer.KPConvFPN:1
 msgid "Feature Pyramid Network with KPConv backbone."
-msgstr ""
+msgstr "Feature Pyramid Network с KPConv backbone."
 
 #: ../../source/api/opr.models.registration.rst:18
 msgid "opr.models.registration.hregnet"
-msgstr ""
+msgstr "opr.models.registration.hregnet"
 
 #: of opr.models.registration.hregnet:1
 msgid "Implementation of HRegNet point cloud registration model."
-msgstr ""
+msgstr "Реализация модели регистрации облака точек HRegNet."
 
 #: of opr.models.registration.hregnet.HRegNet:1
 msgid "Bases: :py:class:`~hregnet.models.HRegNet`"
-msgstr ""
+msgstr "Основы: :py:class:`~hregnet.models.HRegNet`"
 
 #: of opr.models.registration.hregnet.HRegNet:1
 msgid ""
 "HRegNet: A Hierarchical Network for Large-scale Outdoor LiDAR Point Cloud"
 " Registration."
 msgstr ""
+"HRegNet: Иерархическая сеть для крупномасштабной регистрации облаков точек LiDAR на открытом воздухе."
 
 #: of opr.models.registration.hregnet.HRegNet:3
 msgid ""
 "Paper: https://arxiv.org/abs/2107.11992 Code is adopted from the original"
 " repository: https://github.com/ispc-lab/HRegNet, MIT License"
 msgstr ""
-
+"Статья: https://arxiv.org/abs/2107.11992 Код взят из оригинального"
+" репозитория: https://github.com/ispc-lab/HRegNet, MIT License"

@@ -23,11 +23,11 @@ msgstr ""
 
 #: ../../source/api/opr.trainers.place_recognition.rst:2
 msgid "opr.trainers.place\\_recognition package"
-msgstr ""
+msgstr "Пакет opr.trainers.place\\_recognition"
 
 #: ../../source/api/opr.trainers.place_recognition.rst:10
 msgid "opr.trainers.place\\_recognition.multimodal"
-msgstr ""
+msgstr "opr.trainers.place\\_recognition.multimodal"
 
 #: ../../source/api/opr.trainers.place_recognition.rst:18
 msgid "opr.trainers.place\\_recognition.unimodal"
@@ -85,4 +85,3 @@ msgstr ""
 #~ "to evaluate the model on the test"
 #~ " set."
 #~ msgstr ""
-
