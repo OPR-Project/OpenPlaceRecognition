@@ -89,6 +89,9 @@ def test(
     Returns:
         Tuple[np.ndarray, float, float]: Array of AverageRecall@N (N from 1 to 25), AverageRecall@1%
             and mean top-1 distance.
+
+    Raises:
+        ValueError: If the required coordinate columns are not found in the dataset.
     """
     device = parse_device(device)
     with torch.no_grad():
@@ -110,7 +113,18 @@ def test(
         selected_queries = group[group["in_query"]]
         queries.append(selected_queries.index.to_list())
 
-    utms = torch.tensor(test_df[["northing", "easting"]].to_numpy())
+    if "northing" in test_df.columns and "easting" in test_df.columns:
+        coords_columns = ["northing", "easting"]
+    elif "x" in test_df.columns and "y" in test_df.columns:
+        coords_columns = ["x", "y"]
+    elif "tx" in test_df.columns and "ty" in test_df.columns:
+        coords_columns = ["tx", "ty"]
+    else:
+        raise ValueError(
+            "Required coordinate columns ('northing'/'easting', 'x'/'y', or 'tx'/'ty') not found in the dataset"
+        )
+
+    utms = torch.tensor(test_df[coords_columns].to_numpy())
     dist_fn = LpDistance(normalize_embeddings=False)
     dist_utms = dist_fn(utms).numpy()
 
