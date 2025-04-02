@@ -166,12 +166,12 @@ class TopologicalLocalizationPipeline(LocalizationPipeline):
             Rotation.from_quat(self.poses[self.vcur][3:]).as_matrix(), self.poses[self.vcur][:3]
         )
         out_dict["db_match_pose"] = db_pose
-        out_dict["db_match_idx"] = self.vcur
+        out_dict["current_node"] = self.vcur
 
         estimated_transform = get_transform_from_rotation_translation(
             Rotation.from_rotvec([0, 0, tf[2]]).as_matrix(), tf[3:]
         )
-        estimated_pose = db_pose @ estimated_transform#self._invert_rigid_transformation_matrix(estimated_transform)
+        estimated_pose = db_pose @ estimated_transform
         rot, trans = get_rotation_translation_from_transform(estimated_pose)
         rot = Rotation.from_matrix(rot).as_quat()
         pose = np.concatenate([trans, rot])
