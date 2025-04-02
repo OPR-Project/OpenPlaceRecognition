@@ -8,7 +8,7 @@ Usage example
 -------------
 
 First, you should create the database for localization from a pre-processed dataset. The recommended way to do it is the usage of `opr.datasets` API. 
-An example of building a database is shown in the notebook `notebooks/build_database.ipynb <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/notebooks/build_database.ipynb>`.
+An example of building a database is shown in the notebook `notebooks/build_database.ipynb <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/notebooks/build_database.ipynb>`_.
 
 After that, you should initialize the
 :class:`opr.pipelines.localization.base.TopologicalLocalizationPipeline`
@@ -16,9 +16,11 @@ which consists of two sub-pipelines:
 :class:`opr.pipelines.place_recognition.base.PlaceRecognitionPipeline`
 and
 :class:`opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`.
+
 As a place recognition model, you can use
 :class:`opr.models.place_recognition.base.LateFusionModel`.
-As a registration model, you can use the `GeoTransformer <https://github.com/alexmelekhin/GeoTransformer/tree/1e56f104ee88cb60734ad9344e28b6d64536c2e8>` neural network model:
+
+As a registration model, you can use the `GeoTransformer <https://github.com/alexmelekhin/GeoTransformer/tree/1e56f104ee88cb60734ad9344e28b6d64536c2e8>`_ neural network model:
 
 .. code-block:: python
 
