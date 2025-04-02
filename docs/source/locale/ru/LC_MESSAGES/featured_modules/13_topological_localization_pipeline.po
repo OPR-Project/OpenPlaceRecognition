@@ -1,0 +1,132 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-02 12:11+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:2
+msgid "TopologicalLocalizationPipeline"
+msgstr "TopologicalLocalizationPipeline"
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:4
+msgid ""
+"A module which performs twofold localization (place recognition and pose "
+"registration) leveraging the topological properties of the environment. "
+"The module builds a topological graph from the input database and outputs"
+" pose and corresponding node in the graph for each query."
+msgstr ""
+"Модуль, выполняющий двухэтапную локализацию (распознавание места и регистрацию "
+"позы), используя топологические свойства окружающей среды. Модуль строит "
+"топологический граф из входной базы данных и выводит позу и "
+"соответствующий узел в графе для каждого запроса."
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:8
+msgid "Usage example"
+msgstr "Пример использования"
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:10
+msgid ""
+"First, you should create the database for localization from a pre-"
+"processed dataset. The recommended way to do it is the usage of "
+"`opr.datasets` API. An example of building a database is shown in the "
+"notebook `notebooks/build_database.ipynb <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/build_database.ipynb>`_."
+msgstr ""
+"Сначала вам следует создать базу данных для локализации из предварительно "
+"обработанного набора данных. Рекомендуемый способ - использование API "
+"`opr.datasets`. Пример построения базы данных показан в блокноте "
+"`notebooks/build_database.ipynb <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/build_database.ipynb>`_."
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:13
+msgid ""
+"After that, you should initialize the "
+":class:`opr.pipelines.localization.base.TopologicalLocalizationPipeline` "
+"which consists of two sub-pipelines: "
+":class:`opr.pipelines.place_recognition.base.PlaceRecognitionPipeline` "
+"and "
+":class:`opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`."
+msgstr ""
+"После этого вам следует инициализировать "
+":class:`opr.pipelines.localization.base.TopologicalLocalizationPipeline`, "
+"который состоит из двух под-конвейеров: "
+":class:`opr.pipelines.place_recognition.base.PlaceRecognitionPipeline` и "
+":class:`opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`."
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:20
+msgid ""
+"As a place recognition model, you can use "
+":class:`opr.models.place_recognition.base.LateFusionModel`."
+msgstr ""
+"В качестве модели распознавания мест вы можете использовать "
+":class:`opr.models.place_recognition.base.LateFusionModel`."
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:23
+msgid ""
+"As a registration model, you can use the `GeoTransformer "
+"<https://github.com/alexmelekhin/GeoTransformer/tree/1e56f104ee88cb60734ad9344e28b6d64536c2e8>`_"
+" neural network model:"
+msgstr ""
+"В качестве модели регистрации вы можете использовать нейронную сеть "
+"`GeoTransformer <https://github.com/alexmelekhin/GeoTransformer/tree/1e56f104ee88cb60734ad9344e28b6d64536c2e8>`_:"
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:62
+msgid ""
+"Then you can use the pipeline to infer the location of the input query "
+"data:"
+msgstr ""
+"Затем вы можете использовать конвейер для определения местоположения входных "
+"данных запроса:"
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:75
+msgid "The pipeline will return the output dictionary with the following keys:"
+msgstr "Конвейер вернет выходной словарь со следующими ключами:"
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:77
+msgid ""
+"``\"db_match_pose\"``: the pose of the location in the database found by "
+"place recognition model with topological restrictions."
+msgstr ""
+"``\"db_match_pose\"``: поза местоположения в базе данных, найденная моделью "
+"распознавания мест с топологическими ограничениями."
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:78
+msgid ""
+"``\"current_node\"``: the index of the found location in the topological "
+"graph."
+msgstr ""
+"``\"current_node\"``: индекс найденного местоположения в топологическом графе."
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:79
+msgid ""
+"``\"estimated_pose\"``: the estimated pose refined by point cloud "
+"registration."
+msgstr ""
+"``\"estimated_pose\"``: оценочная поза, уточненная регистрацией облака точек."
+
+#: ../../source/featured_modules/13_topological_localization_pipeline.rst:81
+msgid ""
+"More usage examples can be found in the notebook "
+"`notebooks/topological_pipeline.ipynb <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/topological_pipeline.ipynb>`_"
+msgstr ""
+"Больше примеров использования можно найти в блокноте "
+"`notebooks/topological_pipeline.ipynb <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/topological_pipeline.ipynb>`_."
