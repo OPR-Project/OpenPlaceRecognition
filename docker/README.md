@@ -33,6 +33,7 @@ bash into.sh
 ```bash
 cd OpenPlaceRecognition
 pip install -e .
+pip install rosnumpy memory_profiler
 ```
 
 6. Inside the container, build the ROS Catkin workspace:
