@@ -1,23 +1,73 @@
 # Docker images
 
+The Docker images built for this branch are adapted for use with ROS Noetic and [PRISM-TopoMap](https://github.com/KirillMouraviev/PRISM-TopoMap)
+
+## Step-by-step instruction for building PRISM-TopoMap setup
+
+1. Clone this repo with branch `feat/toposlam`:
+`git clone --branch feat/toposlam https://github.com/OPR-Project/OpenPlaceRecognition`
+
+2. Build the docker image from source (takes from 3 to 6 hours, depending from CPU and the Internet speed):
+```bash
+cd OpenPlaceRecognition/docker
+bash build_base.sh
+bash build_toposlam.sh
+```
+Or unpack the pre-built docker image:
+```bash
+docker load -i prism_topomap_docker
+```
+
+3. Run the docker container with the datasets directory:
+```bash
+bash start_toposlam.sh DATASETS_DIR
+```
+the `DATASETS_DIR` will be mounted into `~/Datasets` directory inside the container.
+
+4. Enter into the container:
+```bash
+bash into.sh
+```
+
+5. Inside the container, setup the OpenPlaceRecognition library (mounted in the home directory):
+```bash
+cd OpenPlaceRecognition
+pip install -e .
+```
+
+6. Inside the container, build the ROS Catkin workspace:
+```bash
+source /opt/ros/noetic/setup.bash
+cd ~/catkin_ws
+catkin_make
+source devel/setup.bash
+```
+
+7. After that, you can launch PRISM-TopoMap:
+For indoor demo (on AgileX Scout robot):
+```bash
+roslaunch prism_topomap build_map_by_iou_scout_rosbag.launch
+```
+
+For outdoor demo (on a self-driving truck, with `truck_localization` launch file created by you):
+```bash
+cd catkin_ws/src/PRISM-TopoMap
+git checkout localization_mode
+roslaunch prism_topomap truck_localization.launch
+```
+
 ## Base image
 
-The `alexmelekhin/open-place-recognition:base` image contains following:
+The `alexmelekhin/open-place-recognition:base` image built by th contains following:
 
-- Ubuntu 22.04
-- Python 3.10
+- Ubuntu 20.04
+- Python 3.8
 - CUDA 12.1.1
 - cuDNN 8
 - PyTorch 2.1.2
 - torhvision 0.16.2
 - MinkowskiEngine
 - faiss
-
-You can either pull it from dockerhub:
-
-```bash
-docker pull alexmelekhin/open-place-recognition:base
-```
 
 Or build it manually:
 
@@ -26,24 +76,24 @@ Or build it manually:
 bash docker/build_base.sh
 ```
 
-## Devel image
+## TopoSLAM image (for PRISM-TopoMap)
 
-The `open-place-recognition:devel` image are build upon base image described above and contain pip requirements pre-installed and non-root user created inside.
+The `prism_topomap_docker` image is build upon base image described above and contain pip requirements pre-installed as well as ROS Noetic and non-root user created inside. 
 
 It should be build only manually (to correctly propagate your UID and GID):
 
 ```bash
 # from repo root dir
-bash docker/build_devel.sh
+bash docker/build_toposlam.sh
 ```
 
-### Starting container
+### Starting container for TopoSLAM
 
 The container should be started using the `open-place-recognition:devel` image by using the following script:
 
 ```bash
 # from repo root dir
-bash docker/start.sh [DATASETS_DIR]
+bash docker/start_toposlam.sh [DATASETS_DIR]
 ```
 
 The `[DATASETS_DIR]` will be mounted to the directory `/home/docker_opr/Datasets` with read and write access.
