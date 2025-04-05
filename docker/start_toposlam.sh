@@ -12,12 +12,18 @@ get_real_path(){
 }
 
 ARCH=`uname -m`
-if [ $ARCH != "aarch64" ]; then
+if [ $ARCH == "x86_64" ]; then
+    if command -v nvidia-smi &> /dev/null; then
+        DEVICE=cuda
+        ARGS="--ipc host --gpus all"
+    else
+        echo "${orange}CPU-only${reset_color} build is not supported yet"
+        exit 1
+    fi
+else
     echo "${orange}${ARCH}${reset_color} architecture is not supported"
     exit 1
 fi
-
-ARGS="--runtime nvidia"
 
 if [ $# != 1 ]; then
     echo "Usage:
@@ -35,17 +41,16 @@ fi
 
 PROJECT_ROOT_DIR=$(cd ./"`dirname $0`"/.. || exit; pwd)
 
-echo "Running on ${orange}${ARCH}${reset_color}"
+echo "Running on ${orange}${ARCH}${reset_color} with ${orange}${DEVICE}${reset_color}"
 
 docker run -it -d --rm \
     $ARGS \
     --privileged \
     --name ${USER}_opr \
     --net host \
-    --shm-size=2g \
     -v $PROJECT_ROOT_DIR:/home/docker_opr/OpenPlaceRecognition:rw \
     -v $DATASETS_DIR:/home/docker_opr/Datasets:rw \
-    open-place-recognition-jetson:devel-r35.4.1-cu114-cp310
+    prism-topomap-docker:devel
 
 docker exec --user root \
     ${USER}_opr bash -c "/etc/init.d/ssh start"

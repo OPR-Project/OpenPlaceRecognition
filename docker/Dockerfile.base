@@ -1,7 +1,7 @@
-FROM nvcr.io/nvidia/cuda:12.1.1-cudnn8-devel-ubuntu22.04
+FROM nvcr.io/nvidia/cuda:12.1.1-cudnn8-devel-ubuntu20.04
 ARG MAX_JOBS=4
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies for convinient development inside container
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
@@ -34,7 +34,16 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libxmlsec1-dev \
     libffi-dev \
     liblzma-dev \
+    locales \
+    language-pack-en \
+    language-pack-ru \
     && rm -rf /var/lib/apt/lists/*
+
+# Ensure locale environment variables are properly set
+RUN locale-gen en_US.UTF-8 ru_RU.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
@@ -49,6 +58,10 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v3.26.5/cmake-3.26.5
 ARG PIP_VERSION=23.3.2
 ARG SETUPTOOLS_VERSION=69.0.3
 RUN pip install pip==${PIP_VERSION} setuptools==${SETUPTOOLS_VERSION}
+
+# install numpy<2
+ARG NUMPY_VERSION=1.24.4
+RUN pip install numpy==${NUMPY_VERSION}
 
 # install pytorch and torchvision
 RUN pip install \
@@ -83,6 +96,52 @@ RUN git clone https://github.com/facebookresearch/faiss.git && \
         -DCMAKE_CUDA_ARCHITECTURES="60;61;70;75;80;86" && \
     make -C build -j${MAX_JOBS} faiss && \
     make -C build -j${MAX_JOBS} swigfaiss && \
-    cd build/faiss/python && python3 setup.py install && \
+    cd build/faiss/python && python3 setup.py install --install-lib /usr/local/lib/python3.8/dist-packages && \
+    cd /
+
+# Install Open3D library with GPU support
+RUN git clone https://github.com/isl-org/Open3D.git && cd Open3D && git checkout c8856fc
+WORKDIR /Open3D
+RUN bash util/install_deps_ubuntu.sh assume-yes && \
+    rm -rf /var/lib/apt/lists/*
+RUN mkdir build && cd build && \
+    cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=ON \
+        -DGLIBCXX_USE_CXX11_ABI=OFF \
+        -DBUILD_CUDA_MODULE=ON \
+        -DBUILD_PYTORCH_OPS=ON \
+        -DBUILD_TENSORFLOW_OPS=OFF \
+        -DPYTHON_EXECUTABLE=$(which python) \
+        -DCMAKE_INSTALL_PREFIX=/usr/local \
+        .. && \
+    make -j${MAX_JOBS} && \
+    make install -j${MAX_JOBS}
+ARG YAPF_VERSION=0.43.0
+RUN pip install yapf==${YAPF_VERSION}
+RUN cd build && make install-pip-package -j${MAX_JOBS}
+
+# install pytorch3d
+RUN FORCE_CUDA=1 pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
+
+# install PointMamba requirements
+WORKDIR /
+ARG CAUSALCONV1D_VERSION=1.4.0
+ARG MAMBA_VERSION=1.2.2
+RUN git clone https://github.com/alexmelekhin/PointMamba.git && \
+    cd PointMamba && \
+    pip install -r requirements.txt && \
+    cd pointmamba/extensions/chamfer_dist && \
+    python setup.py install && \
+    cd ../emd && \
+    python setup.py install && \
+    pip install "git+https://github.com/alexmelekhin/Pointnet2_PyTorch.git#egg=pointnet2_ops&subdirectory=pointnet2_ops_lib" && \
+    pip install causal-conv1d==${CAUSALCONV1D_VERSION} && \
+    pip install mamba-ssm==${MAMBA_VERSION} && \
     cd / && \
-    rm -rf faiss
+    rm -rf PointMamba
+
+# install PaddlePaddle and PaddleOCR for OCR tasks
+RUN pip install paddlepaddle-gpu==2.6.1.post120 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
+ARG PADDLEOCR_VERSION=2.10.0
+RUN pip install paddleocr==${PADDLEOCR_VERSION}

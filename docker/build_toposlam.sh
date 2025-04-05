@@ -11,7 +11,7 @@ fi
 
 if command -v nvidia-smi &> /dev/null; then
     echo "Detected ${orange}CUDA${reset_color} hardware"
-    DOCKERFILE=Dockerfile.devel
+    DOCKERFILE=Dockerfile.toposlam
     DEVICE=cuda
 else
     echo "${orange}CPU-only${reset_color} build is not supported yet"
@@ -27,5 +27,5 @@ docker build $PROJECT_ROOT_DIR \
     --build-arg UID=$(id -u) \
     --build-arg GID=$(id -g) \
     -f $PROJECT_ROOT_DIR/docker/$DOCKERFILE \
-    -t open-place-recognition:devel \
+    -t prism-topomap-docker:devel \
     --network=host
