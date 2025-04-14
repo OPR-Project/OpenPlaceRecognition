@@ -48,6 +48,8 @@ def get_recalls(
     gt_db = []
     errors_dists = []
     one_percent_threshold = max(int(round(len(db_embs) / 100.0)), 1)
+    if one_percent_threshold >= at_n:
+        raise ValueError(f"at_n is required to be greater than one percent threshold: {one_percent_threshold}")
 
     distances, indices = database_tree.query(query_embs, k=at_n)
 
@@ -89,16 +91,17 @@ def test(
     Returns:
         Tuple[np.ndarray, float, float]: Array of AverageRecall@N (N from 1 to 25), AverageRecall@1%
             and mean top-1 distance.
+
+    Raises:
+        ValueError: If the required coordinate columns are not found in the dataset.
     """
     device = parse_device(device)
-
-    model = model.to(device)
-
     with torch.no_grad():
         embeddings_list = []
         for batch in tqdm(dataloader, desc="Calculating test set descriptors", leave=False):
             batch = {e: batch[e].to(device) for e in batch}
             embeddings = model(batch)["final_descriptor"]
+
             embeddings_list.append(embeddings.cpu().numpy())
             torch.cuda.empty_cache()
         test_embeddings = np.vstack(embeddings_list)
@@ -113,7 +116,18 @@ def test(
         selected_queries = group[group["in_query"]]
         queries.append(selected_queries.index.to_list())
 
-    utms = torch.tensor(test_df[["northing", "easting"]].to_numpy())
+    if "northing" in test_df.columns and "easting" in test_df.columns:
+        coords_columns = ["northing", "easting"]
+    elif "x" in test_df.columns and "y" in test_df.columns:
+        coords_columns = ["x", "y"]
+    elif "tx" in test_df.columns and "ty" in test_df.columns:
+        coords_columns = ["tx", "ty"]
+    else:
+        raise ValueError(
+            "Required coordinate columns ('northing'/'easting', 'x'/'y', or 'tx'/'ty') not found in the dataset"
+        )
+
+    utms = torch.tensor(test_df[coords_columns].to_numpy())
     dist_fn = LpDistance(normalize_embeddings=False)
     dist_utms = dist_fn(utms).numpy()
 

@@ -140,4 +140,5 @@ class ViTBaseFeatureExtractor(nn.Module):
         return _forward_hook
     
     def __del__(self):
-        self.fh_handle.remove()
+        if self.fh_handle is not None:
+            self.fh_handle.remove()
