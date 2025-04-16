@@ -260,6 +260,29 @@ and consists of tracks recorded at different times of day (day/dusk/night) and d
 You can find more details in the `OPR-Project/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_ repository.
 
 
+Other datasets
+==============
+
+We provide several datasets that can be used with the library.
+
+* `Oxford RobotCar <https://robotcar-dataset.robots.ox.ac.uk/>`_ is a comprehensive autonomous driving dataset
+  featuring over 1,000 km of traffic data, nearly 20 million images, and sensor data collected in diverse weather conditions
+  from an autonomous vehicle in Oxford between 2014 and 2015.
+  We provide a specifically pre-processed subset designed for the place recognition task in the OpenPlaceRecognition library.
+  This subset is primarily based on the
+  `PointNetVLAD paper <https://openaccess.thecvf.com/content_cvpr_2018/html/Uy_PointNetVLAD_Deep_Point_CVPR_2018_paper.html>`_.
+
+  * `Hugging Face <https://huggingface.co/datasets/OPR-Project/OxfordRobotCar_OpenPlaceRecognition>`_
+  * `Kaggle <https://www.kaggle.com/datasets/creatorofuniverses/oxfordrobotcar-iprofi-hack-23>`_
+
+* `NCLT <https://robots.engin.umich.edu/nclt/index.html#top>`_ is the University of Michigan North Campus Long-Term Vision and LIDAR Dataset.
+  We provide a modified version of the NCLT dataset, which is primarily based on the
+  `AdaFusion paper <https://ieeexplore.ieee.org/abstract/document/9905898/>`_.
+
+  * `Hugging Face <https://huggingface.co/datasets/OPR-Project/NCLT_OpenPlaceRecognition>`_
+  * `Kaggle <https://www.kaggle.com/datasets/creatorofuniverses/nclt-iprofi-hack-23>`_
+
+
 Package Structure
 =================
 
