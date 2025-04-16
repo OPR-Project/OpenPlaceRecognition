@@ -139,6 +139,25 @@ You can download the dataset:
   - [ITLP Campus Outdoor](https://huggingface.co/datasets/OPR-Project/ITLP-Campus-Outdoor)
   - [ITLP Campus Indoor](https://huggingface.co/datasets/OPR-Project/ITLP-Campus-Indoor)
 
+## Other Datasets
+
+We provide several datasets that can be used with the library.
+
+- [Oxford RobotCar](https://robotcar-dataset.robots.ox.ac.uk/) is a comprehensive autonomous driving dataset
+  featuring over 1,000 km of traffic data, nearly 20 million images, and sensor data collected in diverse weather conditions
+  from an autonomous vehicle in Oxford between 2014 and 2015.
+  We provide a specifically pre-processed subset designed for the place recognition task in the OpenPlaceRecognition library.
+  This subset is primarily based on the
+  [PointNetVLAD paper](https://openaccess.thecvf.com/content_cvpr_2018/html/Uy_PointNetVLAD_Deep_Point_CVPR_2018_paper.html).
+  - [Hugging Face](https://huggingface.co/datasets/OPR-Project/OxfordRobotCar_OpenPlaceRecognition)
+  - [Kaggle](https://www.kaggle.com/datasets/creatorofuniverses/oxfordrobotcar-iprofi-hack-23)
+
+- [NCLT](https://robots.engin.umich.edu/nclt/index.html#top) is the University of Michigan North Campus Long-Term Vision and LIDAR Dataset.
+  We provide a modified version of the NCLT dataset, which is primarily based on the
+  [AdaFusion paper](https://ieeexplore.ieee.org/abstract/document/9905898/).
+  - [Hugging Face](https://huggingface.co/datasets/OPR-Project/NCLT_OpenPlaceRecognition)
+  - [Kaggle](https://www.kaggle.com/datasets/creatorofuniverses/nclt-iprofi-hack-23)
+
 ## Package Structure
 
 You can learn more about the package structure in the
