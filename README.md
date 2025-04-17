@@ -183,6 +183,22 @@ You can find the models for place recognition in the Hugging Face model hub:
 | Custom | Multi-Image, LiDAR, SOC | NCLT | [multimodal_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_with_soc_outdoor.yaml) | [`multimodal_with_soc_outdoor_nclt.pth`](https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/multimodal_with_soc_outdoor_nclt.pth) |
 | Custom | Multi-Image, LiDAR, SOC | NCLT + ITLP Campus Outdoor fine-tune | [multimodal_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_with_soc_outdoor.yaml) | [`multimodal_with_soc_outdoor_itlp-finetune.pth`](https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/multimodal_with_soc_outdoor_itlp-finetune.pth) |
 
+### Registration
+
+You can find the models for point cloud registration in the Hugging Face model hub:
+- https://huggingface.co/OPR-Project/Registration-nuScenes - nuScenes-trained models
+- https://huggingface.co/OPR-Project/Registration-KITTI - KITTI-trained models
+
+| Model      | Modality | Train Dataset | Config | Weights |
+| ---------- | -------- | ------------- | ------ | ------- |
+| GeoTransformer ([paper](https://ieeexplore.ieee.org/abstract/document/10076895)) | LiDAR | KITTI | [geotransformer_kitti.yaml](./configs/model/registration/geotransformer_kitti.yaml) | [`geotransformer_kitti.pth`](https://huggingface.co/OPR-Project/Registration-KITTI/resolve/main/geotransformer_kitti.pth) |
+| HRegNet ([paper](https://openaccess.thecvf.com/content/ICCV2021/html/Lu_HRegNet_A_Hierarchical_Network_for_Large-Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html)) | LiDAR | KITTI | [hregnet.yaml](./configs/model/registration/hregnet.yaml) | [`hregnet_kitti.pth`](https://huggingface.co/OPR-Project/Registration-KITTI/resolve/main/hregnet_kitti.pth) |
+| HRegNet Coarse (1-step) ([paper](https://openaccess.thecvf.com/content/ICCV2021/html/Lu_HRegNet_A_Hierarchical_Network_for_Large-Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html)) | LiDAR | KITTI | [hregnet_coarse.yaml](./configs/model/registration/hregnet_coarse.yaml) | [`hregnet_kitti.pth`](https://huggingface.co/OPR-Project/Registration-KITTI/resolve/main/hregnet_kitti.pth) |
+| HRegNet ([paper](https://openaccess.thecvf.com/content/ICCV2021/html/Lu_HRegNet_A_Hierarchical_Network_for_Large-Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html)) | LiDAR | nuScenes | [hregnet.yaml](./configs/model/registration/hregnet.yaml) | [`hregnet_nuscenes.pth`](https://huggingface.co/OPR-Project/Registration-nuScenes/resolve/main/hregnet_nuscenes.pth) |
+| HRegNet Coarse (1-step) ([paper](https://openaccess.thecvf.com/content/ICCV2021/html/Lu_HRegNet_A_Hierarchical_Network_for_Large-Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html)) | LiDAR | nuScenes | [hregnet_coarse.yaml](./configs/model/registration/hregnet_coarse.yaml) | [`hregnet_nuscenes.pth`](https://huggingface.co/OPR-Project/Registration-nuScenes/resolve/main/hregnet_nuscenes.pth) |
+| HRegNet w/o Sim-feats ([paper](https://openaccess.thecvf.com/content/ICCV2021/html/Lu_HRegNet_A_Hierarchical_Network_for_Large-Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html)) | LiDAR | nuScenes | [hregnet_nosim.yaml](./configs/model/registration/hregnet_nosim.yaml) | [`hregnet_nosim_nuscenes.pth`](https://huggingface.co/OPR-Project/Registration-nuScenes/resolve/main/hregnet_nosim_nuscenes.pth) |
+| HRegNet Light (custom modification) | LiDAR | nuScenes | [hregnet_light_feats.yaml](./configs/model/registration/hregnet_light_feats.yaml) | [`hregnet_light_feats_nuscenes.pth`](https://huggingface.co/OPR-Project/Registration-nuScenes/resolve/main/hregnet_light_feats_nuscenes.pth) |
+
 ## Сonnected Projects
 
 - [OPR-Project/OpenPlaceRecognition-ROS2](https://github.com/OPR-Project/OpenPlaceRecognition-ROS2) - ROS-2 implementation of OpenPlaceRecognition modules
