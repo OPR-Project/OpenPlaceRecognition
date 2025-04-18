@@ -199,6 +199,24 @@ You can find the models for point cloud registration in the Hugging Face model h
 | HRegNet w/o Sim-feats ([paper](https://openaccess.thecvf.com/content/ICCV2021/html/Lu_HRegNet_A_Hierarchical_Network_for_Large-Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html)) | LiDAR | nuScenes | [hregnet_nosim.yaml](./configs/model/registration/hregnet_nosim.yaml) | [`hregnet_nosim_nuscenes.pth`](https://huggingface.co/OPR-Project/Registration-nuScenes/resolve/main/hregnet_nosim_nuscenes.pth) |
 | HRegNet Light (custom modification) | LiDAR | nuScenes | [hregnet_light_feats.yaml](./configs/model/registration/hregnet_light_feats.yaml) | [`hregnet_light_feats_nuscenes.pth`](https://huggingface.co/OPR-Project/Registration-nuScenes/resolve/main/hregnet_light_feats_nuscenes.pth) |
 
+### PaddleOCR weights
+
+You can find the weights for PaddleOCR in the Hugging Face model hub: https://huggingface.co/OPR-Project/PaddleOCR
+
+Make sure `huggingface_hub` is installed: `pip install huggingface_hub`.
+Load the weights using the following code:
+
+```python
+from pathlib import Path
+from huggingface_hub import snapshot_download
+
+ocr_weights_path = Path("/home/docker_opr/OpenPlaceRecognition/weights/paddleocr")  # change to your path
+if not ocr_weights_path.exists():
+    ocr_weights_path.mkdir(parents=True)
+
+snapshot_download(repo_id="OPR-Project/PaddleOCR", repo_type="model", local_dir=ocr_weights_path)
+```
+
 ## Сonnected Projects
 
 - [OPR-Project/OpenPlaceRecognition-ROS2](https://github.com/OPR-Project/OpenPlaceRecognition-ROS2) - ROS-2 implementation of OpenPlaceRecognition modules
