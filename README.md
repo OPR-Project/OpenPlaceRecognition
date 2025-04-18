@@ -173,15 +173,49 @@ You can find the models for place recognition in the Hugging Face model hub:
 
 | Model      | Modality | Train Dataset | Config | Weights |
 | ---------- | -------- | ------------- | ------ | ------- |
-| MinkLoc3D ([paper](https://openaccess.thecvf.com/content/WACV2021/html/Komorowski_MinkLoc3D_Point_Cloud_Based_Large-Scale_Place_Recognition_WACV_2021_paper.html)) | LiDAR | NCLT | [minkloc3d.yaml](./configs/model/place_recognition/minkloc3d.yaml) | `minkloc3d_nclt.pth` |
-| Custom | Multi-Image, Multi-Semantic, LiDAR | NCLT | [multi-image_multi-semantic_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_multi-semantic_lidar_late-fusion.yaml) | `multi-image_multi-semantic_lidar_late-fusion_nclt.pth` |
-| Custom | Multi-Image, Multi-Semantic, LiDAR | NCLT + ITLP Campus Outdoor fine-tune | [multi-image_multi-semantic_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_multi-semantic_lidar_late-fusion.yaml) | `multi-image_multi-semantic_lidar_late-fusion_itlp-finetune.pth` |
-| Custom | Multi-Image, LiDAR | NCLT | [multi-image_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_lidar_late-fusion.yaml) | `multi-image_lidar_late-fusion_nclt.pth` |
-| Custom | Multi-Image, LiDAR | NCLT + ITLP Campus Outdoor fine-tune | [multi-image_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_lidar_late-fusion.yaml) | `multi-image_lidar_late-fusion_itlp-finetune.pth` |
-| Custom | Multi-Image, Multi-Semantic, LiDAR, SOC | NCLT | [multimodal_semantic_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_semantic_with_soc_outdoor.yaml) | `multimodal_semantic_with_soc_outdoor_nclt.pth` |
-| Custom | Multi-Image, Multi-Semantic, LiDAR, SOC | NCLT + ITLP Campus Outdoor fine-tune | [multimodal_semantic_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_semantic_with_soc_outdoor.yaml) | `multimodal_semantic_with_soc_outdoor_itlp-finetune.pth` |
-| Custom | Multi-Image, LiDAR, SOC | NCLT | [multimodal_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_with_soc_outdoor.yaml) | `multimodal_with_soc_outdoor_nclt.pth` |
-| Custom | Multi-Image, LiDAR, SOC | NCLT + ITLP Campus Outdoor fine-tune | [multimodal_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_with_soc_outdoor.yaml) | `multimodal_with_soc_outdoor_itlp-finetune.pth` |
+| MinkLoc3D ([paper](https://openaccess.thecvf.com/content/WACV2021/html/Komorowski_MinkLoc3D_Point_Cloud_Based_Large-Scale_Place_Recognition_WACV_2021_paper.html)) | LiDAR | NCLT | [minkloc3d.yaml](./configs/model/place_recognition/minkloc3d.yaml) | [`minkloc3d_nclt.pth`](https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/minkloc3d_nclt.pth) |
+| Custom | Multi-Image, Multi-Semantic, LiDAR | NCLT | [multi-image_multi-semantic_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_multi-semantic_lidar_late-fusion.yaml) | [`multi-image_multi-semantic_lidar_late-fusion_nclt.pth`](https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/multi-image_multi-semantic_lidar_late-fusion_nclt.pth) |
+| Custom | Multi-Image, Multi-Semantic, LiDAR | NCLT + ITLP Campus Outdoor fine-tune | [multi-image_multi-semantic_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_multi-semantic_lidar_late-fusion.yaml) | [`multi-image_multi-semantic_lidar_late-fusion_itlp-finetune.pth`](https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/multi-image_multi-semantic_lidar_late-fusion_itlp-finetune.pth) |
+| Custom | Multi-Image, LiDAR | NCLT | [multi-image_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_lidar_late-fusion.yaml) | [`multi-image_lidar_late-fusion_nclt.pth`](https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/multi-image_lidar_late-fusion_nclt.pth) |
+| Custom | Multi-Image, LiDAR | NCLT + ITLP Campus Outdoor fine-tune | [multi-image_lidar_late-fusion.yaml](./configs/model/place_recognition/multi-image_lidar_late-fusion.yaml) | [`multi-image_lidar_late-fusion_itlp-finetune.pth`](https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/multi-image_lidar_late-fusion_itlp-finetune.pth) |
+| Custom | Multi-Image, Multi-Semantic, LiDAR, SOC | NCLT | [multimodal_semantic_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_semantic_with_soc_outdoor.yaml) | [`multimodal_semantic_with_soc_outdoor_nclt.pth`](https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/multimodal_semantic_with_soc_outdoor_nclt.pth) |
+| Custom | Multi-Image, Multi-Semantic, LiDAR, SOC | NCLT + ITLP Campus Outdoor fine-tune | [multimodal_semantic_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_semantic_with_soc_outdoor.yaml) | [`multimodal_semantic_with_soc_outdoor_itlp-finetune.pth`](https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/multimodal_semantic_with_soc_outdoor_itlp-finetune.pth) |
+| Custom | Multi-Image, LiDAR, SOC | NCLT | [multimodal_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_with_soc_outdoor.yaml) | [`multimodal_with_soc_outdoor_nclt.pth`](https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/multimodal_with_soc_outdoor_nclt.pth) |
+| Custom | Multi-Image, LiDAR, SOC | NCLT + ITLP Campus Outdoor fine-tune | [multimodal_with_soc_outdoor.yaml](./configs/model/place_recognition/multimodal_with_soc_outdoor.yaml) | [`multimodal_with_soc_outdoor_itlp-finetune.pth`](https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/multimodal_with_soc_outdoor_itlp-finetune.pth) |
+
+### Registration
+
+You can find the models for point cloud registration in the Hugging Face model hub:
+- https://huggingface.co/OPR-Project/Registration-nuScenes - nuScenes-trained models
+- https://huggingface.co/OPR-Project/Registration-KITTI - KITTI-trained models
+
+| Model      | Modality | Train Dataset | Config | Weights |
+| ---------- | -------- | ------------- | ------ | ------- |
+| GeoTransformer ([paper](https://ieeexplore.ieee.org/abstract/document/10076895)) | LiDAR | KITTI | [geotransformer_kitti.yaml](./configs/model/registration/geotransformer_kitti.yaml) | [`geotransformer_kitti.pth`](https://huggingface.co/OPR-Project/Registration-KITTI/resolve/main/geotransformer_kitti.pth) |
+| HRegNet ([paper](https://openaccess.thecvf.com/content/ICCV2021/html/Lu_HRegNet_A_Hierarchical_Network_for_Large-Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html)) | LiDAR | KITTI | [hregnet.yaml](./configs/model/registration/hregnet.yaml) | [`hregnet_kitti.pth`](https://huggingface.co/OPR-Project/Registration-KITTI/resolve/main/hregnet_kitti.pth) |
+| HRegNet Coarse (1-step) ([paper](https://openaccess.thecvf.com/content/ICCV2021/html/Lu_HRegNet_A_Hierarchical_Network_for_Large-Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html)) | LiDAR | KITTI | [hregnet_coarse.yaml](./configs/model/registration/hregnet_coarse.yaml) | [`hregnet_kitti.pth`](https://huggingface.co/OPR-Project/Registration-KITTI/resolve/main/hregnet_kitti.pth) |
+| HRegNet ([paper](https://openaccess.thecvf.com/content/ICCV2021/html/Lu_HRegNet_A_Hierarchical_Network_for_Large-Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html)) | LiDAR | nuScenes | [hregnet.yaml](./configs/model/registration/hregnet.yaml) | [`hregnet_nuscenes.pth`](https://huggingface.co/OPR-Project/Registration-nuScenes/resolve/main/hregnet_nuscenes.pth) |
+| HRegNet Coarse (1-step) ([paper](https://openaccess.thecvf.com/content/ICCV2021/html/Lu_HRegNet_A_Hierarchical_Network_for_Large-Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html)) | LiDAR | nuScenes | [hregnet_coarse.yaml](./configs/model/registration/hregnet_coarse.yaml) | [`hregnet_nuscenes.pth`](https://huggingface.co/OPR-Project/Registration-nuScenes/resolve/main/hregnet_nuscenes.pth) |
+| HRegNet w/o Sim-feats ([paper](https://openaccess.thecvf.com/content/ICCV2021/html/Lu_HRegNet_A_Hierarchical_Network_for_Large-Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html)) | LiDAR | nuScenes | [hregnet_nosim.yaml](./configs/model/registration/hregnet_nosim.yaml) | [`hregnet_nosim_nuscenes.pth`](https://huggingface.co/OPR-Project/Registration-nuScenes/resolve/main/hregnet_nosim_nuscenes.pth) |
+| HRegNet Light (custom modification) | LiDAR | nuScenes | [hregnet_light_feats.yaml](./configs/model/registration/hregnet_light_feats.yaml) | [`hregnet_light_feats_nuscenes.pth`](https://huggingface.co/OPR-Project/Registration-nuScenes/resolve/main/hregnet_light_feats_nuscenes.pth) |
+
+### PaddleOCR weights
+
+You can find the weights for PaddleOCR in the Hugging Face model hub: https://huggingface.co/OPR-Project/PaddleOCR
+
+Make sure `huggingface_hub` is installed: `pip install huggingface_hub`.
+Load the weights using the following code:
+
+```python
+from pathlib import Path
+from huggingface_hub import snapshot_download
+
+ocr_weights_path = Path("/home/docker_opr/OpenPlaceRecognition/weights/paddleocr")  # change to your path
+if not ocr_weights_path.exists():
+    ocr_weights_path.mkdir(parents=True)
+
+snapshot_download(repo_id="OPR-Project/PaddleOCR", repo_type="model", local_dir=ocr_weights_path)
+```
 
 ## Сonnected Projects
 
