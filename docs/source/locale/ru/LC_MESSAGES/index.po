@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"POT-Creation-Date: 2025-04-18 12:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,8 +39,8 @@ msgid ""
 msgstr ""
 "*Обзор типичного пайплайна распознавания мест. Сначала входные данные "
 "кодируются в дескриптор запроса. Затем выполняется поиск K ближайших "
-"соседей между запросом и базой данных. В конце позиция ближайшего найденного "
-"дескриптора в базе данных считается ответом.*"
+"соседей между запросом и базой данных. В конце позиция ближайшего "
+"найденного дескриптора в базе данных считается ответом.*"
 
 #: ../../source/index.rst:17
 msgid "This library is suitable for:"
@@ -51,24 +51,25 @@ msgid ""
 "🚗 **Navigation of autonomous cars, robots, and drones** using cameras and"
 " lidars, especially in areas with limited or unavailable GPS signals."
 msgstr ""
-"🚗 **Навигации автономных автомобилей, роботов и дронов**, использующих камеры "
-"и лидары, особенно в зонах с ограниченным или недоступным сигналом GPS."
+"🚗 **Навигации автономных автомобилей, роботов и дронов**, использующих "
+"камеры и лидары, особенно в зонах с ограниченным или недоступным сигналом"
+" GPS."
 
 #: ../../source/index.rst:20
 msgid ""
 "📦 **Localization of delivery robots** needing reliable positioning both "
 "indoors and outdoors."
 msgstr ""
-"📦 **Локализации роботов-доставщиков**, требующих надежного позиционирования "
-"как внутри помещений, так и на открытых пространствах."
+"📦 **Локализации роботов-доставщиков**, требующих надежного "
+"позиционирования как внутри помещений, так и на открытых пространствах."
 
 #: ../../source/index.rst:21
 msgid ""
 "🔬 **Research and development of computer vision algorithms**, related to "
 "multimodal place recognition and localization."
 msgstr ""
-"🔬 **Исследований и разработки алгоритмов компьютерного зрения**, связанных с "
-"мультимодальным распознаванием и локализацией мест."
+"🔬 **Исследований и разработки алгоритмов компьютерного зрения**, "
+"связанных с мультимодальным распознаванием и локализацией мест."
 
 #: ../../source/index.rst:22
 msgid ""
@@ -104,7 +105,9 @@ msgstr "**RAM**: не менее 8 ГБ"
 
 #: ../../source/index.rst:47
 msgid "**GPU**: NVIDIA RTX 2060 or higher (to ensure adequate performance)"
-msgstr "**GPU**: NVIDIA RTX 2060 или выше (для обеспечения достаточной производительности)"
+msgstr ""
+"**GPU**: NVIDIA RTX 2060 или выше (для обеспечения достаточной "
+"производительности)"
 
 #: ../../source/index.rst:48
 msgid "**Video memory**: at least 4 GB"
@@ -112,7 +115,9 @@ msgstr "**Видеопамять**: не менее 4 ГБ"
 
 #: ../../source/index.rst:49
 msgid "**Storage**: SSD recommended for faster loading of data and models"
-msgstr "**Хранилище**: рекомендуется SSD для более быстрой загрузки данных и моделей"
+msgstr ""
+"**Хранилище**: рекомендуется SSD для более быстрой загрузки данных и "
+"моделей"
 
 #: ../../source/index.rst:51
 msgid "**NVIDIA Jetson**:"
@@ -125,7 +130,8 @@ msgid ""
 " yet.*"
 msgstr ""
 "Мы рекомендуем использовать NVIDIA Jetson Xavier AGX. *Библиотека должна "
-"быть совместима с новыми версиями устройств, но мы пока их не тестировали.*"
+"быть совместима с новыми версиями устройств, но мы пока их не "
+"тестировали.*"
 
 #: ../../source/index.rst:58
 msgid "Software"
@@ -178,10 +184,11 @@ msgstr ""
 "Рекомендуемый и самый простой способ использовать библиотеку — это "
 "предоставляемое Docker-окружение. Файл ``Dockerfile.base`` содержит все "
 "необходимые компоненты для запуска библиотеки, включая опциональные "
-"библиотеки `MinkowskiEngine <https://github.com/NVIDIA/MinkowskiEngine>`_ и "
-"`faiss <https://github.com/facebookresearch/faiss>`_. Вы можете либо загрузить "
-"этот образ из Docker Hub (``docker pull alexmelekhin/open-place-recognition:base``), "
-"либо собрать его вручную (``bash docker/build_base.sh``)."
+"библиотеки `MinkowskiEngine <https://github.com/NVIDIA/MinkowskiEngine>`_"
+" и `faiss <https://github.com/facebookresearch/faiss>`_. Вы можете либо "
+"загрузить этот образ из Docker Hub (``docker pull alexmelekhin/open-"
+"place-recognition:base``), либо собрать его вручную (``bash "
+"docker/build_base.sh``)."
 
 #: ../../source/index.rst:89
 msgid ""
@@ -190,23 +197,23 @@ msgid ""
 "notebook.txt`` files, and creates a non-root user inside the image to "
 "avoid permission issues when using the container with mounted volumes."
 msgstr ""
-"Файл ``Dockerfile.devel`` устанавливает дополнительные требования из файлов "
-"``requirements.txt``, ``requirements-dev.txt`` и ``requirements-notebook.txt``, "
-"а также создаёт пользователя без root-прав для предотвращения проблем с правами "
-"при использовании контейнера с подключёнными томами."
+"Файл ``Dockerfile.devel`` устанавливает дополнительные требования из "
+"файлов ``requirements.txt``, ``requirements-dev.txt`` и ``requirements-"
+"notebook.txt``, а также создаёт пользователя без root-прав для "
+"предотвращения проблем с правами при использовании контейнера с "
+"подключёнными томами."
 
 #: ../../source/index.rst:95
 msgid "The ``devel`` version of the image should be built manually by the user:"
-msgstr ""
-"Версия образа ``devel`` должна быть собрана вручную пользователем:"
+msgstr "Версия образа ``devel`` должна быть собрана вручную пользователем:"
 
 #: ../../source/index.rst:101
 msgid ""
 "When starting the container, you must provide a data directory that will "
 "be mounted to ``~/Datasets`` inside the container:"
 msgstr ""
-"При запуске контейнера необходимо указать директорию с данными, которая будет "
-"подключена в ``~/Datasets`` внутри контейнера:"
+"При запуске контейнера необходимо указать директорию с данными, которая "
+"будет подключена в ``~/Datasets`` внутри контейнера:"
 
 #: ../../source/index.rst:107
 msgid ""
@@ -222,9 +229,9 @@ msgid ""
 "installing in editable mode with the ``-e`` flag to be able to make "
 "modifications to the code):"
 msgstr ""
-"После входа в контейнер установите библиотеку (рекомендуется устанавливать "
-"в редактируемом режиме с флагом ``-e``, чтобы иметь возможность вносить "
-"изменения в код):"
+"После входа в контейнер установите библиотеку (рекомендуется "
+"устанавливать в редактируемом режиме с флагом ``-e``, чтобы иметь "
+"возможность вносить изменения в код):"
 
 #: ../../source/index.rst:121
 msgid "Third-party packages"
@@ -244,24 +251,24 @@ msgid ""
 "registration, you should install the package located in the `third_party`"
 " directory:"
 msgstr ""
-"Если вы хотите использовать модель `GeoTransformer` для регистрации облаков "
-"точек, вам следует установить пакет из директории `third_party`:"
+"Если вы хотите использовать модель `GeoTransformer` для регистрации "
+"облаков точек, вам следует установить пакет из директории `third_party`:"
 
 #: ../../source/index.rst:139
 msgid ""
 "If you are seeing `Permission denied` error, you should run the command "
 "with `sudo`:"
 msgstr ""
-"Если вы столкнулись с ошибкой `Permission denied`, выполните команду через "
-"`sudo`:"
+"Если вы столкнулись с ошибкой `Permission denied`, выполните команду "
+"через `sudo`:"
 
 #: ../../source/index.rst:147
 msgid ""
 "If you want to use the `HRegNet` model for pointcloud registration, you "
 "should install the package located in the `third_party` directory:"
 msgstr ""
-"Если вы хотите использовать модель `HRegNet` для регистрации облаков точек, "
-"вам следует установить пакет из директории `third_party`:"
+"Если вы хотите использовать модель `HRegNet` для регистрации облаков "
+"точек, вам следует установить пакет из директории `third_party`:"
 
 #: ../../source/index.rst:166
 msgid ""
@@ -277,16 +284,17 @@ msgid ""
 "password for the user `docker_opr` can be found in the "
 "``Dockerfile.devel`` file:"
 msgstr ""
-"**Примечание:** Если вы используете предоставленное Docker-окружение, пароль "
-"по умолчанию для пользователя `docker_opr` можно найти в файле ``Dockerfile.devel``:"
+"**Примечание:** Если вы используете предоставленное Docker-окружение, "
+"пароль по умолчанию для пользователя `docker_opr` можно найти в файле "
+"``Dockerfile.devel``:"
 
 #: ../../source/index.rst:192
 msgid ""
 "You can change the password by providing the `PW` build-time argument in "
 "the `docker/build_devel.sh` script:"
 msgstr ""
-"Вы можете изменить пароль, указав аргумент `PW` при сборке образа с помощью "
-"скрипта `docker/build_devel.sh`:"
+"Вы можете изменить пароль, указав аргумент `PW` при сборке образа с "
+"помощью скрипта `docker/build_devel.sh`:"
 
 #: ../../source/index.rst:202
 msgid "Advanced"
@@ -297,7 +305,8 @@ msgid ""
 "For a manual installation, you'll need to install several prerequisite "
 "libraries:"
 msgstr ""
-"Для ручной установки необходимо установить несколько библиотек-зависимостей:"
+"Для ручной установки необходимо установить несколько "
+"библиотек-зависимостей:"
 
 #: ../../source/index.rst:206
 msgid ""
@@ -306,9 +315,9 @@ msgid ""
 "<https://pytorch.org/get-started/locally/>`_ documentation for "
 "installation instructions."
 msgstr ""
-"**PyTorch** — главная зависимость нашей библиотеки. Мы рекомендуем использовать "
-"версию ``>=2.1.2``. Подробности установки см. в документации `PyTorch Get Started "
-"<https://pytorch.org/get-started/locally/>`_."
+"**PyTorch** — главная зависимость нашей библиотеки. Мы рекомендуем "
+"использовать версию ``>=2.1.2``. Подробности установки см. в документации"
+" `PyTorch Get Started <https://pytorch.org/get-started/locally/>`_."
 
 #: ../../source/index.rst:208
 msgid ""
@@ -319,10 +328,11 @@ msgid ""
 "please refer to the `torchvision GitHub repository "
 "<https://github.com/pytorch/vision>`_."
 msgstr ""
-"**torchvision** — библиотека PyTorch, предоставляющая наборы данных, трансформации "
-"и модели для компьютерного зрения. Обычно она устанавливается вместе с PyTorch. "
-"Подробнее см. документацию `PyTorch Get Started <https://pytorch.org/get-started/locally/>`_. "
-"Если хотите установить её отдельно, обратитесь к репозиторию `torchvision GitHub "
+"**torchvision** — библиотека PyTorch, предоставляющая наборы данных, "
+"трансформации и модели для компьютерного зрения. Обычно она "
+"устанавливается вместе с PyTorch. Подробнее см. документацию `PyTorch Get"
+" Started <https://pytorch.org/get-started/locally/>`_. Если хотите "
+"установить её отдельно, обратитесь к репозиторию `torchvision GitHub "
 "<https://github.com/pytorch/vision>`_."
 
 #: ../../source/index.rst:211
@@ -334,10 +344,12 @@ msgid ""
 "instead of the official repository, use the fork: "
 "`<https://github.com/alexmelekhin/MinkowskiEngine.git>`_."
 msgstr ""
-"**MinkowskiEngine** — библиотека для операций с разреженными тензорами. Мы рекомендуем "
-"использовать форк библиотеки, совместимый с CUDA 12. Инструкцию по установке можно найти в "
-"`Official Installation Guide <https://github.com/NVIDIA/MinkowskiEngine/wiki/Installation>`_, "
-"но вместо официального репозитория используйте форк: `<https://github.com/alexmelekhin/MinkowskiEngine.git>`_."
+"**MinkowskiEngine** — библиотека для операций с разреженными тензорами. "
+"Мы рекомендуем использовать форк библиотеки, совместимый с CUDA 12. "
+"Инструкцию по установке можно найти в `Official Installation Guide "
+"<https://github.com/NVIDIA/MinkowskiEngine/wiki/Installation>`_, но "
+"вместо официального репозитория используйте форк: "
+"`<https://github.com/alexmelekhin/MinkowskiEngine.git>`_."
 
 #: ../../source/index.rst:214
 msgid ""
@@ -348,10 +360,11 @@ msgid ""
 "the GPU version of the library because our pipelines use it for better "
 "performance."
 msgstr ""
-"**faiss** — библиотека для эффективного поиска похожих элементов и кластеризации плотных векторов. "
-"Подробнее см. репозиторий `faiss GitHub <https://github.com/facebookresearch/faiss>`_. "
-"Рекомендуемая версия — ``>=1.7.4``. Рекомендуется использовать GPU-версию библиотеки для "
-"лучшей производительности наших пайплайнов."
+"**faiss** — библиотека для эффективного поиска похожих элементов и "
+"кластеризации плотных векторов. Подробнее см. репозиторий `faiss GitHub "
+"<https://github.com/facebookresearch/faiss>`_. Рекомендуемая версия — "
+"``>=1.7.4``. Рекомендуется использовать GPU-версию библиотеки для лучшей "
+"производительности наших пайплайнов."
 
 #: ../../source/index.rst:218
 msgid ""
@@ -361,9 +374,11 @@ msgid ""
 "installation instructions. We recommend using the GPU version of the "
 "library because our pipelines use it for better performance."
 msgstr ""
-"**Open3D** — библиотека для обработки 3D-данных. Подробнее см. документацию "
-"`Open3D documentation <https://www.open3d.org/docs/release/getting_started.html>`_. "
-"Рекомендуется использовать GPU-версию библиотеки для улучшения производительности наших пайплайнов."
+"**Open3D** — библиотека для обработки 3D-данных. Подробнее см. "
+"документацию `Open3D documentation "
+"<https://www.open3d.org/docs/release/getting_started.html>`_. "
+"Рекомендуется использовать GPU-версию библиотеки для улучшения "
+"производительности наших пайплайнов."
 
 #: ../../source/index.rst:221
 msgid ""
@@ -375,17 +390,20 @@ msgid ""
 "installing PaddlePaddle, you can install PaddleOCR via pip: ``pip install"
 " paddleocr``."
 msgstr ""
-"**PaddlePaddle** и **PaddleOCR** используются для пайплайнов распознавания мест на основе текста. "
-"Подробнее см. инструкцию `PaddlePaddle Quick Start Guide "
-"<https://www.paddlepaddle.org.cn/en/install/quick>`_. Рекомендуется GPU-версия библиотеки. "
-"После установки PaddlePaddle вы можете установить PaddleOCR через pip: ``pip install paddleocr``."
+"**PaddlePaddle** и **PaddleOCR** используются для пайплайнов "
+"распознавания мест на основе текста. Подробнее см. инструкцию "
+"`PaddlePaddle Quick Start Guide "
+"<https://www.paddlepaddle.org.cn/en/install/quick>`_. Рекомендуется "
+"GPU-версия библиотеки. После установки PaddlePaddle вы можете установить "
+"PaddleOCR через pip: ``pip install paddleocr``."
 
 #: ../../source/index.rst:225
 msgid ""
 "The library also depends on several performance optimization libraries "
 "that should be installed:"
 msgstr ""
-"Библиотека также зависит от нескольких библиотек для оптимизации производительности, которые необходимо установить:"
+"Библиотека также зависит от нескольких библиотек для оптимизации "
+"производительности, которые необходимо установить:"
 
 #: ../../source/index.rst:227
 msgid ""
@@ -402,7 +420,8 @@ msgid ""
 "12x>`_."
 msgstr ""
 "ONNX Runtime: подробнее см. `Installation Guide "
-"<https://onnxruntime.ai/docs/install/#install-onnx-runtime-gpu-cuda-12x>`_."
+"<https://onnxruntime.ai/docs/install/#install-onnx-runtime-gpu-cuda-"
+"12x>`_."
 
 #: ../../source/index.rst:229
 msgid ""
@@ -411,7 +430,8 @@ msgid ""
 "tensorrt/installing.html#python-package-index-installation>`_."
 msgstr ""
 "TensorRT: подробнее см. `Installation Guide "
-"<https://docs.nvidia.com/deeplearning/tensorrt/latest/installing-tensorrt/installing.html#python-package-index-installation>`_."
+"<https://docs.nvidia.com/deeplearning/tensorrt/latest/installing-"
+"tensorrt/installing.html#python-package-index-installation>`_."
 
 #: ../../source/index.rst:230
 msgid ""
@@ -445,8 +465,8 @@ msgid ""
 " to the `OpenPlaceRecognition Issues <https://github.com/OPR-"
 "Project/OpenPlaceRecognition/issues>`_ page."
 msgstr ""
-"Если у вас возникнут какие-либо проблемы в процессе установки, обратитесь "
-"на страницу `OpenPlaceRecognition Issues <https://github.com/OPR-"
+"Если у вас возникнут какие-либо проблемы в процессе установки, обратитесь"
+" на страницу `OpenPlaceRecognition Issues <https://github.com/OPR-"
 "Project/OpenPlaceRecognition/issues>`_."
 
 #: ../../source/index.rst:241
@@ -461,11 +481,11 @@ msgid ""
 " model group. Note that models may have different licenses, depending on "
 "the dataset they were trained on."
 msgstr ""
-"Вы можете загрузить веса моделей из организации Hugging Face `OPR-Project "
-"<https://huggingface.co/OPR-Project>`_. Это рекомендуемый способ загрузки весов, "
-"так как там указаны лицензии и файлы README для каждой группы моделей. "
-"Обратите внимание, что лицензии моделей могут различаться в зависимости от "
-"датасетов, на которых они обучались."
+"Вы можете загрузить веса моделей из организации Hugging Face `OPR-Project"
+" <https://huggingface.co/OPR-Project>`_. Это рекомендуемый способ "
+"загрузки весов, так как там указаны лицензии и файлы README для каждой "
+"группы моделей. Обратите внимание, что лицензии моделей могут различаться"
+" в зависимости от датасетов, на которых они обучались."
 
 #: ../../source/index.rst:248
 msgid ""
@@ -475,11 +495,11 @@ msgid ""
 " But please check the license for each model group on the `OPR-Project "
 "<https://huggingface.co/OPR-Project>`_ page before using them."
 msgstr ""
-"Альтернативно вы можете скачать веса из общедоступной папки на "
-"`Google Drive "
-"<https://drive.google.com/drive/folders/1uRiMe2-I9b5Tgv8mIJLkdGaHXccp_UFJ?usp=sharing>`_. "
-"Однако перед использованием обязательно проверьте лицензию каждой группы моделей "
-"на странице `OPR-Project <https://huggingface.co/OPR-Project>`_."
+"Альтернативно вы можете скачать веса из общедоступной папки на `Google "
+"Drive "
+"<https://drive.google.com/drive/folders/1uRiMe2-I9b5Tgv8mIJLkdGaHXccp_UFJ?usp=sharing>`_."
+" Однако перед использованием обязательно проверьте лицензию каждой группы"
+" моделей на странице `OPR-Project <https://huggingface.co/OPR-Project>`_."
 
 #: ../../source/index.rst:255
 msgid "ITLP-Campus dataset"
@@ -493,11 +513,12 @@ msgid ""
 "seasons (winter/spring). You can find more details in the `OPR-Project"
 "/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_ repository."
 msgstr ""
-"Мы представляем датасет ITLP-Campus. Данные были записаны с использованием "
-"роботизированной платформы Husky на территории университетского кампуса и "
-"включают маршруты, записанные в разное время суток (день/сумерки/ночь) и "
-"в разное время года (зима/весна). Подробности доступны в репозитории "
-"`OPR-Project/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_."
+"Мы представляем датасет ITLP-Campus. Данные были записаны с "
+"использованием роботизированной платформы Husky на территории "
+"университетского кампуса и включают маршруты, записанные в разное время "
+"суток (день/сумерки/ночь) и в разное время года (зима/весна). Подробности"
+" доступны в репозитории `OPR-Project/ITLP-Campus <https://github.com/OPR-"
+"Project/ITLP-Campus>`_."
 
 #: ../../source/index.rst:264
 msgid "Other datasets"
@@ -505,18 +526,20 @@ msgstr "Другие датасеты"
 
 #: ../../source/index.rst:266
 msgid "We provide several datasets that can be used with the library."
-msgstr "Мы предоставляем несколько наборов данных, которые можно использовать с библиотекой."
+msgstr ""
+"Мы предоставляем несколько наборов данных, которые можно использовать с "
+"библиотекой."
 
 #: ../../source/index.rst:268
 msgid ""
 "`Oxford RobotCar <https://robotcar-dataset.robots.ox.ac.uk/>`_ is a "
-"comprehensive autonomous driving dataset featuring over 1,000 km of traffic "
-"data, nearly 20 million images, and sensor data collected in diverse weather "
-"conditions from an autonomous vehicle in Oxford between 2014 and 2015. We "
-"provide a specifically pre-processed subset designed for the place "
-"recognition task in the OpenPlaceRecognition library. This subset is "
-"primarily based on the `PointNetVLAD paper <https://openaccess.thecvf.com/"
-"content_cvpr_2018/html/Uy_PointNetVLAD_Deep_Point_CVPR_2018_paper.html>`_."
+"comprehensive autonomous driving dataset featuring over 1,000 km of "
+"traffic data, nearly 20 million images, and sensor data collected in "
+"diverse weather conditions from an autonomous vehicle in Oxford between "
+"2014 and 2015. We provide a specifically pre-processed subset designed "
+"for the place recognition task in the OpenPlaceRecognition library. This "
+"subset is primarily based on the `PointNetVLAD paper "
+"<https://openaccess.thecvf.com/content_cvpr_2018/html/Uy_PointNetVLAD_Deep_Point_CVPR_2018_paper.html>`_."
 msgstr ""
 "`Oxford RobotCar <https://robotcar-dataset.robots.ox.ac.uk/>`_ — это "
 "обширный набор данных для автономного вождения, содержащий более 1000 км "
@@ -525,46 +548,47 @@ msgstr ""
 "транспортного средства в Оксфорде в период с 2014 по 2015 год. Мы "
 "предоставляем специально предварительно обработанный поднабор, "
 "предназначенный для задачи распознавания мест в библиотеке "
-"OpenPlaceRecognition. Этот поднабор в основном основан на статье `PointNetVLAD "
-"<https://openaccess.thecvf.com/content_cvpr_2018/html/Uy_PointNetVLAD_Deep_"
-"Point_CVPR_2018_paper.html>`_."
+"OpenPlaceRecognition. Этот поднабор в основном основан на статье "
+"`PointNetVLAD "
+"<https://openaccess.thecvf.com/content_cvpr_2018/html/Uy_PointNetVLAD_Deep_Point_CVPR_2018_paper.html>`_."
 
 #: ../../source/index.rst:275
 msgid ""
-"`Hugging Face <https://huggingface.co/datasets/OPR-Project/"
-"OxfordRobotCar_OpenPlaceRecognition>`_"
+"`Hugging Face <https://huggingface.co/datasets/OPR-"
+"Project/OxfordRobotCar_OpenPlaceRecognition>`_"
 msgstr ""
-"`Hugging Face <https://huggingface.co/datasets/OPR-Project/"
-"OxfordRobotCar_OpenPlaceRecognition>`_"
+"`Hugging Face <https://huggingface.co/datasets/OPR-"
+"Project/OxfordRobotCar_OpenPlaceRecognition>`_"
 
 #: ../../source/index.rst:276
 msgid ""
-"`Kaggle <https://www.kaggle.com/datasets/creatorofuniverses/oxfordrobotcar-"
-"iprofi-hack-23>`_"
+"`Kaggle <https://www.kaggle.com/datasets/creatorofuniverses"
+"/oxfordrobotcar-iprofi-hack-23>`_"
 msgstr ""
-"`Kaggle <https://www.kaggle.com/datasets/creatorofuniverses/oxfordrobotcar-"
-"iprofi-hack-23>`_"
+"`Kaggle <https://www.kaggle.com/datasets/creatorofuniverses"
+"/oxfordrobotcar-iprofi-hack-23>`_"
 
 #: ../../source/index.rst:278
 msgid ""
 "`NCLT <https://robots.engin.umich.edu/nclt/index.html#top>`_ is the "
-"University of Michigan North Campus Long-Term Vision and LIDAR Dataset. We "
-"provide a modified version of the NCLT dataset, which is primarily based on "
-"the `AdaFusion paper <https://ieeexplore.ieee.org/abstract/document/9905898/"
-">`_."
+"University of Michigan North Campus Long-Term Vision and LIDAR Dataset. "
+"We provide a modified version of the NCLT dataset, which is primarily "
+"based on the `AdaFusion paper "
+"<https://ieeexplore.ieee.org/abstract/document/9905898/>`_."
 msgstr ""
 "`NCLT <https://robots.engin.umich.edu/nclt/index.html#top>`_ — это набор "
-"данных University of Michigan North Campus Long-Term Vision and LIDAR Dataset. "
-"Мы предоставляем изменённую версию набора данных NCLT, основанную в основном "
-"на статье `AdaFusion <https://ieeexplore.ieee.org/abstract/document/9905898/>`_."
+"данных University of Michigan North Campus Long-Term Vision and LIDAR "
+"Dataset. Мы предоставляем изменённую версию набора данных NCLT, "
+"основанную в основном на статье `AdaFusion "
+"<https://ieeexplore.ieee.org/abstract/document/9905898/>`_."
 
 #: ../../source/index.rst:282
 msgid ""
-"`Hugging Face <https://huggingface.co/datasets/OPR-Project/"
-"NCLT_OpenPlaceRecognition>`_"
+"`Hugging Face <https://huggingface.co/datasets/OPR-"
+"Project/NCLT_OpenPlaceRecognition>`_"
 msgstr ""
-"`Hugging Face <https://huggingface.co/datasets/OPR-Project/"
-"NCLT_OpenPlaceRecognition>`_"
+"`Hugging Face <https://huggingface.co/datasets/OPR-"
+"Project/NCLT_OpenPlaceRecognition>`_"
 
 #: ../../source/index.rst:283
 msgid ""
@@ -578,40 +602,41 @@ msgstr ""
 msgid "Package Structure"
 msgstr "Структура пакета"
 
-#: ../../source/index.rst:267
+#: ../../source/index.rst:290
 msgid "opr.datasets"
 msgstr "opr.datasets"
 
-#: ../../source/index.rst:269
+#: ../../source/index.rst:292
 msgid "Subpackage containing dataset classes and functions."
 msgstr "Подпакет, содержащий классы и функции для работы с датасетами."
 
-#: ../../source/index.rst:271 ../../source/index.rst:308
-#: ../../source/index.rst:343 ../../source/index.rst:377
-#: ../../source/index.rst:407
+#: ../../source/index.rst:294 ../../source/index.rst:331
+#: ../../source/index.rst:366 ../../source/index.rst:400
+#: ../../source/index.rst:430
 msgid "Usage example:"
 msgstr "Пример использования:"
 
-#: ../../source/index.rst:283
+#: ../../source/index.rst:306
 msgid "The iterator will return a dictionary with the following keys:"
 msgstr "Итератор вернёт словарь со следующими ключами:"
 
-#: ../../source/index.rst:285
+#: ../../source/index.rst:308
 msgid "``\"idx\"``: index of the sample in the dataset, single number Tensor"
 msgstr "``\"idx\"``: индекс образца в датасете, тензор из одного числа"
 
-#: ../../source/index.rst:286
+#: ../../source/index.rst:309
 msgid "``\"utm\"``: UTM coordinates of the sample, Tensor of shape ``(2)``"
 msgstr "``\"utm\"``: UTM-координаты образца, тензор размерности ``(2)``"
 
-#: ../../source/index.rst:287
+#: ../../source/index.rst:310
 msgid ""
 "(optional) ``\"image_stereo_centre\"``: image Tensor of shape ``(C, H, "
 "W)``"
 msgstr ""
-"(опционально) ``\"image_stereo_centre\"``: изображение, тензор размерности ``(C, H, W)``"
+"(опционально) ``\"image_stereo_centre\"``: изображение, тензор "
+"размерности ``(C, H, W)``"
 
-#: ../../source/index.rst:288
+#: ../../source/index.rst:311
 msgid ""
 "(optional) ``\"pointcloud_lidar_feats\"``: point cloud features Tensor of"
 " shape ``(N, 1)``"
@@ -619,7 +644,7 @@ msgstr ""
 "(опционально) ``\"pointcloud_lidar_feats\"``: признаки облака точек, "
 "тензор размерности ``(N, 1)``"
 
-#: ../../source/index.rst:289
+#: ../../source/index.rst:312
 msgid ""
 "(optional) ``\"pointcloud_lidar_coords\"``: point cloud coordinates "
 "Tensor of shape ``(N, 3)``"
@@ -627,7 +652,7 @@ msgstr ""
 "(опционально) ``\"pointcloud_lidar_coords\"``: координаты облака точек, "
 "тензор размерности ``(N, 3)``"
 
-#: ../../source/index.rst:291
+#: ../../source/index.rst:314
 msgid ""
 "In this example, we use a pre-processed version of the Oxford RobotCar "
 "dataset. We use the same subsample of tracks and preprocessed point "
@@ -636,17 +661,17 @@ msgid ""
 " Additionally, we created the files \"train.csv\", \"val.csv\", and "
 "\"test.csv.\""
 msgstr ""
-"В этом примере используется предварительно обработанная версия датасета Oxford RobotCar. "
-"Используется та же выборка маршрутов и предобработанные облака точек, что и в статье "
-"`PointNetVLAD <https://openaccess.thecvf.com/content_cvpr_2018/html/Uy_PointNetVLAD_Deep_Point_CVPR_2018_paper.html>`_. "
-"Дополнительно созданы файлы \"train.csv\", \"val.csv\" и \"test.csv\"."
+"В этом примере используется предварительно обработанная версия датасета "
+"Oxford RobotCar. Используется та же выборка маршрутов и предобработанные "
+"облака точек, что и в статье `PointNetVLAD "
+"<https://openaccess.thecvf.com/content_cvpr_2018/html/Uy_PointNetVLAD_Deep_Point_CVPR_2018_paper.html>`_."
+" Дополнительно созданы файлы \"train.csv\", \"val.csv\" и \"test.csv\"."
 
-
-#: ../../source/index.rst:296
+#: ../../source/index.rst:319
 msgid "You can download our version of the dataset via the following link:"
 msgstr "Вы можете скачать нашу версию датасета по следующей ссылке:"
 
-#: ../../source/index.rst:298
+#: ../../source/index.rst:321
 msgid ""
 "[Kaggle](https://www.kaggle.com/datasets/creatorofuniverses"
 "/oxfordrobotcar-iprofi-hack-23)"
@@ -654,222 +679,232 @@ msgstr ""
 "[Kaggle](https://www.kaggle.com/datasets/creatorofuniverses"
 "/oxfordrobotcar-iprofi-hack-23)"
 
-#: ../../source/index.rst:300
+#: ../../source/index.rst:323
 msgid ""
 "More details can be found in the `demo_datasets.ipynb <https://github.com"
 "/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/demo_datasets.ipynb>`_ "
 "notebook."
 msgstr ""
-"Дополнительные подробности можно найти в ноутбуке `demo_datasets.ipynb <https://github.com"
-"/OPR-"
+"Дополнительные подробности можно найти в ноутбуке `demo_datasets.ipynb "
+"<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/demo_datasets.ipynb>`_."
 
-#: ../../source/index.rst:304
+#: ../../source/index.rst:327
 msgid "opr.losses"
 msgstr "opr.losses"
 
-#: ../../source/index.rst:306
+#: ../../source/index.rst:329
 msgid ""
 "The ``opr.losses`` subpackage contains ready-to-use loss functions "
 "implemented in PyTorch, featuring a common interface."
 msgstr ""
-"Подпакет ``opr.losses`` содержит готовые функции потерь, реализованные в PyTorch, "
-"с единым интерфейсом."
+"Подпакет ``opr.losses`` содержит готовые функции потерь, реализованные в "
+"PyTorch, с единым интерфейсом."
 
-#: ../../source/index.rst:322
+#: ../../source/index.rst:345
 msgid "The loss functions introduce a unified interface:"
 msgstr "Функции потерь реализуют унифицированный интерфейс:"
 
-#: ../../source/index.rst:324
+#: ../../source/index.rst:347
 msgid "**Input:**"
 msgstr "**Вход:**"
 
-#: ../../source/index.rst:326
+#: ../../source/index.rst:349
 msgid "``embeddings``: descriptor Tensor of shape ``(B, D)``"
 msgstr "``embeddings``: дескриптор, тензор размерности ``(B, D)``"
 
-#: ../../source/index.rst:327
+#: ../../source/index.rst:350
 msgid "``positives_mask``: boolean mask Tensor of shape ``(B, B)``"
 msgstr "``positives_mask``: булева маска, тензор размерности ``(B, B)``"
 
-#: ../../source/index.rst:328
+#: ../../source/index.rst:351
 msgid "``negatives_mask``: boolean mask Tensor of shape ``(B, B)``"
 msgstr "``negatives_mask``: булева маска, тензор размерности ``(B, B)``"
 
-#: ../../source/index.rst:330
+#: ../../source/index.rst:353
 msgid "**Output:**"
 msgstr "**Выход:**"
 
-#: ../../source/index.rst:332
+#: ../../source/index.rst:355
 msgid "``loss``: loss value Tensor"
 msgstr "``loss``: значение функции потерь, тензор"
 
-#: ../../source/index.rst:333
+#: ../../source/index.rst:356
 msgid "``stats``: dictionary with additional statistics"
 msgstr "``stats``: словарь с дополнительной статистикой"
 
-#: ../../source/index.rst:335
+#: ../../source/index.rst:358
 msgid ""
 "More details can be found in the `demo_losses.ipynb <https://github.com"
 "/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/demo_losses.ipynb>`_ "
 "notebook."
 msgstr ""
-"Дополнительные подробности можно найти в ноутбуке `demo_losses.ipynb <https://github.com"
-"/OPR-"
+"Дополнительные подробности можно найти в ноутбуке `demo_losses.ipynb "
+"<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/demo_losses.ipynb>`_."
 
-#: ../../source/index.rst:339
+#: ../../source/index.rst:362
 msgid "opr.models"
 msgstr "opr.models"
 
-#: ../../source/index.rst:341
+#: ../../source/index.rst:364
 msgid ""
 "The ``opr.models`` subpackage contains ready-to-use neural networks "
 "implemented in PyTorch, featuring a common interface."
 msgstr ""
-"Подпакет ``opr.models`` содержит готовые нейронные сети, реализованные в PyTorch, "
-"с единым интерфейсом."
+"Подпакет ``opr.models`` содержит готовые нейронные сети, реализованные в "
+"PyTorch, с единым интерфейсом."
 
-#: ../../source/index.rst:354
+#: ../../source/index.rst:377
 msgid "The models introduce unified input and output formats:"
 msgstr "Модели имеют унифицированные форматы входных и выходных данных:"
 
-#: ../../source/index.rst:356
+#: ../../source/index.rst:379
 msgid ""
 "**Input:** a ``batch`` dictionary with the following keys (all keys are "
 "optional, depending on the model and dataset):"
 msgstr ""
-"**Вход:** словарь ``batch`` со следующими ключами (все ключи опциональны, "
-"зависят от модели и датасета):"
+"**Вход:** словарь ``batch`` со следующими ключами (все ключи опциональны,"
+" зависят от модели и датасета):"
 
-#: ../../source/index.rst:359
+#: ../../source/index.rst:382
 msgid "``\"images_<camera_name>\"``: images Tensor of shape ``(B, 3, H, W)``"
-msgstr "``\"images_<camera_name>\"``: изображения, тензор размерности ``(B, 3, H, W)``"
+msgstr ""
+"``\"images_<camera_name>\"``: изображения, тензор размерности ``(B, 3, H,"
+" W)``"
 
-#: ../../source/index.rst:360
+#: ../../source/index.rst:383
 msgid ""
 "``\"masks_<camera_name>\"``: semantic segmentation masks Tensor of shape "
 "``(B, 1, H, W)``"
 msgstr ""
-"``\"masks_<camera_name>\"``: маски семантической сегментации, тензор размерности "
-"``(B, 1, H, W)``"
+"``\"masks_<camera_name>\"``: маски семантической сегментации, тензор "
+"размерности ``(B, 1, H, W)``"
 
-#: ../../source/index.rst:361
+#: ../../source/index.rst:384
 msgid ""
 "``\"pointclouds_lidar_coords\"``: point cloud coordinates Tensor of shape"
 " ``(B * N_points, 4)``"
 msgstr ""
-"``\"pointclouds_lidar_coords\"``: координаты облаков точек, тензор размерности "
-"``(B * N_points, 4)``"
+"``\"pointclouds_lidar_coords\"``: координаты облаков точек, тензор "
+"размерности ``(B * N_points, 4)``"
 
-#: ../../source/index.rst:362
+#: ../../source/index.rst:385
 msgid ""
 "``\"pointclouds_lidar_feats\"``: point cloud features Tensor of shape "
 "``(B * N_points, C)``"
 msgstr ""
-"``\"pointclouds_lidar_feats\"``: признаки облаков точек, тензор размерности "
-"``(B * N_points, C)``"
+"``\"pointclouds_lidar_feats\"``: признаки облаков точек, тензор "
+"размерности ``(B * N_points, C)``"
 
-#: ../../source/index.rst:364
+#: ../../source/index.rst:387
 msgid ""
 "**Output:** a dictionary with the requiered key ``\"final_descriptor\"`` "
 "and optional keys for intermediate descriptors:"
 msgstr ""
-"**Выход:** словарь с обязательным ключом ``\"final_descriptor\"`` и опциональными "
-"ключами для промежуточных дескрипторов:"
+"**Выход:** словарь с обязательным ключом ``\"final_descriptor\"`` и "
+"опциональными ключами для промежуточных дескрипторов:"
 
-#: ../../source/index.rst:367
+#: ../../source/index.rst:390
 msgid "``\"final_descriptor\"``: final descriptor Tensor of shape ``(B, D)``"
-msgstr "``\"final_descriptor\"``: итоговый дескриптор, тензор размерности ``(B, D)``"
+msgstr ""
+"``\"final_descriptor\"``: итоговый дескриптор, тензор размерности ``(B, "
+"D)``"
 
-#: ../../source/index.rst:369
+#: ../../source/index.rst:392
 msgid ""
 "More details can be found in the `demo_models.ipynb <https://github.com"
 "/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/demo_models.ipynb>`_ "
 "notebook."
 msgstr ""
-"Дополнительные подробности можно найти в ноутбуке `demo_models.ipynb <https://github.com"
-"/OPR-"
+"Дополнительные подробности можно найти в ноутбуке `demo_models.ipynb "
+"<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/demo_models.ipynb>`_."
 
-#: ../../source/index.rst:373
+#: ../../source/index.rst:396
 msgid "opr.trainers"
 msgstr "opr.trainers"
 
-#: ../../source/index.rst:375
+#: ../../source/index.rst:398
 msgid "The ``opr.trainers`` subpackage contains ready-to-use training algorithms."
 msgstr "Подпакет ``opr.trainers`` содержит готовые алгоритмы обучения."
 
-#: ../../source/index.rst:403
+#: ../../source/index.rst:426
 msgid "opr.pipelines"
 msgstr "opr.pipelines"
 
-#: ../../source/index.rst:405
+#: ../../source/index.rst:428
 msgid ""
 "The ``opr.pipelines`` subpackage contains ready-to-use pipelines for "
 "model inference."
 msgstr ""
-"Подпакет ``opr.pipelines`` содержит готовые пайплайны для инференса моделей."
+"Подпакет ``opr.pipelines`` содержит готовые пайплайны для инференса "
+"моделей."
 
-#: ../../source/index.rst:423
+#: ../../source/index.rst:446
 msgid "The pipeline introduces a unified interface for model inference:"
 msgstr "Пайплайн реализует унифицированный интерфейс для инференса моделей:"
 
-#: ../../source/index.rst:425
+#: ../../source/index.rst:448
 msgid ""
 "**Input:** a dictionary with the following keys (all keys are optional, "
 "depending on the model and dataset):"
 msgstr ""
-"**Вход:** словарь со следующими ключами (все ключи опциональны, зависят от модели и датасета):"
+"**Вход:** словарь со следующими ключами (все ключи опциональны, зависят "
+"от модели и датасета):"
 
-#: ../../source/index.rst:428
+#: ../../source/index.rst:451
 msgid "``\"image_<camera_name>\"``: image Tensor of shape ``(3, H, W)``"
 msgstr "``\"image_<camera_name>\"``: изображение, тензор размерности ``(3, H, W)``"
 
-#: ../../source/index.rst:429
+#: ../../source/index.rst:452
 msgid ""
 "``\"mask_<camera_name>\"``: semantic segmentation mask Tensor of shape "
 "``(1, H, W)``"
 msgstr ""
-"``\"mask_<camera_name>\"``: маска семантической сегментации, тензор размерности ``(1, H, W)``"
+"``\"mask_<camera_name>\"``: маска семантической сегментации, тензор "
+"размерности ``(1, H, W)``"
 
-#: ../../source/index.rst:430
+#: ../../source/index.rst:453
 msgid ""
 "``\"pointcloud_lidar_coords\"``: point cloud coordinates Tensor of shape "
 "``(N_points, 4)``"
 msgstr ""
-"``\"pointcloud_lidar_coords\"``: координаты облака точек, тензор размерности ``(N_points, 4)``"
+"``\"pointcloud_lidar_coords\"``: координаты облака точек, тензор "
+"размерности ``(N_points, 4)``"
 
-#: ../../source/index.rst:431
+#: ../../source/index.rst:454
 msgid ""
 "``\"pointcloud_lidar_feats\"``: point cloud features Tensor of shape "
 "``(N_points, C)``"
 msgstr ""
-"``\"pointcloud_lidar_feats\"``: признаки облака точек, тензор размерности ``(N_points, C)``"
+"``\"pointcloud_lidar_feats\"``: признаки облака точек, тензор размерности"
+" ``(N_points, C)``"
 
-#: ../../source/index.rst:433
+#: ../../source/index.rst:456
 msgid "**Output:** a dictionary with keys:"
 msgstr "**Выход:** словарь с ключами:"
 
-#: ../../source/index.rst:435
+#: ../../source/index.rst:458
 msgid "``\"idx\"`` for predicted index in the database,"
 msgstr "``\"idx\"`` — предсказанный индекс в базе данных,"
 
-#: ../../source/index.rst:436
+#: ../../source/index.rst:459
 msgid ""
 "``\"pose\"`` for predicted pose in the format ``[tx, ty, tz, qx, qy, qz, "
 "qw]``,"
 msgstr ""
-"``\"pose\"`` — предсказанная поза в формате ``[tx, ty, tz, qx, qy, qz, qw]``,"
+"``\"pose\"`` — предсказанная поза в формате ``[tx, ty, tz, qx, qy, qz, "
+"qw]``,"
 
-#: ../../source/index.rst:437
+#: ../../source/index.rst:460
 msgid "``\"descriptor\"`` for predicted descriptor."
 msgstr "``\"descriptor\"`` — предсказанный дескриптор."
 
-#: ../../source/index.rst:439
+#: ../../source/index.rst:462
 msgid ""
 "More details can be found in the `demo_pipelines.ipynb "
 "<https://github.com/OPR-"
@@ -880,44 +915,434 @@ msgstr ""
 "<https://github.com/OPR-"
 "Project/OpenPlaceRecognition/blob/main/notebooks/demo_pipelines.ipynb>`_."
 
-#: ../../source/index.rst:443
+#: ../../source/index.rst:466
 msgid "Model Zoo"
 msgstr "Model Zoo"
 
-#: ../../source/index.rst:445
-msgid "*WIP*"
-msgstr "*В разработке*"
+#: ../../source/index.rst:469
+#, fuzzy
+msgid "Place Recognition"
+msgstr "Библиотека Open Place Recognition"
 
-#: ../../source/index.rst:449
+#: ../../source/index.rst:471
+msgid ""
+"You can find the models for place recognition in the Hugging Face model "
+"hub:"
+msgstr "Вы можете найти модели для распознавания мест в хабе моделей Hugging Face:"
+
+#: ../../source/index.rst:473
+msgid ""
+"https://huggingface.co/OPR-Project/PlaceRecognition-NCLT - NCLT-trained "
+"models (including models with ITLP Campus fine-tuning)"
+msgstr ""
+"https://huggingface.co/OPR-Project/PlaceRecognition-NCLT - модели, "
+"обученные на NCLT (включая модели с тонкой настройкой на ITLP Campus)"
+
+#: ../../source/index.rst:479 ../../source/index.rst:542
+#, fuzzy
+msgid "Model"
+msgstr "Модели"
+
+#: ../../source/index.rst:480 ../../source/index.rst:543
+msgid "Modality"
+msgstr "Модальность"
+
+#: ../../source/index.rst:481 ../../source/index.rst:544
+#, fuzzy
+msgid "Train Dataset"
+msgstr "Обучающий датасет"
+
+#: ../../source/index.rst:482 ../../source/index.rst:545
+msgid "Config"
+msgstr "Конфиг"
+
+#: ../../source/index.rst:483 ../../source/index.rst:546
+msgid "Weights"
+msgstr "Веса"
+
+#: ../../source/index.rst:484
+msgid ""
+"MinkLoc3D (`paper <https://openaccess.thecvf.com/content/WACV2021/html"
+"/Komorowski_MinkLoc3D_Point_Cloud_Based_Large-"
+"Scale_Place_Recognition_WACV_2021_paper.html>`_)"
+msgstr ""
+"MinkLoc3D (`статья <https://openaccess.thecvf.com/content/WACV2021/html"
+"/Komorowski_MinkLoc3D_Point_Cloud_Based_Large-"
+"Scale_Place_Recognition_WACV_2021_paper.html>`_)"
+
+#: ../../source/index.rst:485 ../../source/index.rst:548
+#: ../../source/index.rst:553 ../../source/index.rst:558
+#: ../../source/index.rst:563 ../../source/index.rst:568
+#: ../../source/index.rst:573 ../../source/index.rst:578
+msgid "LiDAR"
+msgstr "LiDAR"
+
+#: ../../source/index.rst:486 ../../source/index.rst:491
+#: ../../source/index.rst:501 ../../source/index.rst:511
+#: ../../source/index.rst:521
+msgid "NCLT"
+msgstr "NCLT"
+
+#: ../../source/index.rst:487
+msgid "`minkloc3d.yaml <./configs/model/place_recognition/minkloc3d.yaml>`_"
+msgstr "`minkloc3d.yaml <./configs/model/place_recognition/minkloc3d.yaml>`_"
+
+#: ../../source/index.rst:488
+#, fuzzy
+msgid ""
+"`minkloc3d_nclt.pth <https://huggingface.co/OPR-Project/PlaceRecognition-"
+"NCLT/resolve/main/minkloc3d_nclt.pth>`_"
+msgstr ""
+"`Hugging Face <https://huggingface.co/datasets/OPR-"
+"Project/NCLT_OpenPlaceRecognition>`_"
+msgstr "`minkloc3d_nclt.pth <https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main/minkloc3d_nclt.pth>`_"
+
+#: ../../source/index.rst:489 ../../source/index.rst:494
+#: ../../source/index.rst:499 ../../source/index.rst:504
+#: ../../source/index.rst:509 ../../source/index.rst:514
+#: ../../source/index.rst:519 ../../source/index.rst:524
+msgid "Custom"
+msgstr "Кастомная"
+
+#: ../../source/index.rst:490 ../../source/index.rst:495
+msgid "Multi-Image, Multi-Semantic, LiDAR"
+msgstr "Мульти-изображение, Мульти-семантика, LiDAR"
+
+#: ../../source/index.rst:492 ../../source/index.rst:497
+msgid ""
+"`multi-image_multi-semantic_lidar_late-fusion.yaml "
+"<./configs/model/place_recognition/multi-image_multi-semantic_lidar_late-"
+"fusion.yaml>`_"
+msgstr ""
+"`multi-image_multi-semantic_lidar_late-fusion.yaml "
+"<./configs/model/place_recognition/multi-image_multi-semantic_lidar_late-"
+"fusion.yaml>`_"
+
+#: ../../source/index.rst:493
+msgid ""
+"`multi-image_multi-semantic_lidar_late-fusion_nclt.pth "
+"<https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main"
+"/multi-image_multi-semantic_lidar_late-fusion_nclt.pth>`_"
+msgstr ""
+"`multi-image_multi-semantic_lidar_late-fusion_nclt.pth "
+"<https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main"
+"/multi-image_multi-semantic_lidar_late-fusion_nclt.pth>`_"
+
+#: ../../source/index.rst:496 ../../source/index.rst:506
+#: ../../source/index.rst:516 ../../source/index.rst:526
+msgid "NCLT + ITLP Campus Outdoor fine-tune"
+msgstr "NCLT + тонкая настройка на открытом воздухе ITLP Campus"
+
+#: ../../source/index.rst:498
+msgid ""
+"`multi-image_multi-semantic_lidar_late-fusion_itlp-finetune.pth "
+"<https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main"
+"/multi-image_multi-semantic_lidar_late-fusion_itlp-finetune.pth>`_"
+msgstr ""
+"`multi-image_multi-semantic_lidar_late-fusion_itlp-finetune.pth "
+"<https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main"
+"/multi-image_multi-semantic_lidar_late-fusion_itlp-finetune.pth>`_"
+
+#: ../../source/index.rst:500 ../../source/index.rst:505
+msgid "Multi-Image, LiDAR"
+msgstr "Мульти-изображение, LiDAR"
+
+#: ../../source/index.rst:502 ../../source/index.rst:507
+msgid ""
+"`multi-image_lidar_late-fusion.yaml <./configs/model/place_recognition"
+"/multi-image_lidar_late-fusion.yaml>`_"
+msgstr ""
+"`multi-image_lidar_late-fusion.yaml <./configs/model/place_recognition"
+"/multi-image_lidar_late-fusion.yaml>`_"
+
+#: ../../source/index.rst:503
+msgid ""
+"`multi-image_lidar_late-fusion_nclt.pth <https://huggingface.co/OPR-"
+"Project/PlaceRecognition-NCLT/resolve/main/multi-image_lidar_late-"
+"fusion_nclt.pth>`_"
+msgstr ""
+"`multi-image_lidar_late-fusion_nclt.pth <https://huggingface.co/OPR-"
+"Project/PlaceRecognition-NCLT/resolve/main/multi-image_lidar_late-"
+"fusion_nclt.pth>`_"
+
+#: ../../source/index.rst:508
+msgid ""
+"`multi-image_lidar_late-fusion_itlp-finetune.pth <https://huggingface.co"
+"/OPR-Project/PlaceRecognition-NCLT/resolve/main/multi-image_lidar_late-"
+"fusion_itlp-finetune.pth>`_"
+msgstr ""
+"`multi-image_lidar_late-fusion_itlp-finetune.pth <https://huggingface.co"
+"/OPR-Project/PlaceRecognition-NCLT/resolve/main/multi-image_lidar_late-"
+"fusion_itlp-finetune.pth>`_"
+
+#: ../../source/index.rst:510 ../../source/index.rst:515
+msgid "Multi-Image, Multi-Semantic, LiDAR, SOC"
+msgstr "Мульти-изображение, Мульти-семантика, LiDAR, SOC"
+
+#: ../../source/index.rst:512 ../../source/index.rst:517
+msgid ""
+"`multimodal_semantic_with_soc_outdoor.yaml "
+"<./configs/model/place_recognition/multimodal_semantic_with_soc_outdoor.yaml>`_"
+msgstr ""
+"`multimodal_semantic_with_soc_outdoor.yaml "
+"<./configs/model/place_recognition/multimodal_semantic_with_soc_outdoor.yaml>`_"
+
+#: ../../source/index.rst:513
+msgid ""
+"`multimodal_semantic_with_soc_outdoor_nclt.pth <https://huggingface.co"
+"/OPR-Project/PlaceRecognition-"
+"NCLT/resolve/main/multimodal_semantic_with_soc_outdoor_nclt.pth>`_"
+msgstr ""
+"`multimodal_semantic_with_soc_outdoor_nclt.pth <https://huggingface.co"
+"/OPR-Project/PlaceRecognition-"
+"NCLT/resolve/main/multimodal_semantic_with_soc_outdoor_nclt.pth>`_"
+
+#: ../../source/index.rst:518
+msgid ""
+"`multimodal_semantic_with_soc_outdoor_itlp-finetune.pth "
+"<https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main"
+"/multimodal_semantic_with_soc_outdoor_itlp-finetune.pth>`_"
+msgstr ""
+"`multimodal_semantic_with_soc_outdoor_itlp-finetune.pth "
+"<https://huggingface.co/OPR-Project/PlaceRecognition-NCLT/resolve/main"
+"/multimodal_semantic_with_soc_outdoor_itlp-finetune.pth>`_"
+
+#: ../../source/index.rst:520 ../../source/index.rst:525
+msgid "Multi-Image, LiDAR, SOC"
+msgstr "Мульти-изображение, LiDAR, SOC"
+
+#: ../../source/index.rst:522 ../../source/index.rst:527
+msgid ""
+"`multimodal_with_soc_outdoor.yaml "
+"<./configs/model/place_recognition/multimodal_with_soc_outdoor.yaml>`_"
+msgstr ""
+"`multimodal_with_soc_outdoor.yaml "
+"<./configs/model/place_recognition/multimodal_with_soc_outdoor.yaml>`_"
+
+#: ../../source/index.rst:523
+msgid ""
+"`multimodal_with_soc_outdoor_nclt.pth <https://huggingface.co/OPR-Project"
+"/PlaceRecognition-"
+"NCLT/resolve/main/multimodal_with_soc_outdoor_nclt.pth>`_"
+msgstr ""
+"`multimodal_with_soc_outdoor_nclt.pth <https://huggingface.co/OPR-Project"
+"/PlaceRecognition-"
+"NCLT/resolve/main/multimodal_with_soc_outdoor_nclt.pth>`_"
+
+#: ../../source/index.rst:528
+msgid ""
+"`multimodal_with_soc_outdoor_itlp-finetune.pth <https://huggingface.co"
+"/OPR-Project/PlaceRecognition-NCLT/resolve/main"
+"/multimodal_with_soc_outdoor_itlp-finetune.pth>`_"
+msgstr ""
+"`multimodal_with_soc_outdoor_itlp-finetune.pth <https://huggingface.co"
+"/OPR-Project/PlaceRecognition-NCLT/resolve/main"
+"/multimodal_with_soc_outdoor_itlp-finetune.pth>`_"
+
+#: ../../source/index.rst:531
+#, fuzzy
+msgid "Registration"
+msgstr "Регистрация"
+
+#: ../../source/index.rst:533
+msgid ""
+"You can find the models for point cloud registration in the Hugging Face "
+"model hub:"
+msgstr ""
+"Вы можете найти модели для регистрации облаков точек в хабе моделей Hugging Face:"
+
+#: ../../source/index.rst:535
+msgid ""
+"https://huggingface.co/OPR-Project/Registration-nuScenes - nuScenes-"
+"trained models"
+msgstr ""
+"https://huggingface.co/OPR-Project/Registration-nuScenes - модели, "
+"обученные на nuScenes"
+
+#: ../../source/index.rst:536
+msgid ""
+"https://huggingface.co/OPR-Project/Registration-KITTI - KITTI-trained "
+"models"
+msgstr ""
+"https://huggingface.co/OPR-Project/Registration-KITTI - модели, "
+"обученные на KITTI"
+
+#: ../../source/index.rst:547
+msgid ""
+"GeoTransformer (`paper "
+"<https://ieeexplore.ieee.org/abstract/document/10076895>`_)"
+msgstr ""
+"GeoTransformer (`статья <https://ieeexplore.ieee.org/abstract/document/10076895>`_)"
+
+#: ../../source/index.rst:549 ../../source/index.rst:554
+#: ../../source/index.rst:559
+msgid "KITTI"
+msgstr "KITTI"
+
+#: ../../source/index.rst:550
+msgid ""
+"`geotransformer_kitti.yaml "
+"<./configs/model/registration/geotransformer_kitti.yaml>`_"
+msgstr ""
+"`geotransformer_kitti.yaml "
+"<./configs/model/registration/geotransformer_kitti.yaml>`_"
+
+#: ../../source/index.rst:551
+msgid ""
+"`geotransformer_kitti.pth <https://huggingface.co/OPR-Project"
+"/Registration-KITTI/resolve/main/geotransformer_kitti.pth>`_"
+msgstr ""
+"`geotransformer_kitti.pth <https://huggingface.co/OPR-Project"
+"/Registration-KITTI/resolve/main/geotransformer_kitti.pth>`_"
+
+#: ../../source/index.rst:552 ../../source/index.rst:562
+msgid ""
+"HRegNet (`paper <https://openaccess.thecvf.com/content/ICCV2021/html"
+"/Lu_HRegNet_A_Hierarchical_Network_for_Large-"
+"Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html>`_)"
+msgstr ""
+"HRegNet (`статья <https://openaccess.thecvf.com/content/ICCV2021/html"
+"/Lu_HRegNet_A_Hierarchical_Network_for_Large-"
+"Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html>`_)"
+
+#: ../../source/index.rst:555 ../../source/index.rst:565
+msgid "`hregnet.yaml <./configs/model/registration/hregnet.yaml>`_"
+msgstr "`hregnet.yaml <./configs/model/registration/hregnet.yaml>`_"
+
+#: ../../source/index.rst:556 ../../source/index.rst:561
+msgid ""
+"`hregnet_kitti.pth <https://huggingface.co/OPR-Project/Registration-"
+"KITTI/resolve/main/hregnet_kitti.pth>`_"
+msgstr ""
+"`hregnet_kitti.pth <https://huggingface.co/OPR-Project/Registration-"
+"KITTI/resolve/main/hregnet_kitti.pth>`_"
+
+#: ../../source/index.rst:557 ../../source/index.rst:567
+msgid ""
+"HRegNet Coarse (1-step) (`paper "
+"<https://openaccess.thecvf.com/content/ICCV2021/html"
+"/Lu_HRegNet_A_Hierarchical_Network_for_Large-"
+"Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html>`_)"
+msgstr ""
+"HRegNet Coarse (1-step) (`статья <https://openaccess.thecvf.com/content/ICCV2021/html"
+"/Lu_HRegNet_A_Hierarchical_Network_for_Large-"
+"Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html>`_)"
+
+#: ../../source/index.rst:560 ../../source/index.rst:570
+msgid "`hregnet_coarse.yaml <./configs/model/registration/hregnet_coarse.yaml>`_"
+msgstr "`hregnet_coarse.yaml <./configs/model/registration/hregnet_coarse.yaml>`_"
+
+#: ../../source/index.rst:564 ../../source/index.rst:569
+#: ../../source/index.rst:574 ../../source/index.rst:579
+msgid "nuScenes"
+msgstr "nuScenes"
+
+#: ../../source/index.rst:566 ../../source/index.rst:571
+msgid ""
+"`hregnet_nuscenes.pth <https://huggingface.co/OPR-Project/Registration-"
+"nuScenes/resolve/main/hregnet_nuscenes.pth>`_"
+msgstr ""
+"`hregnet_nuscenes.pth <https://huggingface.co/OPR-Project/Registration-"
+"nuScenes/resolve/main/hregnet_nuscenes.pth>`_"
+
+#: ../../source/index.rst:572
+msgid ""
+"HRegNet w/o Sim-feats (`paper "
+"<https://openaccess.thecvf.com/content/ICCV2021/html"
+"/Lu_HRegNet_A_Hierarchical_Network_for_Large-"
+"Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html>`_)"
+msgstr ""
+"HRegNet w/o Sim-feats (`статья <https://openaccess.thecvf.com/content/ICCV2021/html"
+"/Lu_HRegNet_A_Hierarchical_Network_for_Large-"
+"Scale_Outdoor_LiDAR_Point_Cloud_ICCV_2021_paper.html>`_)"
+
+#: ../../source/index.rst:575
+msgid "`hregnet_nosim.yaml <./configs/model/registration/hregnet_nosim.yaml>`_"
+msgstr "`hregnet_nosim.yaml <./configs/model/registration/hregnet_nosim.yaml>`_"
+
+#: ../../source/index.rst:576
+msgid ""
+"`hregnet_nosim_nuscenes.pth <https://huggingface.co/OPR-Project"
+"/Registration-nuScenes/resolve/main/hregnet_nosim_nuscenes.pth>`_"
+msgstr ""
+"`hregnet_nosim_nuscenes.pth <https://huggingface.co/OPR-Project"
+"/Registration-nuScenes/resolve/main/hregnet_nosim_nuscenes.pth>`_"
+
+#: ../../source/index.rst:577
+msgid "HRegNet Light (custom modification)"
+msgstr "HRegNet Light (кастомная модификация)"
+
+#: ../../source/index.rst:580
+msgid ""
+"`hregnet_light_feats.yaml "
+"<./configs/model/registration/hregnet_light_feats.yaml>`_"
+msgstr ""
+"`hregnet_light_feats.yaml "
+"<./configs/model/registration/hregnet_light_feats.yaml>`_"
+"`hregnet_light_feats.yaml "
+"<./configs/model/registration/hregnet_light_feats.yaml>`_"
+
+#: ../../source/index.rst:581
+msgid ""
+"`hregnet_light_feats_nuscenes.pth <https://huggingface.co/OPR-Project"
+"/Registration-nuScenes/resolve/main/hregnet_light_feats_nuscenes.pth>`_"
+msgstr ""
+"`hregnet_light_feats_nuscenes.pth <https://huggingface.co/OPR-Project"
+"/Registration-nuScenes/resolve/main/hregnet_light_feats_nuscenes.pth>`_"
+
+#: ../../source/index.rst:584
+msgid "PaddleOCR weights"
+msgstr "Веса PaddleOCR"
+
+#: ../../source/index.rst:586
+msgid ""
+"You can find the weights for PaddleOCR in the Hugging Face model hub: "
+"https://huggingface.co/OPR-Project/PaddleOCR"
+msgstr ""
+"Вы можете найти веса для PaddleOCR в хабе моделей Hugging Face: "
+"https://huggingface.co/OPR-Project/PaddleOCR"
+
+#: ../../source/index.rst:588
+msgid ""
+"Make sure ``huggingface_hub`` is installed: ``pip install "
+"huggingface_hub``. Load the weights using the following code:"
+msgstr ""
+"Убедитесь, что установлен ``huggingface_hub``: ``pip install "
+"huggingface_hub``. Загрузите веса, используя следующий код:"
+
+#: ../../source/index.rst:604
 msgid "Connected Projects"
 msgstr "Связанные проекты"
 
-#: ../../source/index.rst:451
+#: ../../source/index.rst:606
 msgid ""
 "`OPR-Project/OpenPlaceRecognition-ROS2 <https://github.com/OPR-Project"
 "/OpenPlaceRecognition-ROS2>`_ - ROS-2 implementation of "
 "OpenPlaceRecognition modules"
 msgstr ""
 "`OPR-Project/OpenPlaceRecognition-ROS2 <https://github.com/OPR-Project"
-"/OpenPlaceRecognition-ROS2>`_ — реализация модулей OpenPlaceRecognition для ROS-2."
+"/OpenPlaceRecognition-ROS2>`_ — реализация модулей OpenPlaceRecognition "
+"для ROS-2."
 
-#: ../../source/index.rst:453
+#: ../../source/index.rst:608
 msgid ""
 "`OPR-Project/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_ -"
 " ITLP-Campus dataset tools."
 msgstr ""
-"`OPR-Project/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_ — инструменты для работы с датасетом ITLP-Campus."
+"`OPR-Project/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_ —"
+" инструменты для работы с датасетом ITLP-Campus."
 
-#: ../../source/index.rst:455
+#: ../../source/index.rst:610
 msgid ""
 "`KirillMouraviev/simple_toposlam_model "
 "<https://github.com/KirillMouraviev/simple_toposlam_model>`_ - An "
 "implementation of the Topological SLAM method that uses the OPR library."
 msgstr ""
 "`KirillMouraviev/simple_toposlam_model "
-"<https://github.com/KirillMouraviev/simple_toposlam_model>`_ — реализация метода Topological SLAM, использующая библиотеку OPR."
+"<https://github.com/KirillMouraviev/simple_toposlam_model>`_ — реализация"
+" метода Topological SLAM, использующая библиотеку OPR."
 
-#: ../../source/index.rst:460
+#: ../../source/index.rst:615
 msgid "License"
 msgstr ""
 
@@ -1215,3 +1640,5 @@ msgid ""
 "limitations under the License."
 msgstr ""
 
+#~ msgid "*WIP*"
+#~ msgstr "*В разработке*"
