@@ -31,6 +31,7 @@ dependencies = [
     "scipy",
     "tqdm",
     "wandb",
+    "torchshow @ git+https://github.com/xwying/torchshow.git@master"
 ]
 
 [project.optional-dependencies]
