@@ -23,5 +23,6 @@ pytorch_metric_learning
 requests>=2.31.0
 scipy
 seaborn
+torchshow @ git+https://github.com/xwying/torchshow.git@master
 tqdm
 wandb
