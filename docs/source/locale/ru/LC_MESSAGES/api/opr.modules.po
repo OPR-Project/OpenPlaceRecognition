@@ -1,0 +1,358 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.modules.rst:2
+msgid "opr.modules package"
+msgstr "Пакет opr.modules"
+
+#: of opr.modules:1
+msgid "Building blocks for the OPR modular system."
+msgstr "Строительные блоки для модульной системы OPR."
+
+#: ../../source/api/opr.modules.rst:16
+msgid "opr.modules.cosplace"
+msgstr "opr.modules.cosplace"
+
+#: of opr.modules.cosplace:1
+msgid "CosPlace aggregation layer implementation."
+msgstr "Реализация агрегирующего слоя CosPlace."
+
+#: of opr.modules.cosplace.CosPlace:1
+#: opr.modules.cross_attention.CrossAttention:1
+#: opr.modules.cross_attention.CrossAttentionFusion:1
+#: opr.modules.eca.MinkECALayer:1 opr.modules.fusion.Add:1
+#: opr.modules.fusion.Concat:1 opr.modules.fusion.GeMFusion:1
+#: opr.modules.gem.GeM:1 opr.modules.gem.MinkGeM:1
+#: opr.modules.mixvpr.FeatureMixerLayer:1 opr.modules.mixvpr.MixVPR:1
+#: opr.modules.mlp.MLP:1 opr.modules.netvlad.NetVLAD:1
+#: opr.modules.self_attention.SelfAttention:1 opr.modules.svt.ASVT:1
+#: opr.modules.svt.CSVT:1
+msgid "Bases: :py:class:`~torch.nn.modules.module.Module`"
+msgstr "Основы: :py:class:`~torch.nn.modules.module.Module`"
+
+#: of opr.modules.cosplace.CosPlace:1
+msgid "CosPlace aggregation layer."
+msgstr "Агрегирующий слой CosPlace."
+
+#: of opr.modules.cosplace.CosPlace:3
+msgid ""
+"As implemented in "
+"https://github.com/gmberton/CosPlace/blob/main/model/network.py"
+msgstr ""
+"Как реализовано в "
+"https://github.com/gmberton/CosPlace/blob/main/model/network.py"
+
+#: of opr.modules.cosplace.CosPlace.forward:1
+#: opr.modules.eca.MinkECALayer.forward:1 opr.modules.fusion.Add.forward:1
+#: opr.modules.fusion.Concat.forward:1 opr.modules.fusion.GeMFusion.forward:1
+#: opr.modules.gem.GeM.forward:1 opr.modules.gem.MinkGeM.forward:1
+#: opr.modules.mixvpr.FeatureMixerLayer.forward:1
+#: opr.modules.mixvpr.MixVPR.forward:1 opr.modules.mlp.MLP.forward:1
+#: opr.modules.netvlad.NetVLAD.forward:1
+#: opr.modules.self_attention.SelfAttention.forward:1
+#: opr.modules.svt.ASVT.forward:1 opr.modules.svt.CSVT.forward:1
+msgid "Defines the computation performed at every call."
+msgstr "Определяет вычисление, выполняемое при каждом вызове."
+
+#: of opr.modules.cosplace.CosPlace.forward:3
+#: opr.modules.eca.MinkECALayer.forward:3 opr.modules.fusion.Add.forward:3
+#: opr.modules.fusion.Concat.forward:3 opr.modules.fusion.GeMFusion.forward:3
+#: opr.modules.gem.GeM.forward:3 opr.modules.gem.MinkGeM.forward:3
+#: opr.modules.mixvpr.FeatureMixerLayer.forward:3
+#: opr.modules.mixvpr.MixVPR.forward:3 opr.modules.mlp.MLP.forward:3
+#: opr.modules.netvlad.NetVLAD.forward:3
+#: opr.modules.self_attention.SelfAttention.forward:3
+#: opr.modules.svt.ASVT.forward:3 opr.modules.svt.CSVT.forward:3
+msgid "Should be overridden by all subclasses."
+msgstr "Должен быть переопределен всеми подклассами."
+
+#: of opr.modules.cosplace.CosPlace.forward:6
+#: opr.modules.eca.MinkECALayer.forward:6 opr.modules.fusion.Add.forward:6
+#: opr.modules.fusion.Concat.forward:6 opr.modules.fusion.GeMFusion.forward:6
+#: opr.modules.gem.GeM.forward:6 opr.modules.gem.MinkGeM.forward:6
+#: opr.modules.mixvpr.FeatureMixerLayer.forward:6
+#: opr.modules.mixvpr.MixVPR.forward:6 opr.modules.mlp.MLP.forward:6
+#: opr.modules.netvlad.NetVLAD.forward:6
+#: opr.modules.self_attention.SelfAttention.forward:6
+#: opr.modules.svt.ASVT.forward:6 opr.modules.svt.CSVT.forward:6
+msgid ""
+"Although the recipe for forward pass needs to be defined within this "
+"function, one should call the :class:`Module` instance afterwards instead"
+" of this since the former takes care of running the registered hooks "
+"while the latter silently ignores them."
+msgstr ""
+"Хотя рецепт для прямого прохода должен быть определен внутри этой функции,"
+" следует вызывать экземпляр :class:`Module` после этого, поскольку первый"
+" заботится о запуске зарегистрированных хуков, а второй молча игнорирует их."
+
+#: ../../source/api/opr.modules.rst:24
+msgid "opr.modules.cross\\_attention"
+msgstr "opr.modules.cross\\_attention"
+
+#: of opr.modules.cross_attention.CrossAttention:1
+msgid "Cross-Attention layer for 2 image descriptors."
+msgstr "Слой Cross-Attention для 2 дескрипторов изображений."
+
+#: of opr.modules.cross_attention.CrossAttention:3
+msgid ""
+"Works in a strange way - for 2 embeddings only. Computes cross-attention "
+"scores between those embeddings and return 'cross-attentioned' values."
+msgstr ""
+"Работает странным образом - только для 2 embeddings. Вычисляет оценки"
+" cross-attention между этими embeddings и возвращает значения 'cross-"
+"attentioned'."
+
+#: of opr.modules.cross_attention.CrossAttention:6
+msgid "TODO: should be re-thinkend."
+msgstr "TODO: следует переосмыслить."
+
+#: of opr.modules.cross_attention.CrossAttention.forward:1
+#: opr.modules.cross_attention.CrossAttentionFusion.forward:1
+msgid "inputs :"
+msgstr "входы :"
+
+#: of opr.modules.cross_attention.CrossAttention.forward:2
+msgid "data : dict with 2 image descriptors that needs to be cross-attentioned"
+msgstr ""
+"data: словарь с 2 дескрипторами изображений, которые необходимо cross-"
+"attentioned"
+
+#: of opr.modules.cross_attention.CrossAttention.forward:3
+#: opr.modules.cross_attention.CrossAttentionFusion.forward:4
+msgid "returns :"
+msgstr "возвращает :"
+
+#: of opr.modules.cross_attention.CrossAttention.forward:4
+#: opr.modules.cross_attention.CrossAttentionFusion.forward:5
+msgid "out : cross attention value + input feature"
+msgstr "out: значение cross attention + входной признак"
+
+#: of opr.modules.cross_attention.CrossAttentionFusion:1
+msgid "Cross-Attention layer for images"
+msgstr "Слой Cross-Attention для изображений"
+
+#: of opr.modules.cross_attention.CrossAttentionFusion.forward:2
+msgid ""
+"im1 : input image1 descriptors ( B x C ) im2 : input image2 descriptors ("
+" B x C )"
+msgstr ""
+"im1: дескрипторы входного изображения 1 (B x C) im2: дескрипторы входного"
+" изображения 2 (B x C)"
+
+#: ../../source/api/opr.modules.rst:32
+msgid "opr.modules.eca"
+msgstr "opr.modules.eca"
+
+#: of opr.modules.eca:1
+msgid "Implementation of Efficient Channel Attention ECA block."
+msgstr "Реализация блока Efficient Channel Attention ECA."
+
+#: of opr.modules.eca:3
+msgid ""
+"Wang, Qilong, et al. \"ECA-Net: Efficient channel attention for deep "
+"convolutional neural networks.\" Proceedings of the IEEE/CVF conference "
+"on computer vision and pattern recognition. 2020."
+msgstr ""
+"Wang, Qilong, et al. \"ECA-Net: Efficient channel attention for deep "
+"convolutional neural networks.\" Материалы конференции IEEE/CVF по "
+"компьютерному зрению и распознаванию образов. 2020."
+
+#: of opr.modules.eca:6
+msgid ""
+"Paper: https://arxiv.org/abs/1910.03151 Code for Mink version adopted "
+"from the repository: https://github.com/jac99/MinkLoc3Dv2, MIT License"
+msgstr ""
+"Статья: https://arxiv.org/abs/1910.03151 Код для версии Mink взят из"
+" репозитория: https://github.com/jac99/MinkLoc3Dv2, MIT License"
+
+#: of opr.modules.eca.MinkECABasicBlock:1
+msgid "Bases: :py:class:`~MinkowskiEngine.modules.resnet_block.BasicBlock`"
+msgstr "Основы: :py:class:`~MinkowskiEngine.modules.resnet_block.BasicBlock`"
+
+#: of opr.modules.eca.MinkECABasicBlock:1
+msgid "Efficient Channel Attention BasicBlock for ResNet with MinkowskiEngine."
+msgstr "Efficient Channel Attention BasicBlock для ResNet с MinkowskiEngine."
+
+#: of opr.modules.eca.MinkECALayer:1
+msgid "Efficient Channel Attention layer for sparse tensors with MinkowskiEngine."
+msgstr "Efficient Channel Attention слой для разреженных тензоров с MinkowskiEngine."
+
+#: ../../source/api/opr.modules.rst:40
+msgid "opr.modules.fusion"
+msgstr "opr.modules.fusion"
+
+#: of opr.modules.fusion:1
+msgid "Basic fusion modules implementation."
+msgstr "Реализация базовых модулей fusion."
+
+#: of opr.modules.fusion.Add:1
+msgid "Addition module."
+msgstr "Модуль сложения."
+
+#: of opr.modules.fusion.Concat:1
+msgid "Concatenation module."
+msgstr "Модуль конкатенации."
+
+#: of opr.modules.fusion.GeMFusion:1
+msgid "GeM fusion module."
+msgstr "Модуль GeM fusion."
+
+#: ../../source/api/opr.modules.rst:48
+msgid "opr.modules.gem"
+msgstr "opr.modules.gem"
+
+#: of opr.modules.gem:1
+msgid "Generalized-Mean pooling layer implementation."
+msgstr "Реализация слоя Generalized-Mean pooling."
+
+#: of opr.modules.gem:3
+msgid ""
+"Radenović, Filip, Giorgos Tolias, and Ondřej Chum. \"Fine-tuning CNN "
+"image retrieval with no human annotation.\" IEEE transactions on pattern "
+"analysis and machine intelligence 41.7 (2018): 1655-1668."
+msgstr ""
+"Radenović, Filip, Giorgos Tolias и Ondřej Chum. \"Fine-tuning CNN image "
+"retrieval with no human annotation.\" IEEE transactions on pattern analysis"
+" and machine intelligence 41.7 (2018): 1655-1668."
+
+#: of opr.modules.gem:7
+msgid ""
+"Paper: https://arxiv.org/abs/1711.02512 Code adopted from the repository:"
+" https://github.com/jac99/MinkLocMultimodal, MIT License"
+msgstr ""
+"Статья: https://arxiv.org/abs/1711.02512 Код взят из репозитория:"
+" https://github.com/jac99/MinkLocMultimodal, MIT License"
+
+#: of opr.modules.gem.GeM:1
+msgid "GeM pooling layer."
+msgstr "Слой GeM pooling."
+
+#: of opr.modules.gem.MinkGeM:1
+msgid "GeM pooling layer for sparse tensors with MinkowskiEngine."
+msgstr "Слой GeM pooling для разреженных тензоров с MinkowskiEngine."
+
+#: of opr.modules.gem.SeqGeM:1
+msgid "Bases: :py:class:`~opr.modules.gem.GeM`"
+msgstr "Основы: :py:class:`~opr.modules.gem.GeM`"
+
+#: of opr.modules.gem.SeqGeM:1
+msgid "1D GeM pooling layer."
+msgstr "1D слой GeM pooling."
+
+#: ../../source/api/opr.modules.rst:56
+msgid "opr.modules.mixvpr"
+msgstr "opr.modules.mixvpr"
+
+#: of opr.modules.mixvpr:1
+msgid "MixVPR: Feature Mixing for Visual Place Recognition."
+msgstr "MixVPR: Feature Mixing для визуального распознавания мест."
+
+#: of opr.modules.mixvpr:3 opr.modules.mixvpr.MixVPR:3
+msgid ""
+"Source: "
+"https://github.com/amaralibey/MixVPR/blob/main/models/aggregators/mixvpr.py"
+msgstr ""
+"Источник:"
+" https://github.com/amaralibey/MixVPR/blob/main/models/aggregators/mixvpr.py"
+
+#: of opr.modules.mixvpr.FeatureMixerLayer:1
+msgid "Feature Mixer Layer."
+msgstr "Слой Feature Mixer."
+
+#: of opr.modules.mixvpr.MixVPR:1
+msgid "MixVPR aggregation layer."
+msgstr "Агрегирующий слой MixVPR."
+
+#: ../../source/api/opr.modules.rst:64
+msgid "opr.modules.mlp"
+msgstr "opr.modules.mlp"
+
+#: of opr.modules.mlp:1
+msgid "2-layer MLP module implementation."
+msgstr "Реализация 2-слойного модуля MLP."
+
+#: of opr.modules.mlp.MLP:1
+msgid "MLP as used in Vision Transformer, MLP-Mixer and related networks."
+msgstr "MLP, используемый в Vision Transformer, MLP-Mixer и связанных сетях."
+
+#: ../../source/api/opr.modules.rst:72
+msgid "opr.modules.netvlad"
+msgstr "opr.modules.netvlad"
+
+#: of opr.modules.netvlad:1 opr.modules.netvlad.NetVLAD:1
+msgid "NetVLAD layer implementation."
+msgstr "Реализация слоя NetVLAD."
+
+#: of opr.modules.netvlad.NetVLAD.init_params:1
+msgid "Initialize NetVLAD layer parameters."
+msgstr "Инициализация параметров слоя NetVLAD."
+
+#: ../../source/api/opr.modules.rst:80
+msgid "opr.modules.self\\_attention"
+msgstr "opr.modules.self\\_attention"
+
+#: of opr.modules.self_attention:1
+msgid "Self-attention modules."
+msgstr "Модули self-attention."
+
+#: of opr.modules.self_attention.SelfAttention:1
+msgid "Self-attention module."
+msgstr "Модуль self-attention."
+
+#: ../../source/api/opr.modules.rst:88
+msgid "opr.modules.svt"
+msgstr "opr.modules.svt"
+
+#: of opr.modules.svt:1
+msgid "Implementation of ASVT and CSVT modules."
+msgstr "Реализация модулей ASVT и CSVT."
+
+#: of opr.modules.svt:3
+msgid "Citation:"
+msgstr "Цитата:"
+
+#: of opr.modules.svt:4
+msgid ""
+"Fan, Zhaoxin, et al. \"Svt-net: Super light-weight sparse voxel "
+"transformer for large scale place recognition.\" Proceedings of the AAAI "
+"Conference on Artificial Intelligence. Vol. 36. No. 1. 2022."
+msgstr ""
+"Fan, Zhaoxin, et al. \"Svt-net: Super light-weight sparse voxel transformer"
+" for large scale place recognition.\" Материалы конференции AAAI по "
+"искусственному интеллекту. Том 36. № 1. 2022."
+
+#: of opr.modules.svt:8
+msgid ""
+"Source: https://github.com/ZhenboSong/SVTNet Paper: "
+"https://arxiv.org/abs/2105.00149"
+msgstr ""
+"Источник: https://github.com/ZhenboSong/SVTNet Статья:"
+" https://arxiv.org/abs/2105.00149"
+
+#: of opr.modules.svt.ASVT:1
+msgid "ASVT - Atom-Based Sparse Voxel Transformer."
+msgstr "ASVT - Atom-Based Sparse Voxel Transformer."
+
+#: of opr.modules.svt.CSVT:1
+msgid "CSVT - Cluster-Based Sparse Voxel Transformer."
+msgstr "CSVT - Cluster-Based Sparse Voxel Transformer."

@@ -6,11 +6,29 @@ ITLP-Campus Dataset
    :align: center
    :scale: 50%
 
-Class for working with the ITLP-Campus dataset.
+Explore multimodal Place Recognition with ITLP Campus — a diverse dataset of indoor and outdoor university environments featuring synchronized RGB images,
+LiDAR point clouds, semantic masks, and rich scene descriptions.
+Built for real-world challenges, day or night, floor or field.
+
+See also the `OPR-Project/ITLP-Campus <https://github.com/OPR-Project/ITLP-Campus>`_ repository.
 
 
 Download
 -------------
+
+You can download the dataset:
+
+* Kaggle:
+
+  * `ITLP Campus Indoor <https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-indoor>`_
+  * `ITLP Campus Outdoor <https://www.kaggle.com/datasets/alexandermelekhin/itlp-campus-outdoor>`_
+
+* Hugging Face:
+
+  * `ITLP Campus Indoor <https://huggingface.co/datasets/OPR-Project/ITLP-Campus-Indoor>`_
+  * `ITLP Campus Outdoor <https://huggingface.co/datasets/OPR-Project/ITLP-Campus-Outdoor>`_
+
+Alternatively, you can download the dataset from the following links:
 
 .. list-table::
    :widths: 25 25

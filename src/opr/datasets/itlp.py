@@ -78,7 +78,7 @@ class ITLPCampus(Dataset):
     def __init__(
         self,
         dataset_root: Union[str, Path],
-        subset: Literal["train", "val", "test"],
+        subset: Literal["train", "val", "test"] | None = None,
         csv_file: str = "track.csv",
         sensors: Union[str, Tuple[str, ...]] = ("front_cam", "lidar"),
         mink_quantization_size: Optional[float] = 0.5,
@@ -109,7 +109,8 @@ class ITLPCampus(Dataset):
 
         Args:
             dataset_root (Union[str, Path]): Path to the dataset track root directory.
-            subset (Literal["train", "val", "test"]): Dataset subset to load.
+            subset (Literal["train", "val", "test"] | None): Subset of the dataset to load.
+                Defaults to None. If None, the dataset will be loaded without splitting.
             csv_file (str): Name of the csv file with dataset information. Defaults to "track.csv".
             sensors (Union[str, Tuple[str, ...]]): List of sensors for which the data should be loaded.
                 Defaults to ("front_cam", "lidar").
@@ -156,7 +157,7 @@ class ITLPCampus(Dataset):
 
         subset_csv = self.dataset_root / csv_file
         self.dataset_df = pd.read_csv(subset_csv)
-        if indoor:
+        if indoor and self.subset is not None:
             if subset == "train":
                 self.dataset_df = self.dataset_df[self.dataset_df["floor"].isin(train_split)]
                 self.dataset_df.reset_index(inplace=True)
@@ -551,7 +552,7 @@ class ITLPCampus(Dataset):
                 data[f"image_{elem}"] = self.late_image_transform(data[f"image_{elem}"].permute((1, 2, 0)).numpy())
         return data
 
-    def _remove_dynamic_points(self, pointcloud: np.ndarray, semantic_map: np.ndarray, dynamic_classes: list, 
+    def _remove_dynamic_points(self, pointcloud: np.ndarray, semantic_map: np.ndarray, dynamic_classes: list,
         lidar2sensor: np.ndarray, sensor_intrinsics: np.ndarray, sensor_dist: np.ndarray) -> np.ndarray:
 
         pc_values = np.concatenate([pointcloud, np.ones((pointcloud.shape[0], 1))],axis=1).T

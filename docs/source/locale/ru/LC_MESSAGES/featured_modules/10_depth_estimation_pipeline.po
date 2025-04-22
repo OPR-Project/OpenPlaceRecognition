@@ -1,0 +1,123 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:2
+msgid "DepthEstimationPipeline"
+msgstr "DepthEstimationPipeline"
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:4
+msgid ""
+"A method that implements depth map reconstruction from a monocular image "
+"by a neural network and scaling of the reconstructed depth map using a "
+"sparse lidar point cloud."
+msgstr ""
+"Модуль, реализующий алгоритм восстановления карты глубин монокулярного изображения "
+"с учетом разреженного облака точек лидара транспортного средства."
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:7
+msgid "Usage example"
+msgstr "Пример использования"
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:9
+msgid ""
+"This is an example of indoor depth reconstruction with state-of-the-art "
+"(2024) DepthAnything-v2 neural network model. At start, you should first "
+"initialize depth estimation neural network model, which can be imported "
+"from `the DepthAnything-v2 package which is added to OPR as a submodule "
+"<https://github.com/DepthAnything/Depth-"
+"Anything-V2/tree/28ad5a0797dfb8ac76d1e3dcddbe2160cbcc6c8d>`_:"
+msgstr ""
+"Это пример реконструкции глубины внутри помещения с использованием "
+"современной (2024 г.) нейросетевой модели DepthAnything-v2. В начале "
+"следует инициализировать нейросетевую модель оценки глубины, которую можно "
+"импортировать из `пакета DepthAnything-v2, добавленного в OPR в качестве "
+"подмодуля "
+"<https://github.com/DepthAnything/Depth-"
+"Anything-V2/tree/28ad5a0797dfb8ac76d1e3dcddbe2160cbcc6c8d>`_:"
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:18
+msgid ""
+"For the best performance, we recommend to use version \"small\" of the "
+"model:"
+msgstr ""
+"Для наилучшей производительности рекомендуется использовать версию \"small\" "
+"модели:"
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:37
+msgid ""
+"Next, you should create an instance of DepthEstimationPipeline. It "
+"requires a camera intrinsic matrix and a lidar-to-camera transformation "
+"matrix for correct operation. This is an example of the matrices for "
+"ITLP-Campus dataset:"
+msgstr ""
+"Далее следует создать экземпляр DepthEstimationPipeline. Для корректной "
+"работы требуются матрица внутренних параметров камеры и матрица "
+"преобразования лидара в камеру. Это пример матриц для набора данных "
+"ITLP-Campus:"
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:53
+msgid "Create the DepthEstimationPipeline with these matrices:"
+msgstr "Создайте DepthEstimationPipeline с этими матрицами:"
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:61
+msgid ""
+"Now you can run the pipeline on a pair of an RGB image and a lidar point "
+"cloud:"
+msgstr ""
+"Теперь вы можете запустить конвейер на паре RGB-изображения и облака точек "
+"лидара:"
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:67
+msgid ""
+"``\"test_img\"`` is an RGB image stored as numpy.ndarray of shape (h, w, "
+"3) and uint8 data type"
+msgstr ""
+"``\"test_img\"`` - это RGB-изображение, хранящееся в виде numpy.ndarray с "
+"формой (h, w, 3) и типом данных uint8"
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:68
+msgid ""
+"``\"test_cloud\"`` is a lidar point cloud stored as numpy.ndarray of "
+"shape (N, 3) and float data type (the values are (x, y, z) coordinates in"
+" meters)"
+msgstr ""
+"``\"test_cloud\"`` - это облако точек лидара, хранящееся в виде "
+"numpy.ndarray с формой (N, 3) и типом данных float (значениями являются "
+"координаты (x, y, z) в метрах)"
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:69
+msgid ""
+"``\"predicted_depth\"`` is the reconstructed depth stored as "
+"numpy.ndarray of shape (h, w) and float data type. The values of the "
+"array are depths in meters."
+msgstr ""
+"``\"predicted_depth\"`` - это реконструированная глубина, хранящаяся в виде "
+"numpy.ndarray с формой (h, w) и типом данных float. Значениями массива "
+"являются глубины в метрах."
+
+#: ../../source/featured_modules/10_depth_estimation_pipeline.rst:71
+msgid ""
+"An illustrated demo of the work of DepthEstimationPipeline can be found "
+"in `the demo notebook <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/depth_reconstruction_nclt/notebooks/test_depth_reconstruction.ipynb>`_"
+msgstr ""
+"Иллюстрированную демонстрацию работы DepthEstimationPipeline можно найти в "
+"`демонстрационном блокноте "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/depth_reconstruction_nclt/notebooks/test_depth_reconstruction.ipynb>`_"

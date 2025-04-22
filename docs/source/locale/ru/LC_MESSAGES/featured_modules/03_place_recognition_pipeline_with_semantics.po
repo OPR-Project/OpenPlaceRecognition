@@ -1,0 +1,138 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:2
+msgid "PlaceRecognitionPipeline with semantics"
+msgstr "PlaceRecognitionPipeline с семантикой"
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:4
+msgid ""
+"A module that implements a neural network algorithm for searching a "
+"database of places already visited by a vehicle for the most similar "
+"records using sequences of data from lidars and cameras."
+msgstr ""
+"Модуль, реализующий нейросетевой алгоритм поиска в базе данных уже посещенных "
+"транспортным средством мест наиболее похожих записей с "
+"использованием данных лидаров и камер, а также результатов "
+"их совместной семантической сегментации."
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:9
+msgid "Usage example"
+msgstr "Пример использования"
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:11
+msgid ""
+"You should start with initializing neural model "
+":class:`opr.models.place_recognition.base.LateFusionModel` with the "
+"image, semantic and cloud modules. The recommended way to do this is to "
+"use the `configs/model/place_recognition/multi-image_multi-"
+"semantic_lidar_late-fusion.yaml <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/place_recognition"
+"/multi-image_multi-semantic_lidar_late-fusion.yaml>`_ config file to "
+"instantiate the model with Hydra and load the weights from the "
+"``\"weights/place_recognition/multi-image_multi-semantic_lidar_late-"
+"fusion_nclt.pth\"`` or other file."
+msgstr ""
+"Начните с инициализации нейронной модели "
+":class:`opr.models.place_recognition.base.LateFusionModel` с модулями "
+"изображений, семантики и облаков. Рекомендуемый способ сделать это - "
+"использовать файл конфигурации "
+"`configs/model/place_recognition/multi-image_multi-semantic_lidar_late-"
+"fusion.yaml <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/place_recognition"
+"/multi-image_multi-semantic_lidar_late-fusion.yaml>`_ для создания "
+"экземпляра модели с помощью Hydra и загрузки весов из файла "
+"``\"weights/place_recognition/multi-image_multi-semantic_lidar_late-"
+"fusion_nclt.pth\"`` или другого файла."
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:33
+msgid ""
+"In the similar manner you should initialize the registration model with "
+"the `configs/model/registration/hregnet_light_feats.yaml "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/registration/hregnet_light_feats.yaml>`_"
+" config:"
+msgstr ""
+"Аналогичным образом следует инициализировать модель регистрации с помощью "
+"конфигурации `configs/model/registration/hregnet_light_feats.yaml "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/configs/model/registration/hregnet_light_feats.yaml>`_:"
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:46
+msgid ""
+"Then you should initialize the "
+":class:`opr.pipelines.localization.base.LocalizationPipeline` which "
+"consists of two sub-pipelines: "
+":class:`opr.pipelines.place_recognition.base.PlaceRecognitionPipeline` "
+"and "
+":class:`opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`."
+msgstr ""
+"Затем следует инициализировать "
+":class:`opr.pipelines.localization.base.LocalizationPipeline`, который "
+"состоит из двух под-пайплайнов: "
+":class:`opr.pipelines.place_recognition.base.PlaceRecognitionPipeline` и "
+":class:`opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`."
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:82
+msgid ""
+"Then you can use the pipeline to infer the location of the input query "
+"data:"
+msgstr "Затем вы можете использовать пайплайн для определения местоположения входных данных запроса:"
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:97
+msgid "The pipeline will return the output dictionary with the following keys:"
+msgstr "Пайплайн вернет выходной словарь со следующими ключами:"
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:99
+msgid "``\"db_match_pose\"``: the pose of the most similar record in the database"
+msgstr "``\"db_match_pose\"``: поза наиболее похожей записи в базе данных"
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:100
+msgid "``\"db_match_idx\"``: the index of the most similar record in the database"
+msgstr "``\"db_match_idx\"``: индекс наиболее похожей записи в базе данных"
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:101
+msgid ""
+"``\"estimated_pose\"``: the estimated pose of the query data after "
+"registration"
+msgstr "``\"estimated_pose\"``: оценочная поза данных запроса после регистрации"
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:103
+msgid "More usage examples can be found in the following notebooks:"
+msgstr "Больше примеров использования можно найти в следующих ноутбуках:"
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:105
+msgid ""
+"`notebooks/test_itlp/03_PlaceRecognitionPipeline_with_semantics.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/03_PlaceRecognitionPipeline_with_semantics.ipynb>`_"
+msgstr ""
+"`notebooks/test_itlp/03_PlaceRecognitionPipeline_with_semantics.ipynb "
+"<https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/03_PlaceRecognitionPipeline_with_semantics.ipynb>`_"
+
+#: ../../source/featured_modules/03_place_recognition_pipeline_with_semantics.rst:106
+msgid ""
+"`notebooks/test_cross_season/03_PlaceRecognitionPipeline_with_semantics.ipynb"
+" <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/03_PlaceRecognitionPipeline_with_semantics.ipynb>`_"
+msgstr ""
+"`notebooks/test_cross_season/03_PlaceRecognitionPipeline_with_semantics.ipynb"
+" <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/03_PlaceRecognitionPipeline_with_semantics.ipynb>`_"

@@ -1,0 +1,80 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.samplers.rst:2
+msgid "opr.samplers package"
+msgstr "Пакет opr.samplers"
+
+#: of opr.samplers:1
+msgid "Module for samplers."
+msgstr "Модуль для сэмплеров."
+
+#: ../../source/api/opr.samplers.rst:10
+msgid "opr.samplers.batch\\_sampler"
+msgstr "opr.samplers.batch\\_sampler"
+
+#: of opr.samplers.batch_sampler:1
+msgid "Batch sampler from MinkLoc method."
+msgstr "Batch sampler из метода MinkLoc."
+
+#: of opr.samplers.batch_sampler:3
+msgid ""
+"Code adopted from repository: https://github.com/jac99/MinkLocMultimodal,"
+" MIT License"
+msgstr ""
+"Код взят из репозитория: https://github.com/jac99/MinkLocMultimodal,"
+" MIT License"
+
+#: of opr.samplers.batch_sampler.BatchSampler:1
+#: opr.samplers.batch_sampler.DistributedBatchSamplerWrapper:1
+msgid "Bases: :py:class:`~torch.utils.data.sampler.Sampler`"
+msgstr "Основы: :py:class:`~torch.utils.data.sampler.Sampler`"
+
+#: of opr.samplers.batch_sampler.BatchSampler:1
+msgid "Sampler returning list of indices to form a mini-batch."
+msgstr "Сэмплер, возвращающий список индексов для формирования мини-пакета."
+
+#: of opr.samplers.batch_sampler.BatchSampler:3
+msgid ""
+"Samples elements in groups consisting of k=2 similar elements (positives)"
+" Batch has the following structure: item1_1, ..., item1_k, item2_1, ... "
+"item2_k, itemn_1, ..., itemn_k"
+msgstr ""
+"Выбирает элементы группами, состоящими из k=2 похожих элементов (положительных)"
+" Пакет имеет следующую структуру: item1_1, ..., item1_k, item2_1, ... "
+"item2_k, itemn_1, ..., itemn_k"
+
+#: of opr.samplers.batch_sampler.BatchSampler.expand_batch:1
+msgid ""
+"Batch expansion method. See MinkLoc paper for details about dynamic batch"
+" sizing."
+msgstr ""
+"Метод расширения батча. См. статью MinkLoc для получения подробной информации о динамическом размере батча."
+
+#: of opr.samplers.batch_sampler.BatchSampler.generate_batches:1
+msgid "Generate training/evaluation batches."
+msgstr "Создание батчей для обучения/оценки."
+
+#: of opr.samplers.batch_sampler.DistributedBatchSamplerWrapper:1
+msgid "Wrapper for BatchSampler that supports distributed batch sampling."
+msgstr "Обертка для BatchSampler, поддерживающая распределенную выборку батчей."

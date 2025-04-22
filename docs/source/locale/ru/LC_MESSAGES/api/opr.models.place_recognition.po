@@ -1,0 +1,524 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.models.place_recognition.rst:2
+msgid "opr.models.place\\_recognition package"
+msgstr "opr.models.place\\_recognition пакет"
+
+#: of opr.models.place_recognition:1
+msgid "Module for Place Recognition models."
+msgstr "Модуль для моделей распознавания мест."
+
+#: ../../source/api/opr.models.place_recognition.rst:10
+msgid "opr.models.place\\_recognition.apgem"
+msgstr "opr.models.place\\_recognition.apgem"
+
+#: of opr.models.place_recognition.apgem:1
+msgid "Implementation of APGeM Image Model."
+msgstr "Реализация APGeM Image Model."
+
+#: of opr.models.place_recognition.apgem.APGeMModel:1
+#: opr.models.place_recognition.base.SemanticModel:1
+#: opr.models.place_recognition.cosplace.CosPlaceModel:1
+#: opr.models.place_recognition.netvlad.NetVLADModel:1
+#: opr.models.place_recognition.patchnetvlad.PatchNetVLAD:1
+#: opr.models.place_recognition.resnet.ResNet18:1
+msgid "Bases: :py:class:`~opr.models.place_recognition.base.ImageModel`"
+msgstr "Основы: :py:class:`~opr.models.place_recognition.base.ImageModel`"
+
+#: of opr.models.place_recognition.apgem.APGeMModel:1
+msgid ""
+"APGeM: 'Learning with Average Precision: Training Image Retrieval with a "
+"Listwise Loss'."
+msgstr ""
+"APGeM: 'Обучение со средней точностью: обучение извлечению изображений с "
+"помощью поэлементной функции потерь'."
+
+#: of opr.models.place_recognition.apgem.APGeMModel:3
+msgid "Paper: https://arxiv.org/abs/1906.07589"
+msgstr "Статья: https://arxiv.org/abs/1906.07589"
+
+#: ../../source/api/opr.models.place_recognition.rst:18
+msgid "opr.models.place\\_recognition.base"
+msgstr "opr.models.place\\_recognition.base"
+
+#: of opr.models.place_recognition.base:1
+msgid "Base meta-models for Place Recognition."
+msgstr "Базовые мета-модели для распознавания мест."
+
+#: of opr.models.place_recognition.base.CloudModel:1
+#: opr.models.place_recognition.base.ImageModel:1
+#: opr.models.place_recognition.base.LateFusionModel:1
+#: opr.models.place_recognition.overlaptransformer.OverlapTransformer:1
+#: opr.models.place_recognition.pointnetvlad.Flatten:1
+#: opr.models.place_recognition.pointnetvlad.GatingContext:1
+#: opr.models.place_recognition.pointnetvlad.NetVLADLoupe:1
+#: opr.models.place_recognition.pointnetvlad.PointNetFeat:1
+#: opr.models.place_recognition.pointnetvlad.PointNetVLAD:1
+#: opr.models.place_recognition.pointnetvlad.STN3d:1
+#: opr.models.place_recognition.soc.SOCMLPMixerModel:1
+#: opr.models.place_recognition.soc.SOCModel:1
+msgid "Bases: :py:class:`~torch.nn.modules.module.Module`"
+msgstr "Основы: :py:class:`~torch.nn.modules.module.Module`"
+
+#: of opr.models.place_recognition.base.CloudModel:1
+msgid ""
+"Meta-model for lidar-based Place Recognition. Combines feature extraction"
+" backbone and head modules."
+msgstr ""
+"Мета-модель для распознавания мест на основе лидара. Объединяет извлечение"
+" признаков, магистральную сеть и модули заголовка."
+
+#: of opr.models.place_recognition.base.CloudModel.forward:1
+#: opr.models.place_recognition.base.ImageModel.forward:1
+#: opr.models.place_recognition.base.LateFusionModel.forward:1
+#: opr.models.place_recognition.base.SemanticModel.forward:1
+#: opr.models.place_recognition.overlaptransformer.OverlapTransformer.forward:1
+#: opr.models.place_recognition.patchnetvlad.PatchNetVLAD.forward:1
+#: opr.models.place_recognition.pointnetvlad.Flatten.forward:1
+#: opr.models.place_recognition.pointnetvlad.GatingContext.forward:1
+#: opr.models.place_recognition.pointnetvlad.NetVLADLoupe.forward:1
+#: opr.models.place_recognition.pointnetvlad.PointNetFeat.forward:1
+#: opr.models.place_recognition.pointnetvlad.PointNetVLAD.forward:1
+#: opr.models.place_recognition.pointnetvlad.STN3d.forward:1
+#: opr.models.place_recognition.soc.SOCMLPMixerModel.forward:1
+msgid "Defines the computation performed at every call."
+msgstr "Определяет вычисления, выполняемые при каждом вызове."
+
+#: of opr.models.place_recognition.base.CloudModel.forward:3
+#: opr.models.place_recognition.base.ImageModel.forward:3
+#: opr.models.place_recognition.base.LateFusionModel.forward:3
+#: opr.models.place_recognition.base.SemanticModel.forward:3
+#: opr.models.place_recognition.overlaptransformer.OverlapTransformer.forward:3
+#: opr.models.place_recognition.patchnetvlad.PatchNetVLAD.forward:3
+#: opr.models.place_recognition.pointnetvlad.Flatten.forward:3
+#: opr.models.place_recognition.pointnetvlad.GatingContext.forward:3
+#: opr.models.place_recognition.pointnetvlad.NetVLADLoupe.forward:3
+#: opr.models.place_recognition.pointnetvlad.PointNetFeat.forward:3
+#: opr.models.place_recognition.pointnetvlad.PointNetVLAD.forward:3
+#: opr.models.place_recognition.pointnetvlad.STN3d.forward:3
+#: opr.models.place_recognition.soc.SOCMLPMixerModel.forward:3
+msgid "Should be overridden by all subclasses."
+msgstr "Должен быть переопределен всеми подклассами."
+
+#: of opr.models.place_recognition.base.CloudModel.forward:6
+#: opr.models.place_recognition.base.ImageModel.forward:6
+#: opr.models.place_recognition.base.LateFusionModel.forward:6
+#: opr.models.place_recognition.base.SemanticModel.forward:6
+#: opr.models.place_recognition.overlaptransformer.OverlapTransformer.forward:6
+#: opr.models.place_recognition.patchnetvlad.PatchNetVLAD.forward:6
+#: opr.models.place_recognition.pointnetvlad.Flatten.forward:6
+#: opr.models.place_recognition.pointnetvlad.GatingContext.forward:6
+#: opr.models.place_recognition.pointnetvlad.NetVLADLoupe.forward:6
+#: opr.models.place_recognition.pointnetvlad.PointNetFeat.forward:6
+#: opr.models.place_recognition.pointnetvlad.PointNetVLAD.forward:6
+#: opr.models.place_recognition.pointnetvlad.STN3d.forward:6
+#: opr.models.place_recognition.soc.SOCMLPMixerModel.forward:6
+msgid ""
+"Although the recipe for forward pass needs to be defined within this "
+"function, one should call the :class:`Module` instance afterwards instead"
+" of this since the former takes care of running the registered hooks "
+"while the latter silently ignores them."
+msgstr ""
+"Хотя рецепт для прямого прохода должен быть определен внутри этой "
+"функции, следует вызывать экземпляр :class:`Module` после этого, поскольку "
+"первый заботится о запуске зарегистрированных хуков, а второй молча "
+"игнорирует их."
+
+#: of opr.models.place_recognition.base.ImageModel:1
+msgid ""
+"Meta-model for image-based Place Recognition. Combines feature extraction"
+" backbone and head modules."
+msgstr ""
+"Мета-модель для распознавания мест на основе изображений. Объединяет "
+"извлечение признаков, магистральную сеть и модули заголовка."
+
+#: of opr.models.place_recognition.base.LateFusionModel:1
+msgid ""
+"Meta-model for multimodal Place Recognition architectures with late "
+"fusion."
+msgstr ""
+"Мета-модель для мультимодальных архитектур распознавания мест с поздним "
+"слиянием."
+
+#: of opr.models.place_recognition.base.SemanticModel:1
+msgid ""
+"Meta-model for semantic-based Place Recognition. Combines feature "
+"extraction backbone and head modules."
+msgstr ""
+"Мета-модель для семантического распознавания мест. Объединяет извлечение "
+"признаков, магистральную сеть и модули заголовка."
+
+#: ../../source/api/opr.models.place_recognition.rst:26
+msgid "opr.models.place\\_recognition.cosplace"
+msgstr "opr.models.place\\_recognition.cosplace"
+
+#: of opr.models.place_recognition.cosplace:1
+msgid "Implementation of CosPlace model."
+msgstr "Реализация модели CosPlace."
+
+#: of opr.models.place_recognition.cosplace.CosPlaceModel:1
+msgid "CosPlace: Rethinking Visual Geo-localization for Large-Scale Applications."
+msgstr ""
+"CosPlace: переосмысление визуальной геолокализации для крупномасштабных "
+"приложений."
+
+#: of opr.models.place_recognition.cosplace.CosPlaceModel:3
+msgid "Paper: https://arxiv.org/abs/2204.02287"
+msgstr "Статья: https://arxiv.org/abs/2204.02287"
+
+#: ../../source/api/opr.models.place_recognition.rst:34
+msgid "opr.models.place\\_recognition.minkloc"
+msgstr "opr.models.place\\_recognition.minkloc"
+
+#: of opr.models.place_recognition.minkloc:1
+msgid "Implementations of MinkLoc models."
+msgstr "Реализации моделей MinkLoc."
+
+#: of opr.models.place_recognition.minkloc.MinkLoc3D:1
+#: opr.models.place_recognition.svtnet.SVTNet:1
+msgid "Bases: :py:class:`~opr.models.place_recognition.base.CloudModel`"
+msgstr "Основы: :py:class:`~opr.models.place_recognition.base.CloudModel`"
+
+#: of opr.models.place_recognition.minkloc.MinkLoc3D:1
+msgid "MinkLoc3D: Point Cloud Based Large-Scale Place Recognition."
+msgstr "MinkLoc3D: Крупномасштабное распознавание мест на основе облака точек."
+
+#: of opr.models.place_recognition.minkloc.MinkLoc3D:3
+msgid ""
+"Paper: https://arxiv.org/abs/2011.04530 Code is adopted from the original"
+" repository: https://github.com/jac99/MinkLoc3Dv2, MIT License"
+msgstr ""
+"Статья: https://arxiv.org/abs/2011.04530 Код взят из оригинального "
+"репозитория: https://github.com/jac99/MinkLoc3Dv2, MIT License"
+
+#: of opr.models.place_recognition.minkloc.MinkLoc3Dv2:1
+msgid "Bases: :py:class:`~opr.models.place_recognition.minkloc.MinkLoc3D`"
+msgstr "Основы: :py:class:`~opr.models.place_recognition.minkloc.MinkLoc3D`"
+
+#: of opr.models.place_recognition.minkloc.MinkLoc3Dv2:1
+msgid ""
+"Improving Point Cloud Based Place Recognition with Ranking-based Loss and"
+" Large Batch Training."
+msgstr ""
+"Улучшение распознавания мест на основе облака точек с помощью функции потерь"
+" на основе ранжирования и обучения на больших пакетах."
+
+#: of opr.models.place_recognition.minkloc.MinkLoc3Dv2:3
+msgid ""
+"Paper: https://arxiv.org/abs/2203.00972 Code is adopted from the original"
+" repository: https://github.com/jac99/MinkLoc3Dv2, MIT License"
+msgstr ""
+"Статья: https://arxiv.org/abs/2203.00972 Код взят из оригинального "
+"репозитория: https://github.com/jac99/MinkLoc3Dv2, MIT License"
+
+#: of opr.models.place_recognition.minkloc.MinkLocMultimodal:1
+msgid "Bases: :py:class:`~opr.models.place_recognition.base.LateFusionModel`"
+msgstr "Основы: :py:class:`~opr.models.place_recognition.base.LateFusionModel`"
+
+#: of opr.models.place_recognition.minkloc.MinkLocMultimodal:1
+msgid "MinkLoc++: Lidar and Monocular Image Fusion for Place Recognition."
+msgstr ""
+"MinkLoc++: Слияние лидара и монокулярных изображений для распознавания мест."
+
+#: of opr.models.place_recognition.minkloc.MinkLocMultimodal:3
+msgid ""
+"Paper: https://arxiv.org/pdf/2104.05327.pdf Code is adopted from the "
+"original repository: https://github.com/jac99/MinkLocMultimodal, MIT "
+"License"
+msgstr ""
+"Статья: https://arxiv.org/pdf/2104.05327.pdf Код взят из оригинального "
+"репозитория: https://github.com/jac99/MinkLocMultimodal, MIT License"
+
+#: ../../source/api/opr.models.place_recognition.rst:42
+msgid "opr.models.place\\_recognition.netvlad"
+msgstr "opr.models.place\\_recognition.netvlad"
+
+#: of opr.models.place_recognition.netvlad:1
+msgid "Implementation of NetVLAD model."
+msgstr "Реализация модели NetVLAD."
+
+#: of opr.models.place_recognition.netvlad.NetVLADModel:1
+msgid "NetVLAD: CNN architecture for weakly supervised place recognition."
+msgstr "NetVLAD: Архитектура CNN для слабо контролируемого распознавания мест."
+
+#: of opr.models.place_recognition.netvlad.NetVLADModel:3
+msgid ""
+"Paper: https://arxiv.org/abs/1511.07247v3 Code is adopted from the "
+"repository: https://github.com/Nanne/pytorch-NetVlad"
+msgstr ""
+"Статья: https://arxiv.org/abs/1511.07247v3 Код взят из репозитория: "
+"https://github.com/Nanne/pytorch-NetVlad"
+
+#: ../../source/api/opr.models.place_recognition.rst:50
+msgid "opr.models.place\\_recognition.overlaptransformer"
+msgstr "opr.models.place\\_recognition.overlaptransformer"
+
+#: of opr.models.place_recognition.overlaptransformer:1
+msgid "Implementation of OverlapTransformer model."
+msgstr "Реализация модели OverlapTransformer."
+
+#: of opr.models.place_recognition.overlaptransformer.OverlapTransformer:1
+msgid ""
+"OverlapTransformer: An Efficient and Yaw-Angle-Invariant Transformer "
+"Network for LiDAR-Based Place Recognition."
+msgstr ""
+"OverlapTransformer: Эффективная и инвариантная к углу рыскания сеть "
+"трансформеров для распознавания мест на основе лидара."
+
+#: of opr.models.place_recognition.overlaptransformer.OverlapTransformer:3
+msgid ""
+"Paper: https://arxiv.org/abs/2203.03397 Adapted from original repository:"
+" https://github.com/haomo-ai/OverlapTransformer"
+msgstr ""
+"Статья: https://arxiv.org/abs/2203.03397 Адаптировано из оригинального "
+"репозитория: https://github.com/haomo-ai/OverlapTransformer"
+
+#: ../../docstring of
+#: opr.models.place_recognition.overlaptransformer.OverlapTransformer.relu:1
+msgid "MHSA num_layers=1 is suggested in our work."
+msgstr "В нашей работе предлагается MHSA num_layers=1."
+
+#: ../../source/api/opr.models.place_recognition.rst:58
+msgid "opr.models.place\\_recognition.patchnetvlad"
+msgstr "opr.models.place\\_recognition.patchnetvlad"
+
+#: of opr.models.place_recognition.patchnetvlad:1
+msgid "Implementation of PatchNetVLAD model."
+msgstr "Реализация модели PatchNetVLAD."
+
+#: of opr.models.place_recognition.patchnetvlad.PatchNetVLAD:1
+msgid ""
+"Patch-NetVLAD: Multi-Scale Fusion of Locally-Global Descriptors for Place"
+" Recognition."
+msgstr ""
+"Patch-NetVLAD: Мультимасштабное слияние локально-глобальных дескрипторов "
+"для распознавания мест."
+
+#: of opr.models.place_recognition.patchnetvlad.PatchNetVLAD:3
+msgid ""
+"Paper: https://arxiv.org/abs/2103.01486 Code is adopted from original "
+"repository: https://github.com/QVPR/Patch-NetVLAD"
+msgstr ""
+"Статья: https://arxiv.org/abs/2103.01486 Код взят из оригинального "
+"репозитория: https://github.com/QVPR/Patch-NetVLAD"
+
+#: of opr.models.place_recognition.patchnetvlad.PatchNetVLAD.init_params:1
+msgid "Initialize NetVLAD layer parameters."
+msgstr "Инициализация параметров слоя NetVLAD."
+
+#: of opr.models.place_recognition.patchnetvlad.get_integral_feature:1
+msgid ""
+"Input/Output as [N,D,H,W] where N is batch size and D is descriptor "
+"dimensions For VLAD, D = K x d where K is the number of clusters and d is"
+" the original descriptor dimensions"
+msgstr ""
+"Вход/Выход как [N,D,H,W], где N - размер пакета, а D - размерность "
+"дескриптора. Для VLAD, D = K x d, где K - количество кластеров, а d -"
+" исходная размерность дескриптора"
+
+#: of
+#: opr.models.place_recognition.patchnetvlad.get_square_regions_from_integral:1
+msgid ""
+"Input as [N,D,H+1,W+1] where additional 1s for last two axes are zero "
+"paddings regSize and regStride are single values as only square regions "
+"are implemented currently"
+msgstr ""
+"Вход как [N,D,H+1,W+1], где дополнительные 1 для последних двух осей "
+"являются нулевыми заполнениями. regSize и regStride - это отдельные "
+"значения, так как в настоящее время реализованы только квадратные области"
+
+#: ../../source/api/opr.models.place_recognition.rst:66
+msgid "opr.models.place\\_recognition.pointnetvlad"
+msgstr "opr.models.place\\_recognition.pointnetvlad"
+
+#: of opr.models.place_recognition.pointnetvlad:1
+msgid "Implementation of PointNetVLAD model."
+msgstr "Реализация модели PointNetVLAD."
+
+#: of opr.models.place_recognition.pointnetvlad.Flatten:1
+msgid "Flatten layer."
+msgstr "Слой Flatten."
+
+#: of opr.models.place_recognition.pointnetvlad.GatingContext:1
+msgid "Gating context layer."
+msgstr "Слой контекста стробирования."
+
+#: of opr.models.place_recognition.pointnetvlad.NetVLADLoupe:1
+msgid "NetVLAD aggregation layer with gating mechanism."
+msgstr "Слой агрегации NetVLAD с механизмом стробирования."
+
+#: of opr.models.place_recognition.pointnetvlad.PointNetFeat:1
+msgid "PointNet feature extractor."
+msgstr "Извлекатель признаков PointNet."
+
+#: of opr.models.place_recognition.pointnetvlad.PointNetVLAD:1
+msgid ""
+"PointNetVLAD: Deep Point Cloud Based Retrieval for Large-Scale Place "
+"Recognition."
+msgstr ""
+"PointNetVLAD: Глубокое извлечение на основе облака точек для "
+"крупномасштабного распознавания мест."
+
+#: of opr.models.place_recognition.pointnetvlad.PointNetVLAD:3
+msgid ""
+"Paper: https://arxiv.org/abs/1804.03492 Original repository: "
+"https://github.com/mikacuy/pointnetvlad Code is adopted from repository: "
+"https://github.com/cattaneod/PointNetVlad-Pytorch"
+msgstr ""
+"Статья: https://arxiv.org/abs/1804.03492 Оригинальный репозиторий: "
+"https://github.com/mikacuy/pointnetvlad Код взят из репозитория: "
+"https://github.com/cattaneod/PointNetVlad-Pytorch"
+
+#: of opr.models.place_recognition.pointnetvlad.STN3d:1
+msgid "Spatial Transformer Network for 3D data."
+msgstr "Сеть пространственного преобразования для 3D данных."
+
+#: ../../source/api/opr.models.place_recognition.rst:74
+msgid "opr.models.place\\_recognition.resnet"
+msgstr "opr.models.place\\_recognition.resnet"
+
+#: of opr.models.place_recognition.resnet:1
+msgid "ResNet image models for Place Recognition."
+msgstr "Модели изображений ResNet для распознавания мест."
+
+#: of opr.models.place_recognition.resnet.ResNet18:1
+msgid "ResNet18 image model for Place Recognition."
+msgstr "Модель изображений ResNet18 для распознавания мест."
+
+#: of opr.models.place_recognition.resnet.SemanticResNet18:1
+msgid "Bases: :py:class:`~opr.models.place_recognition.base.SemanticModel`"
+msgstr "Основы: :py:class:`~opr.models.place_recognition.base.SemanticModel`"
+
+#: of opr.models.place_recognition.resnet.SemanticResNet18:1
+msgid "ResNet18 semantic mask model for Place Recognition."
+msgstr "Модель семантической маски ResNet18 для распознавания мест."
+
+#: ../../source/api/opr.models.place_recognition.rst:82
+msgid "opr.models.place\\_recognition.soc"
+msgstr "opr.models.place\\_recognition.soc"
+
+#: of opr.models.place_recognition.soc:1
+#: opr.models.place_recognition.soc.SOCMLP:1
+msgid "Semantic-Object-Context modality model."
+msgstr "Модель модальности Semantic-Object-Context."
+
+#: of opr.models.place_recognition.soc.SOCMLP:1
+#: opr.models.place_recognition.soc.SOCMLPMixer:1
+msgid "Bases: :py:class:`~opr.models.place_recognition.soc.SOCModel`"
+msgstr "Основы: :py:class:`~opr.models.place_recognition.soc.SOCModel`"
+
+#: of opr.models.place_recognition.soc.SOCMLP.forward:1
+#: opr.models.place_recognition.soc.SOCMLPMixer.forward:1
+#: opr.models.place_recognition.soc.SOCModel.forward:1
+msgid "Forward pass."
+msgstr "Прямой проход."
+
+#: ../../source/api/opr.models.place_recognition.rst
+msgid "Parameters"
+msgstr "Параметры"
+
+#: of opr.models.place_recognition.soc.SOCMLP.forward:3
+#: opr.models.place_recognition.soc.SOCMLPMixer.forward:3
+#: opr.models.place_recognition.soc.SOCModel.forward:3
+msgid "input batch"
+msgstr "входной пакет"
+
+#: ../../source/api/opr.models.place_recognition.rst
+msgid "Returns"
+msgstr "Возвращает"
+
+#: of opr.models.place_recognition.soc.SOCMLP.forward:6
+msgid "output tensor of shape (batch_size, embeddings_size)"
+msgstr "выходной тензор формы (batch_size, embeddings_size)"
+
+#: ../../source/api/opr.models.place_recognition.rst
+msgid "Return type"
+msgstr "Тип возвращаемого значения"
+
+#: of opr.models.place_recognition.soc.SOCMLPMixer:1
+msgid "Semantic-Object-Context modality model based on MLP Mixer ."
+msgstr "Модель модальности Semantic-Object-Context на основе MLP Mixer."
+
+#: of opr.models.place_recognition.soc.SOCMLPMixer:3
+msgid ""
+"Kind of Attention-layer build on top of MLPs. Original paper: "
+"https://arxiv.org/abs/2105.01601 implementation: "
+"https://github.com/lucidrains/mlp-mixer-pytorch"
+msgstr ""
+"Тип слоя внимания, построенного на основе MLP. Оригинальная статья: "
+"https://arxiv.org/abs/2105.01601 реализация: "
+"https://github.com/lucidrains/mlp-mixer-pytorch"
+
+#: of opr.models.place_recognition.soc.SOCMLPMixer.forward:6
+msgid ""
+"output dictionary with \"final_descriptor\" key containing the output "
+"tensor"
+msgstr ""
+"выходной словарь с ключом \"final_descriptor\", содержащим выходной тензор"
+
+#: of opr.models.place_recognition.soc.SOCModel:1
+msgid "Semantic-Object-Context modality base model class."
+msgstr "Базовый класс модели модальности Semantic-Object-Context."
+
+#: of opr.models.place_recognition.soc.SOCModel.forward:6
+msgid "output dictionary"
+msgstr "выходной словарь"
+
+#: ../../source/api/opr.models.place_recognition.rst:90
+msgid "opr.models.place\\_recognition.svtnet"
+msgstr "opr.models.place\\_recognition.svtnet"
+
+#: of opr.models.place_recognition.svtnet:1
+#: opr.models.place_recognition.svtnet.SVTNet:1
+msgid ""
+"SVT-Net: Super Light-Weight Sparse Voxel Transformer for Large Scale "
+"Place Recognition."
+msgstr ""
+"SVT-Net: Сверхлегкий разреженный воксельный трансформер для "
+"крупномасштабного распознавания мест."
+
+#: of opr.models.place_recognition.svtnet:3
+#: opr.models.place_recognition.svtnet.SVTNet:3
+msgid "Citation:"
+msgstr "Цитата:"
+
+#: of opr.models.place_recognition.svtnet:4
+#: opr.models.place_recognition.svtnet.SVTNet:4
+msgid ""
+"Fan, Zhaoxin, et al. \"Svt-net: Super light-weight sparse voxel "
+"transformer for large scale place recognition.\" Proceedings of the AAAI "
+"Conference on Artificial Intelligence. Vol. 36. No. 1. 2022."
+msgstr ""
+"Fan, Zhaoxin, et al. \"Svt-net: Сверхлегкий разреженный воксельный "
+"трансформер для крупномасштабного распознавания мест.\" Материалы "
+"конференции AAAI по искусственному интеллекту. Том 36. № 1. 2022."
+
+#: of opr.models.place_recognition.svtnet:8
+#: opr.models.place_recognition.svtnet.SVTNet:8
+msgid ""
+"Source: https://github.com/ZhenboSong/SVTNet Paper: "
+"https://arxiv.org/abs/2105.00149"
+msgstr ""
+"Источник: https://github.com/ZhenboSong/SVTNet Статья: "
+"https://arxiv.org/abs/2105.00149"

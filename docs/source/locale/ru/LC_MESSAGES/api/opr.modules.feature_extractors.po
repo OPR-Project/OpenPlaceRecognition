@@ -1,0 +1,256 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.modules.feature_extractors.rst:2
+msgid "opr.modules.feature\\_extractors package"
+msgstr "Пакет opr.modules.feature\\_extractors"
+
+#: of opr.modules.feature_extractors:1
+msgid "Feature extraction modules."
+msgstr "Модули извлечения признаков."
+
+#: ../../source/api/opr.modules.feature_extractors.rst:10
+msgid "opr.modules.feature\\_extractors.convnext"
+msgstr "opr.modules.feature\\_extractors.convnext"
+
+#: of opr.modules.feature_extractors.convnext:1
+msgid "ConvNeXt-based image feature extractors."
+msgstr "Модули извлечения признаков изображений на основе ConvNeXt."
+
+#: of opr.modules.feature_extractors.convnext.ConvNeXtTinyFeatureExtractor:1
+#: opr.modules.feature_extractors.mink_resnet.MinkResNetBase:1
+#: opr.modules.feature_extractors.resnet.ResNetFPNFeatureExtractor:1
+#: opr.modules.feature_extractors.resnet.ResNetFeatureExtractor:1
+#: opr.modules.feature_extractors.vgg.VGGFeatureExtractor:1
+msgid "Bases: :py:class:`~torch.nn.modules.module.Module`"
+msgstr "Основы: :py:class:`~torch.nn.modules.module.Module`"
+
+#: of opr.modules.feature_extractors.convnext.ConvNeXtTinyFeatureExtractor:1
+msgid "ConvNeXt-Tiny image feature extractor."
+msgstr "Модуль извлечения признаков изображений ConvNeXt-Tiny."
+
+#: of
+#: opr.modules.feature_extractors.convnext.ConvNeXtTinyFeatureExtractor.forward:1
+#: opr.modules.feature_extractors.mink_resnet.MinkResNetBase.forward:1
+#: opr.modules.feature_extractors.mink_resnet.MinkResNetFPNFeatureExtractor.forward:1
+#: opr.modules.feature_extractors.resnet.ResNetFPNFeatureExtractor.forward:1
+#: opr.modules.feature_extractors.resnet.ResNetFeatureExtractor.forward:1
+#: opr.modules.feature_extractors.svtnet.SVTNetFeatureExtractor.forward:1
+#: opr.modules.feature_extractors.vgg.VGGFeatureExtractor.forward:1
+msgid "Defines the computation performed at every call."
+msgstr "Определяет вычисление, выполняемое при каждом вызове."
+
+#: of
+#: opr.modules.feature_extractors.convnext.ConvNeXtTinyFeatureExtractor.forward:3
+#: opr.modules.feature_extractors.mink_resnet.MinkResNetBase.forward:3
+#: opr.modules.feature_extractors.mink_resnet.MinkResNetFPNFeatureExtractor.forward:3
+#: opr.modules.feature_extractors.resnet.ResNetFPNFeatureExtractor.forward:3
+#: opr.modules.feature_extractors.resnet.ResNetFeatureExtractor.forward:3
+#: opr.modules.feature_extractors.svtnet.SVTNetFeatureExtractor.forward:3
+#: opr.modules.feature_extractors.vgg.VGGFeatureExtractor.forward:3
+msgid "Should be overridden by all subclasses."
+msgstr "Должен быть переопределен всеми подклассами."
+
+#: of
+#: opr.modules.feature_extractors.convnext.ConvNeXtTinyFeatureExtractor.forward:6
+#: opr.modules.feature_extractors.mink_resnet.MinkResNetBase.forward:6
+#: opr.modules.feature_extractors.mink_resnet.MinkResNetFPNFeatureExtractor.forward:6
+#: opr.modules.feature_extractors.resnet.ResNetFPNFeatureExtractor.forward:6
+#: opr.modules.feature_extractors.resnet.ResNetFeatureExtractor.forward:6
+#: opr.modules.feature_extractors.svtnet.SVTNetFeatureExtractor.forward:6
+#: opr.modules.feature_extractors.vgg.VGGFeatureExtractor.forward:6
+msgid ""
+"Although the recipe for forward pass needs to be defined within this "
+"function, one should call the :class:`Module` instance afterwards instead"
+" of this since the former takes care of running the registered hooks "
+"while the latter silently ignores them."
+msgstr ""
+"Хотя рецепт для прямого прохода должен быть определен внутри этой функции,"
+" следует вызывать экземпляр :class:`Module` после этого, поскольку первый"
+" заботится о запуске зарегистрированных хуков, а второй молча игнорирует их."
+
+#: ../../source/api/opr.modules.feature_extractors.rst:18
+msgid "opr.modules.feature\\_extractors.mink\\_resnet"
+msgstr "opr.modules.feature\\_extractors.mink\\_resnet"
+
+#: of opr.modules.feature_extractors.mink_resnet:1
+msgid "ResNetFPN feature extraction module implemented with MinkowskiEngine."
+msgstr ""
+"Модуль извлечения признаков ResNetFPN, реализованный с помощью"
+" MinkowskiEngine."
+
+#: of opr.modules.feature_extractors.mink_resnet:3
+msgid ""
+"Komorowski, Jacek. \"Minkloc3d: Point cloud based large-scale place "
+"recognition.\" Proceedings of the IEEE/CVF Winter Conference on "
+"Applications of Computer Vision. 2021."
+msgstr ""
+"Komorowski, Jacek. \"Minkloc3d: Point cloud based large-scale place "
+"recognition.\" Материалы Зимней конференции IEEE/CVF по приложениям "
+"компьютерного зрения. 2021."
+
+#: of opr.modules.feature_extractors.mink_resnet:6
+msgid ""
+"Paper: https://arxiv.org/abs/2011.04530 Code is adopted from the original"
+" repository: https://github.com/jac99/MinkLoc3Dv2, MIT License"
+msgstr ""
+"Статья: https://arxiv.org/abs/2011.04530 Код взят из оригинального"
+" репозитория: https://github.com/jac99/MinkLoc3Dv2, MIT License"
+
+#: of opr.modules.feature_extractors.mink_resnet.MinkResNetBase:1
+msgid "Base ResNet class for sparse tensors with MinkowskiEngine."
+msgstr "Базовый класс ResNet для разреженных тензоров с MinkowskiEngine."
+
+#: of
+#: opr.modules.feature_extractors.mink_resnet.MinkResNetFPNFeatureExtractor:1
+#: opr.modules.feature_extractors.svtnet.SVTNetFeatureExtractor:1
+msgid ""
+"Bases: "
+":py:class:`~opr.modules.feature_extractors.mink_resnet.MinkResNetBase`"
+msgstr ""
+"Основы: "
+":py:class:`~opr.modules.feature_extractors.mink_resnet.MinkResNetBase`"
+
+#: of
+#: opr.modules.feature_extractors.mink_resnet.MinkResNetFPNFeatureExtractor:1
+msgid ""
+"Feature Pyramid Network (FPN) architecture implementation using Minkowski"
+" ResNet building blocks."
+msgstr ""
+"Реализация архитектуры Feature Pyramid Network (FPN) с использованием"
+" строительных блоков Minkowski ResNet."
+
+#: ../../source/api/opr.modules.feature_extractors.rst:26
+msgid "opr.modules.feature\\_extractors.resnet"
+msgstr "opr.modules.feature\\_extractors.resnet"
+
+#: of opr.modules.feature_extractors.resnet:1
+msgid "ResNet-based image feature extractors."
+msgstr "Модули извлечения признаков изображений на основе ResNet."
+
+#: of opr.modules.feature_extractors.resnet.ResNet18FPNFeatureExtractor:1
+#: opr.modules.feature_extractors.resnet.ResNet50FPNFeatureExtractor:1
+msgid ""
+"Bases: "
+":py:class:`~opr.modules.feature_extractors.resnet.ResNetFPNFeatureExtractor`"
+msgstr ""
+"Основы: "
+":py:class:`~opr.modules.feature_extractors.resnet.ResNetFPNFeatureExtractor`"
+
+#: of opr.modules.feature_extractors.resnet.ResNet18FPNFeatureExtractor:1
+msgid "ResNet18 image feature extractor with FPN block."
+msgstr "Модуль извлечения признаков изображений ResNet18 с блоком FPN."
+
+#: of opr.modules.feature_extractors.resnet.ResNet18FPNFeatureExtractor:3
+#: opr.modules.feature_extractors.resnet.ResNet50FPNFeatureExtractor:3
+#: opr.modules.feature_extractors.resnet.ResNetFPNFeatureExtractor:3
+msgid ""
+"The code is adopted from the repository: "
+"https://github.com/jac99/MinkLocMultimodal, MIT License"
+msgstr ""
+"Код взят из репозитория:"
+" https://github.com/jac99/MinkLocMultimodal, MIT License"
+
+#: of opr.modules.feature_extractors.resnet.ResNet18FeatureExtractor:1
+#: opr.modules.feature_extractors.resnet.ResNet50FeatureExtractor:1
+msgid ""
+"Bases: "
+":py:class:`~opr.modules.feature_extractors.resnet.ResNetFeatureExtractor`"
+msgstr ""
+"Основы: "
+":py:class:`~opr.modules.feature_extractors.resnet.ResNetFeatureExtractor`"
+
+#: of opr.modules.feature_extractors.resnet.ResNet18FeatureExtractor:1
+msgid "ResNet18 image feature extractor."
+msgstr "Модуль извлечения признаков изображений ResNet18."
+
+#: of opr.modules.feature_extractors.resnet.ResNet50FPNFeatureExtractor:1
+msgid "ResNet50 image feature extractor with FPN block."
+msgstr "Модуль извлечения признаков изображений ResNet50 с блоком FPN."
+
+#: of opr.modules.feature_extractors.resnet.ResNet50FeatureExtractor:1
+msgid "ResNet50 image feature extractor."
+msgstr "Модуль извлечения признаков изображений ResNet50."
+
+#: of opr.modules.feature_extractors.resnet.ResNetFPNFeatureExtractor:1
+msgid "ResNet-based image feature extractor with FPN block."
+msgstr "Модуль извлечения признаков изображений на основе ResNet с блоком FPN."
+
+#: of opr.modules.feature_extractors.resnet.ResNetFeatureExtractor:1
+msgid "ResNet-based image feature extractor."
+msgstr "Модуль извлечения признаков изображений на основе ResNet."
+
+#: ../../source/api/opr.modules.feature_extractors.rst:34
+msgid "opr.modules.feature\\_extractors.svtnet"
+msgstr "opr.modules.feature\\_extractors.svtnet"
+
+#: of opr.modules.feature_extractors.svtnet:1
+msgid "Implementation of feature extraction model from SVT-Net."
+msgstr "Реализация модели извлечения признаков из SVT-Net."
+
+#: of opr.modules.feature_extractors.svtnet:3
+msgid "Citation:"
+msgstr "Цитата:"
+
+#: of opr.modules.feature_extractors.svtnet:4
+msgid ""
+"Fan, Zhaoxin, et al. \"Svt-net: Super light-weight sparse voxel "
+"transformer for large scale place recognition.\" Proceedings of the AAAI "
+"Conference on Artificial Intelligence. Vol. 36. No. 1. 2022."
+msgstr ""
+"Fan, Zhaoxin, et al. \"Svt-net: Super light-weight sparse voxel "
+"transformer for large scale place recognition.\" Материалы конференции AAAI"
+" по искусственному интеллекту. Том 36. № 1. 2022."
+
+#: of opr.modules.feature_extractors.svtnet:8
+msgid ""
+"Source: https://github.com/ZhenboSong/SVTNet Paper: "
+"https://arxiv.org/abs/2105.00149"
+msgstr ""
+"Источник: https://github.com/ZhenboSong/SVTNet Статья:"
+" https://arxiv.org/abs/2105.00149"
+
+#: of opr.modules.feature_extractors.svtnet.SVTNetFeatureExtractor:1
+msgid "Feature extraction model from SVT-Net."
+msgstr "Модель извлечения признаков из SVT-Net."
+
+#: of opr.modules.feature_extractors.svtnet.SVTNetFeatureExtractor:3
+msgid "Source: https://github.com/ZhenboSong/SVTNet"
+msgstr "Источник: https://github.com/ZhenboSong/SVTNet"
+
+#: ../../source/api/opr.modules.feature_extractors.rst:42
+msgid "opr.modules.feature\\_extractors.vgg"
+msgstr "opr.modules.feature\\_extractors.vgg"
+
+#: of opr.modules.feature_extractors.vgg:1
+msgid "VGG-based image feature extractors."
+msgstr "Модули извлечения признаков изображений на основе VGG."
+
+#: of opr.modules.feature_extractors.vgg.VGG16FeatureExtractor:1
+msgid "Bases: :py:class:`~opr.modules.feature_extractors.vgg.VGGFeatureExtractor`"
+msgstr "Основы: :py:class:`~opr.modules.feature_extractors.vgg.VGGFeatureExtractor`"
+
+#: of opr.modules.feature_extractors.vgg.VGG16FeatureExtractor:1
+#: opr.modules.feature_extractors.vgg.VGGFeatureExtractor:1
+msgid "VGG-based image feature extractor."
+msgstr "Модуль извлечения признаков изображений на основе VGG."

@@ -1,0 +1,84 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.pipelines.rst:2
+msgid "opr.pipelines package"
+msgstr "Пакет opr.pipelines"
+
+#: of opr.pipelines:1
+msgid "Module for pipelines."
+msgstr "Модуль для пайплайнов."
+
+#: ../../source/api/opr.pipelines.rst:18
+msgid "opr.pipelines.depth\\_estimation"
+msgstr "opr.pipelines.depth\\_estimation"
+
+#: of opr.pipelines.depth_estimation.DepthEstimationPipeline:1
+msgid "Bases: :py:class:`object`"
+msgstr "Основы: :py:class:`object`"
+
+#: of
+#: opr.pipelines.depth_estimation.DepthEstimationPipeline.get_depth_with_lidar:1
+msgid ""
+"Obtain depth estimation from the provided image and point cloud data. "
+":param image: np.ndarray - monocular image :param point_cloud: np.ndarray"
+" - sparse lidar point cloud"
+msgstr ""
+"Получение оценки глубины по предоставленному изображению и данным облака "
+"точек. :param image: np.ndarray - монокулярное изображение :param "
+"point_cloud: np.ndarray - разреженное облако точек лидара"
+
+#: ../../source/api/opr.pipelines.rst
+msgid "Returns"
+msgstr "Возвращает"
+
+#: of
+#: opr.pipelines.depth_estimation.DepthEstimationPipeline.get_depth_with_lidar:5
+msgid ""
+"np.ndarray - reconstructed depth map with the same height and width as "
+"the input image zs: np.ndarray - z values of the lidar point cloud "
+"projected on the iamge errors: np.ndarray - absolute errors of depth "
+"reconstruction for the points of the projected lidar point cloud "
+"rel_errors: np.ndarray - relative errors of depth reconstruction for the "
+"points of the projected lidar point cloud"
+msgstr ""
+"np.ndarray - восстановленная карта глубины с той же высотой и шириной, что и"
+" входное изображение zs: np.ndarray - значения z облака точек лидара,"
+" спроецированные на изображение errors: np.ndarray - абсолютные ошибки"
+" восстановления глубины для точек спроецированного облака точек лидара"
+" rel_errors: np.ndarray - относительные ошибки восстановления глубины для"
+" точек спроецированного облака точек лидара"
+
+#: ../../source/api/opr.pipelines.rst
+msgid "Return type"
+msgstr "Тип возвращаемого значения"
+
+#: of
+#: opr.pipelines.depth_estimation.DepthEstimationPipeline.set_camera_matrix:1
+msgid "Set the camera intrinsic matrix for calculations."
+msgstr "Установите матрицу внутренних параметров камеры для расчетов."
+
+#: of
+#: opr.pipelines.depth_estimation.DepthEstimationPipeline.set_lidar_to_camera_transform:1
+msgid "Set lidar to camera transform"
+msgstr "Установите преобразование лидара в камеру"

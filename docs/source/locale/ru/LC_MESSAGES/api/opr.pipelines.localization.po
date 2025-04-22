@@ -1,0 +1,252 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.pipelines.localization.rst:2
+msgid "opr.pipelines.localization package"
+msgstr "Пакет opr.pipelines.localization"
+
+#: of opr.pipelines.localization:1
+msgid "Hierarchical localization pipelines."
+msgstr "Пайплайны иерархической локализации."
+
+#: ../../source/api/opr.pipelines.localization.rst:10
+msgid "opr.pipelines.localization.aruco"
+msgstr "opr.pipelines.localization.aruco"
+
+#: of opr.pipelines.localization.aruco:1
+msgid "ArucoPlaceRecognitionPipeline pipeline."
+msgstr "Пайплайн ArucoPlaceRecognitionPipeline."
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline:1
+msgid "Bases: :py:class:`~opr.pipelines.localization.base.LocalizationPipeline`"
+msgstr "Основы: :py:class:`~opr.pipelines.localization.base.LocalizationPipeline`"
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline:1
+msgid "ArucoLocalizationPipeline pipeline."
+msgstr "Пайплайн ArucoLocalizationPipeline."
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.aruco_part:1
+msgid "Single aruco inference."
+msgstr "Вывод для одного aruco."
+
+#: ../../source/api/opr.pipelines.localization.rst
+msgid "Parameters"
+msgstr "Параметры"
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.aruco_part:3
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.infer:3
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.loc_part:3
+#: opr.pipelines.localization.base.LocalizationPipeline.infer:3
+#, python-brace-format
+msgid ""
+"Input data. Dictionary with keys in the following format:  "
+"\"image_{camera_name}\" for images from cameras,  \"mask_{camera_name}\" "
+"for semantic segmentation masks,  \"pointcloud_lidar_coords\" for "
+"pointcloud coordinates from lidar,  \"pointcloud_lidar_feats\" for "
+"pointcloud features from lidar."
+msgstr ""
+"Входные данные. Словарь с ключами в следующем формате:  "
+"\"image_{camera_name}\" для изображений с камер,  \"mask_{camera_name}\" для"
+" масок семантической сегментации,  \"pointcloud_lidar_coords\" для координат"
+" облака точек с лидара,  \"pointcloud_lidar_feats\" для признаков облака"
+" точек с лидара."
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.aruco_part:3
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.infer:3
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.loc_part:3
+#: opr.pipelines.localization.base.LocalizationPipeline.infer:3
+msgid "Input data. Dictionary with keys in the following format:"
+msgstr "Входные данные. Словарь с ключами в следующем формате:"
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.aruco_part:5
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.infer:5
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.loc_part:5
+#: opr.pipelines.localization.base.LocalizationPipeline.infer:5
+#, python-brace-format
+msgid "\"image_{camera_name}\" for images from cameras,"
+msgstr "\"image_{camera_name}\" для изображений с камер,"
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.aruco_part:7
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.infer:7
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.loc_part:7
+#: opr.pipelines.localization.base.LocalizationPipeline.infer:7
+#, python-brace-format
+msgid "\"mask_{camera_name}\" for semantic segmentation masks,"
+msgstr "\"mask_{camera_name}\" для масок семантической сегментации,"
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.aruco_part:9
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.infer:9
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.loc_part:9
+#: opr.pipelines.localization.base.LocalizationPipeline.infer:9
+msgid "\"pointcloud_lidar_coords\" for pointcloud coordinates from lidar,"
+msgstr "\"pointcloud_lidar_coords\" для координат облака точек с лидара,"
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.aruco_part:11
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.infer:11
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.loc_part:11
+#: opr.pipelines.localization.base.LocalizationPipeline.infer:11
+msgid "\"pointcloud_lidar_feats\" for pointcloud features from lidar."
+msgstr "\"pointcloud_lidar_feats\" для признаков облака точек с лидара."
+
+#: ../../source/api/opr.pipelines.localization.rst
+msgid "Returns"
+msgstr "Возвращает"
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.aruco_part:14
+#: opr.pipelines.localization.aruco.ArucoLocalizationPipeline.loc_part:14
+msgid "predicted pose in the format [tx, ty, tz, qx, qy, qz, qw],"
+msgstr "предсказанная поза в формате [tx, ty, tz, qx, qy, qz, qw],"
+
+#: ../../source/api/opr.pipelines.localization.rst
+msgid "Return type"
+msgstr "Тип возвращаемого значения"
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.infer:1
+#: opr.pipelines.localization.base.LocalizationPipeline.infer:1
+msgid "Single sample inference."
+msgstr "Вывод для одного образца."
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.infer:14
+msgid ""
+"Inference results. Dict with dictionaries:      \"pose_by_aruco\": "
+"\"pose\" for predicted pose in the format [tx, ty, tz, qx, qy, qz, qw],"
+"      \"pose_by_place_recognition\": \"pose\" for predicted pose in the "
+"format [tx, ty, tz, qx, qy, qz, qw]."
+msgstr ""
+"Результаты вывода. Словарь со словарями:      \"pose_by_aruco\": \"pose\""
+" для предсказанной позы в формате [tx, ty, tz, qx, qy, qz, qw],      "
+"\"pose_by_place_recognition\": \"pose\" для предсказанной позы в формате "
+"[tx, ty, tz, qx, qy, qz, qw]."
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.infer:16
+msgid "Inference results. Dict with dictionaries:"
+msgstr "Результаты вывода. Словарь со словарями:"
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.infer:18
+msgid ""
+"\"pose_by_aruco\": \"pose\" for predicted pose in the format [tx, ty, tz,"
+" qx, qy, qz, qw],"
+msgstr ""
+"\"pose_by_aruco\": \"pose\" для предсказанной позы в формате [tx, ty, tz,"
+" qx, qy, qz, qw],"
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.infer:20
+msgid ""
+"\"pose_by_place_recognition\": \"pose\" for predicted pose in the format "
+"[tx, ty, tz, qx, qy, qz, qw]."
+msgstr ""
+"\"pose_by_place_recognition\": \"pose\" для предсказанной позы в формате "
+"[tx, ty, tz, qx, qy, qz, qw]."
+
+#: of opr.pipelines.localization.aruco.ArucoLocalizationPipeline.loc_part:1
+msgid "Single localization inference."
+msgstr "Вывод для одного этапа локализации."
+
+#: of opr.pipelines.localization.aruco.pose_to_matrix:1
+msgid ""
+"From the 6D poses in the [tx ty tz qx qy qz qw] format to 4x4 pose "
+"matrices."
+msgstr ""
+"Преобразование 6D поз в формате [tx ty tz qx qy qz qw] в матрицы позы 4x4."
+
+#: ../../source/api/opr.pipelines.localization.rst:18
+msgid "opr.pipelines.localization.base"
+msgstr "opr.pipelines.localization.base"
+
+#: of opr.pipelines.localization.base:1
+#: opr.pipelines.localization.base.LocalizationPipeline:1
+msgid "Hierarchical Localization Pipeline."
+msgstr "Пайплайн иерархической локализации."
+
+#: of opr.pipelines.localization.base.LocalizationPipeline:1
+msgid "Bases: :py:class:`object`"
+msgstr "Основы: :py:class:`object`"
+
+#: of opr.pipelines.localization.base.LocalizationPipeline:3
+msgid ""
+"The task of localiation is solved in two steps: 1. Find the best match "
+"for the query in the database (Place Recognition). 2. Refine the pose "
+"estimate using the query and the database match (Registration)."
+msgstr ""
+"Задача локализации решается в два этапа: 1. Найти наилучшее соответствие для"
+" запроса в базе данных (Place Recognition). 2. Уточнить оценку позы,"
+" используя запрос и соответствие в базе данных (Registration)."
+
+#: of
+#: opr.pipelines.localization.base.LocalizationPipeline.compute_reg_features:1
+msgid "Compute registration features for the database."
+msgstr "Вычислить признаки регистрации для базы данных."
+
+#: of
+#: opr.pipelines.localization.base.LocalizationPipeline.compute_reg_features:3
+msgid "Directory to save the features."
+msgstr "Каталог для сохранения признаков."
+
+#: of
+#: opr.pipelines.localization.base.LocalizationPipeline.compute_reg_features:5
+msgid "Directory where pointclouds will be saved."
+msgstr "Каталог, в котором будут сохранены облака точек."
+
+#: of opr.pipelines.localization.base.LocalizationPipeline.infer:14
+msgid ""
+"Inference results. Dictionary with keys:      \"db_match_pose\" for "
+"database match pose in the format [tx, ty, tz, qx, qy, qz, qw],      "
+"\"estimated_pose\" for estimated pose in the format [tx, ty, tz, qx, qy, "
+"qz, qw]."
+msgstr ""
+"Результаты вывода. Словарь с ключами:      \"db_match_pose\" для позы"
+" соответствия в базе данных в формате [tx, ty, tz, qx, qy, qz, qw],      "
+"\"estimated_pose\" для оцененной позы в формате [tx, ty, tz, qx, qy, qz,"
+" qw]."
+
+#: of opr.pipelines.localization.base.LocalizationPipeline.infer:16
+msgid "Inference results. Dictionary with keys:"
+msgstr "Результаты вывода. Словарь с ключами:"
+
+#: of opr.pipelines.localization.base.LocalizationPipeline.infer:18
+msgid ""
+"\"db_match_pose\" for database match pose in the format [tx, ty, tz, qx, "
+"qy, qz, qw],"
+msgstr ""
+"\"db_match_pose\" для позы соответствия в базе данных в формате [tx, ty, tz,"
+" qx, qy, qz, qw],"
+
+#: of opr.pipelines.localization.base.LocalizationPipeline.infer:20
+msgid ""
+"\"estimated_pose\" for estimated pose in the format [tx, ty, tz, qx, qy, "
+"qz, qw]."
+msgstr ""
+"\"estimated_pose\" для оцененной позы в формате [tx, ty, tz, qx, qy, qz,"
+" qw]."
+
+#: ../../source/api/opr.pipelines.localization.rst
+msgid "Raises"
+msgstr "Вызывает"
+
+#: of opr.pipelines.localization.base.LocalizationPipeline.infer:23
+msgid "Provided input data is a list, but the pipeline is not for sequences."
+msgstr "Предоставленные входные данные являются списком, но пайплайн не предназначен для последовательностей."
+
+#: of opr.pipelines.localization.base.LocalizationPipeline.infer:24
+msgid "Provided input data is not a list, but the pipeline is for sequences."
+msgstr "Предоставленные входные данные не являются списком, но пайплайн предназначен для последовательностей."

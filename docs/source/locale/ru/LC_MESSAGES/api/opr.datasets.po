@@ -1,0 +1,570 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.datasets.rst:2
+msgid "opr.datasets package"
+msgstr "opr.datasets пакет"
+
+#: of opr.datasets:1
+msgid "Module for datasets."
+msgstr "Модуль для наборов данных."
+
+#: ../../source/api/opr.datasets.rst:10
+msgid "opr.datasets.augmentations"
+msgstr "opr.datasets.augmentations"
+
+#: of opr.datasets.augmentations:1
+msgid "Data augmentation pipelines."
+msgstr "Конвейеры расширения данных."
+
+#: of opr.datasets.augmentations:3
+msgid ""
+"Point cloud augmentations adopted from the repository: "
+"https://github.com/jac99/MinkLocMultimodal, MIT License"
+msgstr ""
+"Аугментации облака точек, взятые из репозитория: "
+"https://github.com/jac99/MinkLocMultimodal, MIT License"
+
+#: of opr.datasets.augmentations.DefaultCloudSetTransform:1
+#: opr.datasets.augmentations.DefaultCloudTransform:1
+#: opr.datasets.augmentations.DefaultHM3DImageTransform:1
+#: opr.datasets.augmentations.DefaultImageTransform:1
+#: opr.datasets.augmentations.DefaultSemanticTransform:1
+#: opr.datasets.augmentations.JitterPoints:1
+#: opr.datasets.augmentations.OheHotTransform:1
+#: opr.datasets.augmentations.OneHotSemanticTransform:1
+#: opr.datasets.augmentations.RandomFlip:1
+#: opr.datasets.augmentations.RandomRotation:1
+#: opr.datasets.augmentations.RandomScale:1
+#: opr.datasets.augmentations.RandomShear:1
+#: opr.datasets.augmentations.RandomTranslation:1
+#: opr.datasets.augmentations.RemoveRandomBlock:1
+#: opr.datasets.augmentations.RemoveRandomPoints:1
+#: opr.datasets.projection.NCLTProjector:1 opr.datasets.projection.Projector:1
+msgid "Bases: :py:class:`object`"
+msgstr "Основы: :py:class:`object`"
+
+#: of opr.datasets.augmentations.DefaultCloudSetTransform:1
+msgid "Default point cloud set augmentation pipeline."
+msgstr "Конвейер расширения набора облаков точек по умолчанию."
+
+#: of opr.datasets.augmentations.DefaultCloudTransform:1
+msgid "Default point cloud augmentation pipeline."
+msgstr "Конвейер расширения облака точек по умолчанию."
+
+#: of opr.datasets.augmentations.DefaultHM3DImageTransform:1
+#: opr.datasets.augmentations.DefaultImageTransform:1
+msgid "Default image augmentation pipeline."
+msgstr "Конвейер расширения изображений по умолчанию."
+
+#: of opr.datasets.augmentations.DefaultSemanticTransform:1
+msgid "Default semantic mask augmentation pipeline."
+msgstr "Конвейер расширения семантической маски по умолчанию."
+
+#: of opr.datasets.augmentations.OheHotTransform:1
+msgid "Rotate by one of the given angles."
+msgstr "Повернуть на один из заданных углов."
+
+#: of opr.datasets.augmentations.OneHotSemanticTransform:1
+msgid "One-Hot semantic mask augmentation pipeline."
+msgstr "Конвейер расширения семантической маски One-Hot."
+
+#: of opr.datasets.augmentations.RemoveRandomBlock:1
+msgid ""
+"Randomly remove part of the point cloud. Similar to PyTorch RandomErasing"
+" but operating on 3D point clouds. Erases fronto-parallel cuboid. Instead"
+" of erasing we set coords of removed points to (0, 0, 0) to retain the "
+"same number of points"
+msgstr ""
+"Случайным образом удалить часть облака точек. Аналогично PyTorch "
+"RandomErasing, но работает с 3D облаками точек. Удаляет "
+"фронто-параллельный кубоид. Вместо удаления мы устанавливаем координаты "
+"удаленных точек в (0, 0, 0), чтобы сохранить то же количество точек"
+
+#: ../../source/api/opr.datasets.rst:18
+msgid "opr.datasets.base"
+msgstr "opr.datasets.base"
+
+#: of opr.datasets.base:1
+msgid "Base dataset implementation."
+msgstr "Реализация базового набора данных."
+
+#: of opr.datasets.base.BasePlaceRecognitionDataset:1
+#: opr.datasets.itlp.ITLPCampus:1
+msgid "Bases: :py:class:`~torch.utils.data.dataset.Dataset`"
+msgstr "Основы: :py:class:`~torch.utils.data.dataset.Dataset`"
+
+#: of opr.datasets.base.BasePlaceRecognitionDataset:1
+msgid "Base class for track-based Place Recognition dataset."
+msgstr "Базовый класс для набора данных распознавания мест на основе треков."
+
+#: of opr.datasets.base.BasePlaceRecognitionDataset.collate_fn:1
+msgid "Collate function for torch.utils.data.DataLoader."
+msgstr "Функция объединения для torch.utils.data.DataLoader."
+
+#: of opr.datasets.base.BasePlaceRecognitionDataset.negatives_mask:1
+#: opr.datasets.itlp.ITLPCampus.negatives_mask:1
+msgid "Boolean mask of negative samples for each element in the dataset."
+msgstr ""
+"Булева маска отрицательных образцов для каждого элемента в наборе данных."
+
+#: of opr.datasets.base.BasePlaceRecognitionDataset.nonnegative_index:1
+#: opr.datasets.itlp.ITLPCampus.nonnegative_index:1
+msgid "List of indexes of non-negatives samples for each element in the dataset."
+msgstr ""
+"Список индексов неотрицательных образцов для каждого элемента в наборе "
+"данных."
+
+#: of opr.datasets.base.BasePlaceRecognitionDataset.positives_index:1
+#: opr.datasets.itlp.ITLPCampus.positives_index:1
+msgid "List of indexes of positive samples for each element in the dataset."
+msgstr ""
+"Список индексов положительных образцов для каждого элемента в наборе данных."
+
+#: of opr.datasets.base.BasePlaceRecognitionDataset.positives_mask:1
+#: opr.datasets.itlp.ITLPCampus.positives_mask:1
+msgid "Boolean mask of positive samples for each element in the dataset."
+msgstr ""
+"Булева маска положительных образцов для каждого элемента в наборе данных."
+
+#: ../../source/api/opr.datasets.rst:26
+msgid "opr.datasets.dataloader\\_factory"
+msgstr "opr.datasets.dataloader\\_factory"
+
+#: of opr.datasets.dataloader_factory:1
+msgid "Functions to create PyTorch DataLoaders for different datasets."
+msgstr "Функции для создания PyTorch DataLoaders для разных наборов данных."
+
+#: of opr.datasets.dataloader_factory.make_dataloaders:1
+#: opr.datasets.dataloader_factory.make_distributed_dataloaders:1
+msgid ""
+"Function to create DataLoader objects from given dataset and sampler "
+"configs."
+msgstr ""
+"Функция для создания объектов DataLoader из заданного набора данных и "
+"конфигураций выборки."
+
+#: ../../source/api/opr.datasets.rst
+msgid "Parameters"
+msgstr "Параметры"
+
+#: of opr.datasets.dataloader_factory.make_dataloaders:3
+#: opr.datasets.dataloader_factory.make_distributed_dataloaders:3
+msgid "Dataset configuration."
+msgstr "Конфигурация набора данных."
+
+#: of opr.datasets.dataloader_factory.make_dataloaders:5
+#: opr.datasets.dataloader_factory.make_distributed_dataloaders:5
+msgid "Batch sampler configuration."
+msgstr "Конфигурация пакетного выборщика."
+
+#: of opr.datasets.dataloader_factory.make_dataloaders:7
+#: opr.datasets.dataloader_factory.make_distributed_dataloaders:7
+msgid "Number of workers for DataLoader. Defaults to 0."
+msgstr "Количество рабочих для DataLoader. По умолчанию 0."
+
+#: ../../source/api/opr.datasets.rst
+msgid "Returns"
+msgstr "Возвращает"
+
+#: of opr.datasets.dataloader_factory.make_dataloaders:10
+#: opr.datasets.dataloader_factory.make_distributed_dataloaders:10
+msgid "Dictionary with DataLoaders."
+msgstr "Словарь с DataLoaders."
+
+#: ../../source/api/opr.datasets.rst
+msgid "Return type"
+msgstr "Тип возвращаемого значения"
+
+#: ../../source/api/opr.datasets.rst:34
+msgid "opr.datasets.hm3d"
+msgstr "opr.datasets.hm3d"
+
+#: of opr.datasets.hm3d:1 opr.datasets.hm3d.HM3DDataset:1
+msgid "HM3D dataset implementation."
+msgstr "Реализация набора данных HM3D."
+
+#: of opr.datasets.hm3d.HM3DDataset:1 opr.datasets.nclt.NCLTDataset:1
+#: opr.datasets.oxford.OxfordDataset:1
+msgid "Bases: :py:class:`~opr.datasets.base.BasePlaceRecognitionDataset`"
+msgstr "Основы: :py:class:`~opr.datasets.base.BasePlaceRecognitionDataset`"
+
+#: of opr.datasets.hm3d.HM3DDataset.collate_fn:1
+#: opr.datasets.itlp.ITLPCampus.collate_fn:1
+#: opr.datasets.nclt.NCLTDataset.collate_fn:1
+#: opr.datasets.oxford.OxfordDataset.collate_fn:1
+msgid "Pack input data list into batch."
+msgstr "Упаковать список входных данных в пакет."
+
+#: of opr.datasets.hm3d.HM3DDataset.collate_fn:3
+#: opr.datasets.itlp.ITLPCampus.collate_fn:3
+#: opr.datasets.nclt.NCLTDataset.collate_fn:3
+#: opr.datasets.oxford.OxfordDataset.collate_fn:3
+msgid "batch data list generated by DataLoader."
+msgstr "список пакетных данных, сгенерированный DataLoader."
+
+#: of opr.datasets.hm3d.HM3DDataset.collate_fn:6
+#: opr.datasets.itlp.ITLPCampus.collate_fn:6
+#: opr.datasets.nclt.NCLTDataset.collate_fn:6
+#: opr.datasets.oxford.OxfordDataset.collate_fn:6
+msgid "dictionary of batched data."
+msgstr "словарь пакетных данных."
+
+#: ../../source/api/opr.datasets.rst:42
+msgid "opr.datasets.itlp"
+msgstr "opr.datasets.itlp"
+
+#: of opr.datasets.itlp:1
+msgid "Custom ITLP-Campus dataset implementations."
+msgstr "Пользовательские реализации набора данных ITLP-Campus."
+
+#: of opr.datasets.itlp.ITLPCampus:1
+msgid "ITLP Campus dataset implementation."
+msgstr "Реализация набора данных ITLP Campus."
+
+#: of opr.datasets.itlp.ITLPCampus.augment_coords_with_normal:1
+#: opr.datasets.nclt.NCLTDataset.augment_coords_with_normal:1
+msgid "Augment the coordinates with a random normal distribution."
+msgstr "Дополнить координаты случайным нормальным распределением."
+
+#: of opr.datasets.itlp.ITLPCampus.augment_coords_with_normal:3
+#: opr.datasets.itlp.ITLPCampus.augment_coords_with_rotation:3
+#: opr.datasets.nclt.NCLTDataset.augment_coords_with_normal:3
+#: opr.datasets.nclt.NCLTDataset.augment_coords_with_rotation:3
+msgid "The coordinates to be augmented."
+msgstr "Координаты для дополнения."
+
+#: of opr.datasets.itlp.ITLPCampus.augment_coords_with_normal:5
+#: opr.datasets.nclt.NCLTDataset.augment_coords_with_normal:5
+msgid "The mean of the normal distribution. Defaults to (0.0, 0.0, 0.0)."
+msgstr "Среднее значение нормального распределения. По умолчанию (0.0, 0.0, 0.0)."
+
+#: of opr.datasets.itlp.ITLPCampus.augment_coords_with_normal:7
+#: opr.datasets.nclt.NCLTDataset.augment_coords_with_normal:7
+msgid ""
+"The standard deviation of the normal distribution. Defaults to (1.0, 1.0,"
+" 1.0)."
+msgstr ""
+"Стандартное отклонение нормального распределения. По умолчанию (1.0, 1.0,"
+" 1.0)."
+
+#: of opr.datasets.itlp.ITLPCampus.augment_coords_with_normal:10
+#: opr.datasets.itlp.ITLPCampus.augment_coords_with_rotation:8
+#: opr.datasets.nclt.NCLTDataset.augment_coords_with_normal:10
+#: opr.datasets.nclt.NCLTDataset.augment_coords_with_rotation:8
+msgid "The augmented coordinates."
+msgstr "Дополненные координаты."
+
+#: of opr.datasets.itlp.ITLPCampus.augment_coords_with_rotation:1
+#: opr.datasets.nclt.NCLTDataset.augment_coords_with_rotation:1
+msgid ""
+"Augment the coordinates with a random rotation - all objects are rotated "
+"by the same, random uniformly distributed angle."
+msgstr ""
+"Дополнить координаты случайным вращением - все объекты вращаются на один и "
+"тот же случайный равномерно распределенный угол."
+
+#: of opr.datasets.itlp.ITLPCampus.augment_coords_with_rotation:5
+#: opr.datasets.nclt.NCLTDataset.augment_coords_with_rotation:5
+msgid "The range of the random rotation angle. Defaults to (-np.pi, np.pi)."
+msgstr "Диапазон случайного угла поворота. По умолчанию (-np.pi, np.pi)."
+
+#: of opr.datasets.itlp.ITLPCampus.download_data:1
+msgid "Download ITLP-Campus dataset tracks."
+msgstr "Загрузить треки набора данных ITLP-Campus."
+
+#: of opr.datasets.itlp.ITLPCampus.download_data:3
+msgid "Output directory for downloaded tracks."
+msgstr "Выходной каталог для загруженных треков."
+
+#: ../../source/api/opr.datasets.rst:50
+msgid "opr.datasets.nclt"
+msgstr "opr.datasets.nclt"
+
+#: of opr.datasets.nclt:1 opr.datasets.nclt.NCLTDataset:1
+msgid "NCLT dataset implementation."
+msgstr "Реализация набора данных NCLT."
+
+#: ../../source/api/opr.datasets.rst:58
+msgid "opr.datasets.oxford"
+msgstr "opr.datasets.oxford"
+
+#: of opr.datasets.oxford:1 opr.datasets.oxford.OxfordDataset:1
+msgid "PointNetVLAD Oxford RobotCar dataset implementation."
+msgstr "Реализация набора данных PointNetVLAD Oxford RobotCar."
+
+#: ../../source/api/opr.datasets.rst:66
+msgid "opr.datasets.projection"
+msgstr "opr.datasets.projection"
+
+#: of opr.datasets.projection:1
+msgid "Projection of pointcloud to camera image plane."
+msgstr "Проекция облака точек на плоскость изображения камеры."
+
+#: of opr.datasets.projection.NCLTProjector.adjust_points:1
+msgid ""
+"Adjust 3D LiDAR points projected onto the image plane to correspond to "
+"the new image after center cropping and resizing."
+msgstr ""
+"Настроить 3D точки LiDAR, спроецированные на плоскость изображения, чтобы "
+"соответствовать новому изображению после центральной обрезки и изменения "
+"размера."
+
+#: of opr.datasets.projection.NCLTProjector.adjust_points:3
+msgid ""
+"Parameters: - projected_points: np.ndarray of shape (N, 2) representing "
+"the 2D points on the original image. - center_crop_size: Tuple (W_c, H_c)"
+" representing the width and height of the crop. - resize_size: Tuple "
+"(W_r, H_r) representing the width and height of the resized image. - "
+"original_size: Tuple (W, H) representing the width and height of the "
+"original image."
+msgstr ""
+"Параметры: - projected_points: np.ndarray формы (N, 2), представляющий 2D "
+"точки на исходном изображении. - center_crop_size: кортеж (W_c, H_c), "
+"представляющий ширину и высоту обрезки. - resize_size: кортеж (W_r, H_r), "
+"представляющий ширину и высоту измененного изображения. - original_size:"
+" кортеж (W, H), представляющий ширину и высоту исходного изображения."
+
+#: of opr.datasets.projection.NCLTProjector.adjust_points:9
+msgid ""
+"Returns: - adjusted_points: np.ndarray of shape (N, 2) representing the "
+"adjusted 2D points on the resized image."
+msgstr ""
+"Возвращает: - adjusted_points: np.ndarray формы (N, 2), представляющий "
+"настроенные 2D точки на измененном изображении."
+
+#: of opr.datasets.projection.Projector:1
+msgid "Class for projecting pointcloud to camera image plane."
+msgstr "Класс для проецирования облака точек на плоскость изображения камеры."
+
+#: of opr.datasets.projection.Projector.build_matrix:1
+msgid "Build rotation matrix from quaternion."
+msgstr "Построить матрицу вращения из кватерниона."
+
+#: of opr.datasets.projection.Projector.build_matrix:3
+msgid "x coordinate"
+msgstr "координата x"
+
+#: of opr.datasets.projection.Projector.build_matrix:5
+msgid "y coordinate"
+msgstr "координата y"
+
+#: of opr.datasets.projection.Projector.build_matrix:7
+msgid "z coordinate"
+msgstr "координата z"
+
+#: of opr.datasets.projection.Projector.build_matrix:9
+msgid "quaternion"
+msgstr "кватернион"
+
+#: of opr.datasets.projection.Projector.build_matrix:12
+msgid "rotation matrix"
+msgstr "матрица вращения"
+
+#: of opr.datasets.projection.Projector.project_scan_to_camera:1
+msgid "Project pointcloud to camera image plane."
+msgstr "Проецировать облако точек на плоскость изображения камеры."
+
+#: of opr.datasets.projection.Projector.project_scan_to_camera:3
+msgid "pointcloud to project"
+msgstr "облако точек для проецирования"
+
+#: of opr.datasets.projection.Projector.project_scan_to_camera:5
+msgid "whether to return mask. Defaults to True."
+msgstr "возвращать ли маску. По умолчанию True."
+
+#: of opr.datasets.projection.Projector.project_scan_to_camera:8
+msgid "if return_mask: (uv, depths, in_image) else: (uv, depths)"
+msgstr "если return_mask: (uv, depths, in_image) иначе: (uv, depths)"
+
+#: ../../source/api/opr.datasets.rst
+msgid "Raises"
+msgstr "Вызывает"
+
+#: of opr.datasets.projection.Projector.project_scan_to_camera:12
+msgid "if wrong shape of points array"
+msgstr "если неправильная форма массива точек"
+
+#: ../../source/api/opr.datasets.rst:74
+msgid "opr.datasets.soc\\_utils"
+msgstr "opr.datasets.soc\\_utils"
+
+#: of opr.datasets.soc_utils:1
+msgid "Utility functions for Semantic-Object-Context modality."
+msgstr "Вспомогательные функции для модальности Semantic-Object-Context."
+
+#: of opr.datasets.soc_utils.cylindrical_to_euclidean:1
+msgid "Convert cylindrical coordinates to euclidean."
+msgstr "Преобразовать цилиндрические координаты в евклидовы."
+
+#: of opr.datasets.soc_utils.cylindrical_to_euclidean:3
+msgid "array of cylindrical coordinates with shape (n, 3)."
+msgstr "массив цилиндрических координат формы (n, 3)."
+
+#: of opr.datasets.soc_utils.cylindrical_to_euclidean:6
+#: opr.datasets.soc_utils.spherical_to_euclidean:6
+msgid "array of euclidean coordinates with shape (n, 3)."
+msgstr "массив евклидовых координат формы (n, 3)."
+
+#: of opr.datasets.soc_utils.euclidean_to_cylindrical:1
+msgid "Convert euclidean coordinates to cylindrical."
+msgstr "Преобразовать евклидовы координаты в цилиндрические."
+
+#: of opr.datasets.soc_utils.euclidean_to_cylindrical:3
+#: opr.datasets.soc_utils.euclidean_to_spherical:3
+msgid "array of 3D coordinates with shape (n, 3)."
+msgstr "массив 3D координат формы (n, 3)."
+
+#: of opr.datasets.soc_utils.euclidean_to_cylindrical:5
+msgid "whether to return 2D cylindrical coordinates. Defaults to False."
+msgstr "возвращать ли 2D цилиндрические координаты. По умолчанию False."
+
+#: of opr.datasets.soc_utils.euclidean_to_cylindrical:8
+msgid ""
+"array of cylindrical coordinates with shape (n, 3) or (n, 2) if to_2d is "
+"True."
+msgstr ""
+"массив цилиндрических координат формы (n, 3) или (n, 2), если to_2d имеет "
+"значение True."
+
+#: of opr.datasets.soc_utils.euclidean_to_spherical:1
+msgid "Convert euclidean coordinates to spherical."
+msgstr "Преобразовать евклидовы координаты в сферические."
+
+#: of opr.datasets.soc_utils.euclidean_to_spherical:6
+#: opr.datasets.soc_utils.spherical_to_euclidean:3
+msgid "array of spherical coordinates with shape (n, 3)."
+msgstr "массив сферических координат формы (n, 3)."
+
+#: of opr.datasets.soc_utils.generate_color_sequence:1
+msgid "Generate color sequence."
+msgstr "Создать цветовую последовательность."
+
+#: of opr.datasets.soc_utils.generate_color_sequence:3
+msgid "number of colors to generate"
+msgstr "количество цветов для создания"
+
+#: of opr.datasets.soc_utils.generate_color_sequence:5
+msgid "palette to use. Defaults to \"husl\"."
+msgstr "используемая палитра. По умолчанию \"husl\"."
+
+#: of opr.datasets.soc_utils.generate_color_sequence:8
+msgid "list of colors in RGB format."
+msgstr "список цветов в формате RGB."
+
+#: of opr.datasets.soc_utils.get_points_labels_by_mask:1
+msgid "Get point labels from semantic mask."
+msgstr "Получить метки точек из семантической маски."
+
+#: of opr.datasets.soc_utils.get_points_labels_by_mask:3
+msgid "array of 2D coordinates of projected points with shape (n, 2)."
+msgstr "массив 2D координат спроецированных точек формы (n, 2)."
+
+#: of opr.datasets.soc_utils.get_points_labels_by_mask:6
+#: opr.datasets.soc_utils.semantic_mask_to_instances:7
+msgid "semantic mask in opencv  image format (ndarray)"
+msgstr "семантическая маска в формате изображения opencv (ndarray)"
+
+#: of opr.datasets.soc_utils.get_points_labels_by_mask:9
+msgid "point labels taken from the mask."
+msgstr "метки точек, взятые из маски."
+
+#: of opr.datasets.soc_utils.instance_masks_to_objects:1
+msgid "Get objects from instance masks."
+msgstr "Получить объекты из масок экземпляров."
+
+#: of opr.datasets.soc_utils.instance_masks_to_objects:3
+#: opr.datasets.soc_utils.semantic_mask_to_instances:14
+msgid ""
+"dict of instances with keys as instance labels and values as instance "
+"masks."
+msgstr ""
+"словарь экземпляров с ключами в качестве меток экземпляров и значениями в "
+"качестве масок экземпляров."
+
+#: of opr.datasets.soc_utils.instance_masks_to_objects:5
+msgid "2d points of pointcloud projected to image plane"
+msgstr "2D точки облака точек, спроецированные на плоскость изображения"
+
+#: of opr.datasets.soc_utils.instance_masks_to_objects:7
+msgid "labels of points"
+msgstr "метки точек"
+
+#: of opr.datasets.soc_utils.instance_masks_to_objects:9
+msgid "3d points of pointcloud"
+msgstr "3D точки облака точек"
+
+#: of opr.datasets.soc_utils.instance_masks_to_objects:12
+#: opr.datasets.soc_utils.pack_objects:3
+msgid ""
+"dict of objects with keys as object labels and values as object "
+"properties."
+msgstr ""
+"словарь объектов с ключами в качестве меток объектов и значениями в "
+"качестве свойств объектов."
+
+#: of opr.datasets.soc_utils.pack_objects:1
+msgid "Pack objects into a single array."
+msgstr "Упаковать объекты в один массив."
+
+#: of opr.datasets.soc_utils.pack_objects:5
+msgid "maximum number of each class objects to pack"
+msgstr "максимальное количество объектов каждого класса для упаковки"
+
+#: of opr.datasets.soc_utils.pack_objects:7
+msgid "maximum distance between objects"
+msgstr "максимальное расстояние между объектами"
+
+#: of opr.datasets.soc_utils.pack_objects:9
+msgid "list of special classes to pack"
+msgstr "список специальных классов для упаковки"
+
+#: of opr.datasets.soc_utils.pack_objects:12
+msgid ""
+"array of packed objects with shape (N, K, 3), where N - number of "
+"classes, K - number of objects of each class, 3 - 3DoF coords."
+msgstr ""
+"массив упакованных объектов формы (N, K, 3), где N - количество классов, K "
+"- количество объектов каждого класса, 3 - 3DoF координаты."
+
+#: of opr.datasets.soc_utils.semantic_mask_to_instances:1
+msgid "Get instance labels from semantic mask."
+msgstr "Получить метки экземпляров из семантической маски."
+
+#: of opr.datasets.soc_utils.semantic_mask_to_instances:3
+msgid ""
+"Instances are defined as connected components of the same class. "
+"Connected components found using opencv connectedComponentsWithStats "
+"opencv algorithm in class-wise manner."
+msgstr ""
+"Экземпляры определяются как связные компоненты одного и того же класса. "
+"Связные компоненты найдены с использованием opencv "
+"connectedComponentsWithStats алгоритма opencv класс-за-классом."
+
+#: of opr.datasets.soc_utils.semantic_mask_to_instances:9
+msgid "minimum area of instance to be considered. Defaults to 10."
+msgstr "минимальная площадь экземпляра для рассмотрения. По умолчанию 10."
+
+#: of opr.datasets.soc_utils.semantic_mask_to_instances:11
+msgid "list of labels to consider. Defaults to None."
+msgstr "список меток для рассмотрения. По умолчанию None."
+
+#: of opr.datasets.soc_utils.spherical_to_euclidean:1
+msgid "Convert spherical coordinates to euclidean."
+msgstr "Преобразовать сферические координаты в евклидовы."

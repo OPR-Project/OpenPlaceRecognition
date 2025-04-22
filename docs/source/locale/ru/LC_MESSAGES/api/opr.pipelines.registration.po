@@ -1,0 +1,137 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.pipelines.registration.rst:2
+msgid "opr.pipelines.registration package"
+msgstr "Пакет opr.pipelines.registration"
+
+#: of opr.pipelines.registration:1
+msgid "Registration pipelines."
+msgstr "Пайплайны регистрации."
+
+#: ../../source/api/opr.pipelines.registration.rst:10
+msgid "opr.pipelines.registration.pointcloud"
+msgstr "opr.pipelines.registration.pointcloud"
+
+#: of opr.pipelines.registration.pointcloud:1
+#: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline:1
+msgid "Pointcloud registration pipeline."
+msgstr "Пайплайн регистрации облака точек."
+
+#: of opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline:1
+#: opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline:1
+msgid "Bases: :py:class:`object`"
+msgstr "Основы: :py:class:`object`"
+
+#: of
+#: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:1
+#: opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline.infer:1
+#: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline.infer:1
+msgid "Infer the transformation between the query and the database pointclouds."
+msgstr "Вывод преобразования между query и database облаками точек."
+
+#: ../../source/api/opr.pipelines.registration.rst
+msgid "Parameters"
+msgstr "Параметры"
+
+#: of
+#: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:3
+#: opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline.infer:3
+msgid "Query pointcloud. Coordinates array of shape (N, 3)."
+msgstr "Query облако точек. Массив координат формы (N, 3)."
+
+#: of
+#: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:5
+#: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline.infer:6
+msgid ""
+"Database pointcloud. Coordinates array of shape (M, 3). If None, "
+"`db_pc_feats` must be provided. Defaults to None."
+msgstr ""
+"Database облако точек. Массив координат формы (M, 3). Если None, "
+"должен быть предоставлен `db_pc_feats`. По умолчанию None."
+
+#: of
+#: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:8
+#: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline.infer:9
+msgid ""
+"Database pointcloud features. If None, `db_pc` must be provided. Defaults"
+" to None."
+msgstr ""
+"Database признаки облака точек. Если None, должен быть предоставлен `db_pc`."
+" По умолчанию None."
+
+#: ../../source/api/opr.pipelines.registration.rst
+msgid "Returns"
+msgstr "Возвращает"
+
+#: of
+#: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:12
+#: opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline.infer:8
+#: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline.infer:13
+msgid "Transformation matrix."
+msgstr "Матрица преобразования."
+
+#: ../../source/api/opr.pipelines.registration.rst
+msgid "Return type"
+msgstr "Тип возвращаемого значения"
+
+#: ../../source/api/opr.pipelines.registration.rst
+msgid "Raises"
+msgstr "Вызывает"
+
+#: of
+#: opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline.infer:15
+msgid ""
+"If both `db_pc` and `db_pc_feats` are provided or if none of them are "
+"provided."
+msgstr ""
+"Если предоставлены и `db_pc`, и `db_pc_feats`, или если ни один из них не"
+" предоставлен."
+
+#: of opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline:1
+msgid "Pointcloud registration pipeline using RANSAC."
+msgstr "Пайплайн регистрации облака точек с использованием RANSAC."
+
+#: of
+#: opr.pipelines.registration.pointcloud.RansacGlobalRegistrationPipeline.infer:5
+msgid "Database pointcloud. Coordinates array of shape (M, 3)."
+msgstr "Database облако точек. Массив координат формы (M, 3)."
+
+#: of
+#: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline:1
+msgid ""
+"Bases: "
+":py:class:`~opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`"
+msgstr ""
+"Основы: "
+":py:class:`~opr.pipelines.registration.pointcloud.PointcloudRegistrationPipeline`"
+
+#: of
+#: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline:1
+msgid "Pointcloud registration pipeline that supports sequences."
+msgstr "Пайплайн регистрации облака точек, поддерживающий последовательности."
+
+#: of
+#: opr.pipelines.registration.pointcloud.SequencePointcloudRegistrationPipeline.infer:3
+msgid ""
+"List of query pointclouds. Each pointcloud is a coordinates array of "
+"shape (N, 3)."
+msgstr ""
+"Список query облаков точек. Каждое облако точек - это массив координат формы"
+" (N, 3)."

@@ -1,0 +1,146 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-01 14:23+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:2
+msgid "ITLPCampus Dataset Reader"
+msgstr "Модуль датасета ITLPCampus"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:4
+msgid ""
+"A module that implements a PyTorch dataset reader for the ITLPCampus "
+"dataset."
+msgstr ""
+"Модуль, реализующий взаимодействие PyTorch с разработанными "
+"мультимодальными наборами данных ITLPCampus."
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:6
+msgid ""
+"More details about the dataset can be found on the :doc:`../itlp_dataset`"
+" page."
+msgstr ""
+"Более подробную информацию о датасете можно найти на странице :doc:`../itlp_dataset`."
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:9
+msgid ""
+"Below is a usage example of the dataset reader that is implemented as "
+"part of the OpenPlaceRecognition library."
+msgstr ""
+"Ниже приведен пример использования reader датасета, реализованного как часть "
+"библиотеки OpenPlaceRecognition."
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:14
+msgid "Usage example"
+msgstr "Пример использования"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:16
+msgid ""
+"You should start with initializing the dataset reader by creating an "
+"instance of the :class:`opr.datasets.itlp.ITLPCampus` class with "
+"appropriate parameters."
+msgstr ""
+"Начните с инициализации reader датасета, создав экземпляр класса "
+":class:`opr.datasets.itlp.ITLPCampus` с соответствующими параметрами."
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:41
+msgid "The ``sample`` will contain a dictionary with the following keys:"
+msgstr "``sample`` будет содержать словарь со следующими ключами:"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:43
+msgid "``\"idx\"``: index of the sample in the dataset"
+msgstr "``\"idx\"``: индекс образца в датасете"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:44
+msgid "``\"pose\"``: 7-element pose vector [tx, ty, tz, qx, qy, qz, qw]"
+msgstr "``\"pose\"``: 7-элементный вектор позы [tx, ty, tz, qx, qy, qz, qw]"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:45
+msgid ""
+"``\"image_front_cam\"``: tensor of front camera image (if \"front_cam\" "
+"in sensors)"
+msgstr ""
+"``\"image_front_cam\"``: тензор изображения с передней камеры (если "
+"\"front_cam\" в sensors)"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:46
+msgid ""
+"``\"image_back_cam\"``: tensor of back camera image (if \"back_cam\" in "
+"sensors)"
+msgstr ""
+"``\"image_back_cam\"``: тензор изображения с задней камеры (если "
+"\"back_cam\" в sensors)"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:47
+msgid ""
+"``\"mask_front_cam\"``: tensor of front camera semantic mask (if "
+"load_semantics=True)"
+msgstr ""
+"``\"mask_front_cam\"``: тензор семантической маски передней камеры (если "
+"load_semantics=True)"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:48
+msgid ""
+"``\"mask_back_cam\"``: tensor of back camera semantic mask (if "
+"load_semantics=True)"
+msgstr ""
+"``\"mask_back_cam\"``: тензор семантической маски задней камеры (если "
+"load_semantics=True)"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:49
+msgid ""
+"``\"pointcloud_lidar_coords\"``: tensor of LiDAR point coordinates (if "
+"\"lidar\" in sensors)"
+msgstr ""
+"``\"pointcloud_lidar_coords\"``: тензор координат точек LiDAR (если "
+"\"lidar\" в sensors)"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:50
+msgid ""
+"``\"pointcloud_lidar_feats\"``: tensor of LiDAR point features (if "
+"\"lidar\" in sensors)"
+msgstr ""
+"``\"pointcloud_lidar_feats\"``: тензор признаков точек LiDAR (если "
+"\"lidar\" в sensors)"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:52
+msgid "To create a DataLoader for batch training or inference:"
+msgstr "Чтобы создать DataLoader для пакетного обучения или инференса:"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:77
+msgid "For indoor datasets, you can specify train/test splits:"
+msgstr "Для внутренних датасетов вы можете указать разделение на train/test:"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:103
+msgid ""
+"More examples of using the ``ITLPCampus`` dataset reader can be found in "
+"the notebooks:"
+msgstr ""
+"Больше примеров использования reader датасета ``ITLPCampus`` можно найти в "
+"ноутбуках:"
+
+#: ../../source/featured_modules/12_itlp_dataset_reader.rst:105
+msgid ""
+"`notebooks/demo_itlp_dataset.ipynb <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/demo_itlp_dataset.ipynb>`_"
+msgstr ""
+"`notebooks/demo_itlp_dataset.ipynb <https://github.com/OPR-"
+"Project/OpenPlaceRecognition/blob/main/notebooks/demo_itlp_dataset.ipynb>`_"

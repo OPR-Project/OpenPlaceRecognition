@@ -1,0 +1,427 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-01 12:21+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/index.rst:2
+msgid "API Reference"
+msgstr "Справочник API"
+
+#: of opr:1
+msgid "OpenPlaceRecognition package."
+msgstr "Пакет OpenPlaceRecognition."
+
+#: ../../source/api/index.rst:22
+msgid "opr.const"
+msgstr "opr.const"
+
+#: of opr.const:1
+msgid "Definition of package-level constants."
+msgstr "Определение констант уровня пакета."
+
+#: ../../source/api/index.rst:30
+msgid "opr.testing"
+msgstr "opr.testing"
+
+#: of opr.testing:1
+msgid "Testing functions implementation."
+msgstr "Реализация функций тестирования."
+
+#: of opr.testing.get_recalls:1 opr.testing.get_recalls_with_reranking:1
+msgid ""
+"Calculate Recall@N, Recall@1% and mean top-1 distance for the given query"
+" and db embeddings."
+msgstr ""
+"Вычислить Recall@N, Recall@1% и среднее расстояние top-1 для заданных query"
+" и db embeddings."
+
+#: ../../source/api/index.rst of opr.utils.distribute_batch_size
+#: opr.utils.get_start_end_indices_of_local_batch
+msgid "Parameters"
+msgstr "Параметры"
+
+#: of opr.testing.get_recalls:3
+msgid "Query embeddings array."
+msgstr "Массив query embeddings."
+
+#: of opr.testing.get_recalls:5 opr.testing.get_recalls_with_reranking:7
+msgid "Database embeddings array."
+msgstr "Массив database embeddings."
+
+#: of opr.testing.get_recalls:7 opr.testing.get_recalls_with_reranking:9
+msgid "Distance matrix of shape (query_len, db_len)."
+msgstr "Матрица расстояний формы (query_len, db_len)."
+
+#: of opr.testing.get_recalls:9 opr.testing.get_recalls_with_reranking:11
+#: opr.testing.test_image_model_with_reranking:7
+msgid "Distance threshold for positive match. Defaults to 25.0."
+msgstr "Порог расстояния для положительного соответствия. По умолчанию 25.0."
+
+#: of opr.testing.get_recalls:11 opr.testing.get_recalls_with_reranking:13
+msgid "The maximum N value for the Recall@N metric. Defaults to 25."
+msgstr "Максимальное значение N для метрики Recall@N. По умолчанию 25."
+
+#: ../../source/api/index.rst of opr.utils.distribute_batch_size
+#: opr.utils.get_start_end_indices_of_local_batch
+msgid "Returns"
+msgstr "Возвращает"
+
+#: of opr.testing.get_recalls:14 opr.testing.get_recalls_with_reranking:16
+msgid ""
+"(Recall@N, Recall@1%, mean top-1 distance).     The 'mean top-1 distance'"
+" metric may be `None` if Recall@1 = 0."
+msgstr ""
+"(Recall@N, Recall@1%, среднее расстояние top-1).     Метрика 'среднее расстояние"
+" top-1' может быть `None`, если Recall@1 = 0."
+
+#: of opr.testing.get_recalls:16 opr.testing.get_recalls_with_reranking:18
+msgid "(Recall@N, Recall@1%, mean top-1 distance)."
+msgstr "(Recall@N, Recall@1%, среднее расстояние top-1)."
+
+#: of opr.testing.get_recalls:17 opr.testing.get_recalls_with_reranking:19
+msgid "The 'mean top-1 distance' metric may be `None` if Recall@1 = 0."
+msgstr "Метрика 'среднее расстояние top-1' может быть `None`, если Recall@1 = 0."
+
+#: ../../source/api/index.rst of opr.utils.distribute_batch_size
+#: opr.utils.get_start_end_indices_of_local_batch
+msgid "Return type"
+msgstr "Тип возвращаемого значения"
+
+#: of opr.testing.get_recalls_with_reranking:3
+msgid "Query front image embeddings array."
+msgstr "Массив query embeddings для передних изображений."
+
+#: of opr.testing.get_recalls_with_reranking:5
+msgid "Query back image embeddings array."
+msgstr "Массив query embeddings для задних изображений."
+
+#: of opr.testing.test:1
+msgid "Evaluates the model on the test set."
+msgstr "Оценивает модель на тестовом наборе."
+
+#: of opr.testing.test:3 opr.testing.test_image_model_with_reranking:3
+msgid "The model to test."
+msgstr "Модель для тестирования."
+
+#: of opr.testing.test:5
+msgid "The data loader for the test set."
+msgstr "Загрузчик данных для тестового набора."
+
+#: of opr.testing.test:7
+msgid "The distance threshold for a correct match. Defaults to 25.0."
+msgstr "Порог расстояния для правильного соответствия. По умолчанию 25.0."
+
+#: of opr.testing.test:9 opr.testing.test_image_model_with_reranking:9
+msgid "Device (\"cpu\" or \"cuda\"). Defaults to \"cuda\"."
+msgstr "Устройство (\"cpu\" или \"cuda\"). По умолчанию \"cuda\"."
+
+#: of opr.testing.test:12 opr.testing.test_image_model_with_reranking:12
+msgid ""
+"Array of AverageRecall@N (N from 1 to 25), AverageRecall@1%     and mean "
+"top-1 distance."
+msgstr ""
+"Массив AverageRecall@N (N от 1 до 25), AverageRecall@1%     и среднее "
+"расстояние top-1."
+
+#: of opr.testing.test:14 opr.testing.test_image_model_with_reranking:14
+msgid "Array of AverageRecall@N (N from 1 to 25), AverageRecall@1%"
+msgstr "Массив AverageRecall@N (N от 1 до 25), AverageRecall@1%"
+
+#: of opr.testing.test:15 opr.testing.test_image_model_with_reranking:15
+msgid "and mean top-1 distance."
+msgstr "и среднее расстояние top-1."
+
+#: ../../source/api/index.rst
+msgid "Raises"
+msgstr "Вызывает"
+
+#: of opr.testing.test:18
+msgid "If the required coordinate columns are not found in the dataset."
+msgstr "Если необходимые столбцы координат не найдены в наборе данных."
+
+#: of opr.testing.test_image_model_with_reranking:1
+msgid "Test Place Recognition Average Recall@N metric performance."
+msgstr "Тестирование производительности метрики Average Recall@N для Place Recognition."
+
+#: of opr.testing.test_image_model_with_reranking:5
+msgid "Test dataloader object."
+msgstr "Объект тестового загрузчика данных."
+
+#: ../../source/api/index.rst:38
+msgid "opr.utils"
+msgstr "opr.utils"
+
+#: of opr.utils:1
+msgid "Package-level utility functions."
+msgstr "Вспомогательные функции уровня пакета."
+
+#: of opr.utils.accumulate_dict:1
+msgid "Updates dst_dict with values from src_dict."
+msgstr "Обновляет dst\_dict значениями из src\_dict."
+
+#: of opr.utils.accumulate_dict:3
+msgid ""
+"Recursively traverses the src_dict dictionary and appends values to lists"
+" in dst_dict. If a key does not exist in dst_dict, it is created with a "
+"new list containing the corresponding value."
+msgstr ""
+"Рекурсивно обходит словарь src\_dict и добавляет значения в списки в "
+"dst\_dict. Если ключ не существует в dst\_dict, он создается с новым "
+"списком, содержащим соответствующее значение."
+
+#: of opr.utils.accumulate_dict:6 opr.utils.compute_epoch_stats_mean:6
+msgid "A dictionary representing statistics for an epoch."
+msgstr "Словарь, представляющий статистику для эпохи."
+
+#: of opr.utils.accumulate_dict:8
+msgid "A dictionary representing statistics for a step within an epoch."
+msgstr "Словарь, представляющий статистику для шага внутри эпохи."
+
+#: of opr.utils.accumulate_dict:11
+msgid "A dictionary representing updated statistics for an epoch."
+msgstr "Словарь, представляющий обновленную статистику для эпохи."
+
+#: of opr.utils.accumulate_dict:14 opr.utils.compute_epoch_stats_mean:12
+msgid "Example usage:"
+msgstr "Пример использования:"
+
+#: of opr.utils.cartesian_to_spherical:1
+msgid "Converts cartesian coordinates to spherical coordinates."
+msgstr "Преобразует декартовы координаты в сферические координаты."
+
+#: of opr.utils.compute_epoch_stats_mean:1
+msgid "Computes the mean value of each list in epoch_stats."
+msgstr "Вычисляет среднее значение каждого списка в epoch\_stats."
+
+#: of opr.utils.compute_epoch_stats_mean:3
+msgid ""
+"Recursively traverses the epoch_stats dictionary and computes the mean "
+"value of each list using np.mean(). If a key does not contain a list, its"
+" value is returned as is."
+msgstr ""
+"Рекурсивно обходит словарь epoch\_stats и вычисляет среднее значение каждого"
+" списка, используя np.mean(). Если ключ не содержит список, его значение"
+" возвращается как есть."
+
+#: of opr.utils.compute_epoch_stats_mean:9
+msgid "A dictionary representing the mean value of each list in epoch_stats."
+msgstr "Словарь, представляющий среднее значение каждого списка в epoch\_stats."
+
+#: of opr.utils.distribute_batch_size:1
+msgid "Distributes the global batch size over the replicas."
+msgstr "Распределяет глобальный размер пакета по репликам."
+
+#: of opr.utils.distribute_batch_size:3 opr.utils.get_local_batch_size:3
+#: opr.utils.get_start_end_indices_of_local_batch:3
+msgid "The global batch size."
+msgstr "Глобальный размер пакета."
+
+#: of opr.utils.distribute_batch_size:5 opr.utils.get_local_batch_size:5
+#: opr.utils.get_start_end_indices_of_local_batch:5
+msgid "The number of replicas."
+msgstr "Количество реплик."
+
+#: of opr.utils.distribute_batch_size:8
+msgid "A list of batch sizes for each replica."
+msgstr "Список размеров пакетов для каждой реплики."
+
+#: of opr.utils.distribute_batch_size:12
+#: opr.utils.get_start_end_indices_of_local_batch:17
+msgid "Examples"
+msgstr "Примеры"
+
+#: of opr.utils.flatten_dict:1
+msgid "Flatten a nested dictionary with keys separated by `sep`."
+msgstr "Преобразует в плоский вид вложенный словарь с ключами, разделенными `sep`."
+
+#: of opr.utils.flatten_dict:3
+msgid "A nested dictionary to flatten."
+msgstr "Вложенный словарь для преобразования в плоский вид."
+
+#: of opr.utils.flatten_dict:5
+msgid "The string of parent key (used for recursion)."
+msgstr "Строка родительского ключа (используется для рекурсии)."
+
+#: of opr.utils.flatten_dict:7
+msgid "The separator to use between keys in the flattened dictionary."
+msgstr "Разделитель для использования между ключами в преобразованном словаре."
+
+#: of opr.utils.flatten_dict:10
+msgid "A flattened dictionary with keys separated by `sep`."
+msgstr "Преобразованный словарь с ключами, разделенными `sep`."
+
+#: of opr.utils.get_local_batch_size:1
+msgid "Gets the local batch size on the given rank in the global batch."
+msgstr "Получает локальный размер пакета на заданном ранге в глобальном пакете."
+
+#: of opr.utils.get_local_batch_size:7
+#: opr.utils.get_start_end_indices_of_local_batch:7
+msgid "The rank of the replica."
+msgstr "Ранг реплики."
+
+#: of opr.utils.get_local_batch_size:10
+msgid "The local batch size on the given rank in the global batch."
+msgstr "Локальный размер пакета на заданном ранге в глобальном пакете."
+
+#: of opr.utils.get_start_end_indices_of_local_batch:1
+msgid ""
+"Gets the start and end indices of the local batch on the given rank in "
+"the global batch."
+msgstr ""
+"Получает начальный и конечный индексы локального пакета на заданном ранге в"
+" глобальном пакете."
+
+#: of opr.utils.get_start_end_indices_of_local_batch:10
+msgid ""
+"A list of tuples containing the start and end indices     of the local "
+"batch in the global batch."
+msgstr ""
+"Список кортежей, содержащих начальный и конечный индексы     локального "
+"пакета в глобальном пакете."
+
+#: of opr.utils.get_start_end_indices_of_local_batch:12
+msgid "A list of tuples containing the start and end indices"
+msgstr "Список кортежей, содержащих начальный и конечный индексы"
+
+#: of opr.utils.get_start_end_indices_of_local_batch:13
+msgid "of the local batch in the global batch."
+msgstr "локального пакета в глобальном пакете."
+
+#: of opr.utils.in_sorted_array:1
+msgid "Checks whether the given value `e` is in sorted array."
+msgstr "Проверяет, находится ли заданное значение `e` в отсортированном массиве."
+
+#: of opr.utils.in_sorted_array:3
+msgid ""
+"Code adopted from repository: https://github.com/jac99/MinkLocMultimodal,"
+" MIT License"
+msgstr ""
+"Код взят из репозитория: https://github.com/jac99/MinkLocMultimodal,"
+" MIT License"
+
+#: of opr.utils.in_sorted_array:5
+msgid "Value to search for."
+msgstr "Значение для поиска."
+
+#: of opr.utils.in_sorted_array:7
+msgid "Sorted array to look from."
+msgstr "Отсортированный массив для поиска."
+
+#: of opr.utils.in_sorted_array:10
+msgid "Whether the given value `e` is in sorted `array`."
+msgstr "Находится ли заданное значение `e` в отсортированном `array`."
+
+#: of opr.utils.init_model:1
+msgid ""
+"Transfers the model to the device, loads the weights and sets the model "
+"to eval mode."
+msgstr ""
+"Переносит модель на устройство, загружает веса и устанавливает модель в "
+"режим eval."
+
+#: of opr.utils.init_model:3
+msgid "Model."
+msgstr "Модель."
+
+#: of opr.utils.init_model:5
+msgid "Path to the model weights. If None, the weights are not loaded."
+msgstr "Путь к весам модели. Если None, веса не загружаются."
+
+#: of opr.utils.init_model:8
+msgid "Device to use."
+msgstr "Устройство для использования."
+
+#: of opr.utils.init_model:11
+msgid "Model in eval mode."
+msgstr "Модель в режиме eval."
+
+#: of opr.utils.merge_nested_dicts:1
+msgid ""
+"Recursively merge two nested dictionaries that have overlapping outer "
+"keys."
+msgstr ""
+"Рекурсивно объединяет два вложенных словаря, имеющих перекрывающиеся внешние"
+" ключи."
+
+#: of opr.utils.merge_nested_dicts:3
+msgid "First dictionary object."
+msgstr "Первый объект словаря."
+
+#: of opr.utils.merge_nested_dicts:5
+msgid "Second dictionary object."
+msgstr "Второй объект словаря."
+
+#: of opr.utils.merge_nested_dicts:8
+msgid "Merged dictionary."
+msgstr "Объединенный словарь."
+
+#: of opr.utils.parse_device:1
+msgid "Parse given device argument and return torch.device object."
+msgstr "Разбирает заданный аргумент устройства и возвращает объект torch.device."
+
+#: of opr.utils.parse_device:3
+msgid "Device argument."
+msgstr "Аргумент устройства."
+
+#: of opr.utils.parse_device:6
+msgid "Device object."
+msgstr "Объект устройства."
+
+#: of opr.utils.parse_device:9
+msgid "If device is not a string, integer or torch.device object."
+msgstr "Если устройство не является строкой, целым числом или объектом torch.device."
+
+#: of opr.utils.set_seed:1
+msgid ""
+"Set the random seed for the `random`, `numpy`, and `torch` libraries and "
+"enables deterministic mode."
+msgstr ""
+"Устанавливает случайное начальное число для библиотек `random`, `numpy` и"
+" `torch` и включает детерминированный режим."
+
+#: of opr.utils.set_seed:3
+msgid "The random seed to use. Defaults to 0."
+msgstr "Случайное начальное число для использования. По умолчанию 0."
+
+#: of opr.utils.set_seed:5
+msgid ""
+"Whether to make PyTorch deterministic. If True, disables PyTorch's "
+"benchmark mode and enables its deterministic mode. If False, leaves "
+"PyTorch's settings unchanged. Defaults to True."
+msgstr ""
+"Следует ли сделать PyTorch детерминированным. Если True, отключает режим"
+" benchmark PyTorch и включает его детерминированный режим. Если False,"
+" оставляет настройки PyTorch без изменений. По умолчанию True."
+
+#~ msgid ""
+#~ "Evaluates a place recognition model on"
+#~ " the test set with support for "
+#~ "sequences."
+#~ msgstr ""
+
+#~ msgid "The model to evaluate."
+#~ msgstr ""
+
+#~ msgid "Device to run evaluation on. Defaults to \"cuda\"."
+#~ msgstr ""
+
+#~ msgid "Dictionary containing test metrics."
+#~ msgstr ""

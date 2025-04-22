@@ -1,0 +1,102 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2024, Alexander Melekhin, Vitaly Bezuglyj, Ilia Petryashin,
+# Sergey Linok, Kirill Muravyev, Dmitry Yudin
+# This file is distributed under the same license as the opr package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: opr \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-25 00:48+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: ../../source/api/opr.miners.rst:2
+msgid "opr.miners package"
+msgstr "opr.miners пакет"
+
+#: of opr.miners:1
+msgid "Module for miners."
+msgstr "Модуль для майнеров."
+
+#: ../../source/api/opr.miners.rst:10
+msgid "opr.miners.batch\\_hard\\_triplet\\_miner"
+msgstr "opr.miners.batch\\_hard\\_triplet\\_miner"
+
+#: of opr.miners.batch_hard_triplet_miner:1
+msgid "Batch hard triplet miner implementation."
+msgstr "Реализация Batch hard triplet miner."
+
+#: of opr.miners.batch_hard_triplet_miner:3
+msgid ""
+"Code adopted from repository: https://github.com/jac99/MinkLocMultimodal,"
+" MIT License"
+msgstr ""
+"Код взят из репозитория: https://github.com/jac99/MinkLocMultimodal, MIT "
+"License"
+
+#: of opr.miners.batch_hard_triplet_miner.BatchHardTripletMiner:1
+msgid "Bases: :py:class:`~torch.nn.modules.module.Module`"
+msgstr "Основы: :py:class:`~torch.nn.modules.module.Module`"
+
+#: of opr.miners.batch_hard_triplet_miner.BatchHardTripletMiner:1
+msgid "Batch hard triplet miner."
+msgstr "Batch hard triplet miner."
+
+#: of opr.miners.batch_hard_triplet_miner.BatchHardTripletMiner:3
+msgid ""
+"Original idea is taken from repository: "
+"https://github.com/jac99/MinkLocMultimodal, MIT License"
+msgstr ""
+"Оригинальная идея взята из репозитория: "
+"https://github.com/jac99/MinkLocMultimodal, MIT License"
+
+#: of opr.miners.batch_hard_triplet_miner.BatchHardTripletMiner.forward:1
+msgid ""
+"Mine hard triplets from given batch of embeddings. For each element in "
+"batch triplet will be mined."
+msgstr ""
+"Извлечение сложных триплетов из заданного пакета вложений. Для каждого "
+"элемента в пакете будет извлечен триплет."
+
+#: ../../source/api/opr.miners.rst
+msgid "Parameters"
+msgstr "Параметры"
+
+#: of opr.miners.batch_hard_triplet_miner.BatchHardTripletMiner.forward:3
+msgid "Model output embeddings."
+msgstr "Вложения вывода модели."
+
+#: of opr.miners.batch_hard_triplet_miner.BatchHardTripletMiner.forward:5
+msgid "Binary mask of positive elements in batch."
+msgstr "Двоичная маска положительных элементов в пакете."
+
+#: of opr.miners.batch_hard_triplet_miner.BatchHardTripletMiner.forward:7
+msgid "Binary mask of negative elements in batch."
+msgstr "Двоичная маска отрицательных элементов в пакете."
+
+#: ../../source/api/opr.miners.rst
+msgid "Returns"
+msgstr "Возвращает"
+
+#: of opr.miners.batch_hard_triplet_miner.BatchHardTripletMiner.forward:10
+msgid "Hard triplets tuple (a, p, n)."
+msgstr "Кортеж сложных триплетов (a, p, n)."
+
+#: ../../source/api/opr.miners.rst
+msgid "Return type"
+msgstr "Тип возвращаемого значения"
+
+#: of opr.miners.batch_hard_triplet_miner.BatchHardTripletMiner.stats:1
+msgid "Return statistics of last forward pass."
+msgstr "Возвращает статистику последнего прямого прохода."

@@ -10,6 +10,8 @@ authors = [
     {name = "Alexander Melekhin", email = "amelekhin96@gmail.com"},
     {name = "Vitalyy Bezuglyj"},
     {name = "Ilya Petryashin"},
+    {name = "Sergey Linok"},
+    {name = "Kirill Muravyev"},
     {name = "Dmitry Yudin"},
 ]
 readme = "README.md"
@@ -29,6 +31,7 @@ dependencies = [
     "scipy",
     "tqdm",
     "wandb",
+    "torchshow @ git+https://github.com/xwying/torchshow.git@master"
 ]
 
 [project.optional-dependencies]
@@ -70,3 +73,7 @@ profile = "black"
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]
 "tests/*" = ["S101"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["third_party", ".git", "venv"]

@@ -337,7 +337,7 @@ class LateFusionModel(nn.Module):
             out_dict["cloud"] = self.cloud_module(batch)["final_descriptor"]
 
         if self.soc_module is not None:
-            out_dict["soc"] = self.soc_module(batch)["final_descriptor"]
+            out_dict["soc"] = self.soc_module(batch["soc"])["final_descriptor"]
 
         out_dict["final_descriptor"] = self.fusion_module(out_dict)
 
