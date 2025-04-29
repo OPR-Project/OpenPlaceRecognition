@@ -108,6 +108,12 @@ def test(
 
     test_df = dataloader.dataset.dataset_df
 
+    # temporary workaround for working with datasets with frame sequences
+    if hasattr(dataloader.dataset, "_sequence_indices") and dataloader.dataset._sequence_indices is not None:
+        sequence_indices = [seq[0] for seq in dataloader.dataset._sequence_indices]
+        test_df = test_df.iloc[sequence_indices]
+        test_df = test_df.reset_index(drop=True)
+
     queries = []
     databases = []
 
