@@ -31,6 +31,7 @@ class Dataset3RScan(Dataset):
     image_transform: DefaultImageTransform
     load_depth_images: bool
     depth_images_resize: Tuple[int, int]
+    dataset_df: pd.DataFrame
 
 
     def __init__(
@@ -79,7 +80,7 @@ class Dataset3RScan(Dataset):
         scene_references: Dict[str, str] = {}
         track_numbers: Dict[str, int] = {}
         room_numbers: Dict[str, int] = {}
-        tranformation_matrices: Dict[str, np.ndarray] = {}
+        transformation_matrices: Dict[str, np.ndarray] = {}
 
         room_cnt = 0
         for room in json_3rscan:
@@ -101,7 +102,10 @@ class Dataset3RScan(Dataset):
                 scene_references[scan_id] = scene_id
                 track_numbers[scan_id] = i + 1
                 if "transform" in scan:
-                    tranformation_matrices[scan_id] = np.array(scan["transform"]).reshape((4, 4))
+                    transformation_matrix = np.array(scan["transform"]).reshape((4, 4)).T 
+                    transformation_matrix = np.linalg.inv(transformation_matrix) # Transformation in the file in the other direction
+                    transformation_matrix[:3, 3] /= 1000 # Transformation in mm, but pose in m
+                    transformation_matrices[scan_id] = transformation_matrix
         
         # Saving frames ids
         self.scenes_folder = scene_folder
@@ -120,7 +124,7 @@ class Dataset3RScan(Dataset):
 
         self.image_transform = image_transform
 
-        self.dataset_df = self._generate_dataframe(scene_references, track_numbers, room_numbers, tranformation_matrices)
+        self.dataset_df = self._generate_dataframe(scene_references, track_numbers, room_numbers, transformation_matrices)
 
 
     def __getitem__(self, idx: int) -> Dict[str, Union[Tensor, int]]:
@@ -133,8 +137,9 @@ class Dataset3RScan(Dataset):
             Dict[str, Union[Tensor, int]]: Dictionary containing the item data.
                 Contains:
                     - "image": Image tensor
-                    - "pose": 6DOF ose tensor
+                    - "pose": 6DOF pose tensor
                     - "idx": Index of the item
+                    - "depth_image_front_cam": Depth image tensor
         """
 
         data: Dict[str, Union[int, Tensor]] = {"idx": torch.tensor(idx)}
@@ -227,7 +232,7 @@ class Dataset3RScan(Dataset):
         """Load an image from the dataset.
         Args:
             idx (int): Frame index.
-            transform (bool, optional): Whether to apply the image transform. Defaults to True.
+            transform (bool): Whether to apply the image transform. Defaults to True.
 
         Returns:
             Tensor: Loaded image tensor.
@@ -265,17 +270,17 @@ class Dataset3RScan(Dataset):
             room_numbers (Dict[str, int]): Dictionary mapping scene IDs to their room numbers.
 
         Returns:
-            pd.DataFrame: DataFrame containing  poses data in tx, ty, tz, qx, qy, qz, qw.
+            pd.DataFrame: DataFrame containing  poses data in tx, ty, tz, qx, qy, qz, qw and track number.
         """
 
-        data: List[Dict[str, int]] = []
+        data: List[Dict[str, float]] = []
         for idx in range(len(self.frame_ids)):
             scene_id, frame_id = self.frame_ids[idx]
             with open(self._get_frame_pos_path(idx), "r") as f:
                 pose = np.array([float(x) for x in f.read().split()]).reshape((4, 4))
                 
                 if scene_id in transformation_matrices:
-                    pose = pose @ transformation_matrices[scene_id]
+                    pose = transformation_matrices[scene_id] @ pose
 
                 translation = pose[:3, 3]  # [Tx, Ty, Tz]
                 rotation_matrix = pose[:3, :3]
@@ -323,6 +328,8 @@ class Dataset3RScan(Dataset):
                 batch["poses"] = torch.stack([data[key] for data in data_list], dim=0)
             elif key == "image_front_cam":
                 batch["images_front_cam"] = torch.stack([data[key] for data in data_list], dim=0)
+            elif key == "depth_image_front_cam":
+                batch["depth_images_front_cam"] = torch.stack([data[key] for data in data_list], dim=0)
 
         return batch
 
