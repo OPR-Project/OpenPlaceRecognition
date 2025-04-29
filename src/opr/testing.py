@@ -113,8 +113,12 @@ def test(
 
     for _, group in test_df.groupby("track"):
         databases.append(group.index.to_list())
-        selected_queries = group[group["in_query"]]
-        queries.append(selected_queries.index.to_list())
+
+        if "in_query" in group.columns:
+            selected_queries = group[group["in_query"]]
+            queries.append(selected_queries.index.to_list())
+        else:
+            queries.append(group.index.to_list())
 
     if "northing" in test_df.columns and "easting" in test_df.columns:
         coords_columns = ["northing", "easting"]
@@ -131,7 +135,7 @@ def test(
     dist_fn = LpDistance(normalize_embeddings=False)
     dist_utms = dist_fn(utms).numpy()
 
-    n = 25
+    n = 50
     recalls_at_n = np.zeros((len(queries), len(databases), n))
     recalls_at_one_percent = np.zeros((len(queries), len(databases), 1))
     top1_distances = np.zeros((len(queries), len(databases), 1))
