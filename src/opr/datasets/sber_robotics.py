@@ -28,8 +28,6 @@ class SberRobotics(Dataset):
     timestamps: List[str]
     dataset_df: pd.DataFrame
 
-    SECOND_TRACK_START: float = 1846952165000
-
 
     def __init__(
         self,
@@ -69,6 +67,19 @@ class SberRobotics(Dataset):
         self.cam_ids = cam_ids.copy()
         self.image_transform = image_transform
 
+        self.dataset_df = pd.read_csv(self.dataset_folder / "track.csv")
+        self.dataset_df["in_query"] = True # To change when subsets added
+
+        self.timestamps = list(self.dataset_df["timestamp"])
+    
+
+    def generate_dataframe(self) -> pd.DataFrame:
+        """Generate a DataFrame with poses for dataset_df.
+        
+        Returns:
+            pd.DataFrame: DataFrame containing timestamp, poses data in tx, ty, tz, qx, qy, qz, qw and track number in track.
+        """
+
         timestamps_with_all_data: Set[int] = set()
         timestamp_pose: Dict[int, List[float]] = {}
         with open(self.dataset_folder / "traj.txt", "r") as f:
@@ -79,7 +90,7 @@ class SberRobotics(Dataset):
                     timestamps_with_all_data.add(timestamp)
                     timestamp_pose[timestamp] = list(map(float, desc[1:]))
 
-        for cam_id in cam_ids:
+        for cam_id in self.cam_ids:
             cam_timestamps: Set[int] = set()
 
             data_csv = pd.read_csv(self.dataset_folder / f"cam{cam_id}/data.csv", header=None)
@@ -88,27 +99,19 @@ class SberRobotics(Dataset):
             
             timestamps_with_all_data &= cam_timestamps
 
-        self.timestamps = list(timestamps_with_all_data)
-        self.dataset_df = self._generate_dataframe(timestamp_pose)
-    
+        timestamps = list(timestamps_with_all_data)
 
-    def _generate_dataframe(self, timestamp_pose: Dict[int, List[float]]) -> pd.DataFrame:
-        """Generate a DataFrame with poses for dataset_df.
-        Args:
-            timestamp_pose (Dict[int, List[float]]): Dictionary mapping timestamps to pose data.
-        
-        Returns:
-            pd.DataFrame: DataFrame containing  poses data in tx, ty, tz, qx, qy, qz, qw and track number in track.
-        """
+        SECOND_TRACK_START: float = 1846952165000
 
         data: List[Dict[str, int]] = []
 
-        for timestamp in self.timestamps:
+        for timestamp in timestamps:
             if timestamp not in timestamp_pose or len(timestamp_pose[timestamp]) != 7:
                 raise ValueError(f"Incorrect pose in traj.txt for timestamp {timestamp}")
             
             tx, ty, tz, qx, qy, qz, qw = timestamp_pose[timestamp]
             data.append({
+                "timestamp": timestamp,
                 "tx": tx,
                 "ty": ty,
                 "tz": tz,
@@ -116,14 +119,12 @@ class SberRobotics(Dataset):
                 "qy": qy,
                 "qz": qz,
                 "qw": qw,
-                "track": 0 if timestamp < self.SECOND_TRACK_START else 1
+                "track": 0 if timestamp < SECOND_TRACK_START else 1
             })
         
         df = pd.DataFrame(data)
 
-        df["in_query"] = True # To change when subsets added
-
-        return df
+        return df.sort_values("timestamp")
     
     def __getitem__(self, idx: int) -> Dict[str, Union[Tensor, int]]:
         """Get item by index.
