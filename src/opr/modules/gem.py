@@ -97,6 +97,9 @@ class GlobalAvgPooling(nn.Module):
             out = x.mean(dim=1)  # Pool over L dimension
         elif len(x.shape) == 4:  # [N,H,W,C] case after stacking
             out = x.mean(dim=(1,2))  # Pool over H,W dimensions
+        else:
+            out = x.clone()
+            # raise ValueError(f"Unexpected input shape {x.shape}. Expected [N,L,C] or [N,H,W,C].")
         return out
 
 

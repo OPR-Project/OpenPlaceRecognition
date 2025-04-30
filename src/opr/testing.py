@@ -48,6 +48,8 @@ def get_recalls(
     gt_db = []
     errors_dists = []
     one_percent_threshold = max(int(round(len(db_embs) / 100.0)), 1)
+    if one_percent_threshold >= at_n:
+        raise ValueError(f"at_n is required to be greater than one percent threshold: {one_percent_threshold}")
 
     distances, indices = database_tree.query(query_embs, k=at_n)
 
@@ -94,14 +96,12 @@ def test(
         ValueError: If the required coordinate columns are not found in the dataset.
     """
     device = parse_device(device)
-
-    model = model.to(device)
-
     with torch.no_grad():
         embeddings_list = []
         for batch in tqdm(dataloader, desc="Calculating test set descriptors", leave=False):
             batch = {e: batch[e].to(device) for e in batch}
             embeddings = model(batch)["final_descriptor"]
+
             embeddings_list.append(embeddings.cpu().numpy())
             torch.cuda.empty_cache()
         test_embeddings = np.vstack(embeddings_list)
