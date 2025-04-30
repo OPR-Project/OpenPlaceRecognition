@@ -154,3 +154,49 @@ RUN git clone https://github.com/alexmelekhin/PointMamba.git && \
 RUN pip install paddlepaddle-gpu==2.6.1.post120 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
 ARG PADDLEOCR_VERSION=2.10.0
 RUN pip install paddleocr==${PADDLEOCR_VERSION}
+
+# install Pointcept
+ARG POINTCEPT_VERSION_COMMIT_HASH=58523c0
+ARG SHAREDARRAY_VERSION=3.2.4
+ARG ADDICT_VERSION=2.4.0
+ARG PLYFILE_VERSION=1.1
+ARG TERMCOLOR_VERSION=3.0.1
+ARG TIMM_VERSION==1.0.15
+ARG TORCH_CLUSTER_VERSION=1.6.3
+ARG TORCH_SCATTER_VERSION=2.1.2
+ARG TORCH_SPARSE_VERSION=0.6.18
+ARG TORCH_GEOMETRIC_VERSION=2.6.1
+ARG SPCONV_VERSION=2.3.8
+ARG FTFY_VERSION=6.3.1
+RUN git clone https://github.com/Pointcept/Pointcept.git && \
+    cd Pointcept && \
+    git checkout ${POINTCEPT_VERSION_COMMIT_HASH} && \
+    pip install \
+        SharedArray==${SHAREDARRAY_VERSION} \
+        addict==${ADDICT_VERSION} \
+        plyfile==${PLYFILE_VERSION} \
+        termcolor==${TERMCOLOR_VERSION} \
+        timm==${TIMM_VERSION} && \
+    pip install -f https://data.pyg.org/whl/torch-2.1.2+cu121.html \
+        torch-cluster==${TORCH_CLUSTER_VERSION} \
+        torch-scatter==${TORCH_SCATTER_VERSION} \
+        torch-sparse==${TORCH_SPARSE_VERSION} && \
+    pip install \
+        torch_geometric==${TORCH_GEOMETRIC_VERSION} \
+        spconv-cu121==${SPCONV_VERSION} \
+        ftfy==${FTFY_VERSION} && \
+    pip install git+https://github.com/openai/CLIP.git && \
+    cd libs && \
+    pip install pointops/. && \
+    pip install pointops2/. && \
+    cd .. && \
+    mv pointcept /opt/pointcept && \
+    sudo ln -s /opt/pointcept /usr/local/lib/python3.10/dist-packages/pointcept && \
+    cd .. && \
+    rm -rf Pointcept
+
+# clean pip cache
+RUN pip cache purge
+# clean apt cache
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
