@@ -1,23 +1,23 @@
 FROM alexmelekhin/open-place-recognition:base
 
 # to install "dvc[gdrive]" we need to install "distro" package first
-# ARG DISTRO_VERSION=1.9.0
-# RUN pip install distro==${DISTRO_VERSION}
+ARG DISTRO_VERSION=1.9.0
+RUN pip install distro==${DISTRO_VERSION}
 
-# # install other requirements from requirements.txt
-# COPY requirements.txt .
-# RUN pip install -r requirements.txt && \
-#     rm requirements.txt
+# install other requirements from requirements.txt
+COPY requirements.txt .
+RUN pip install -r requirements.txt && \
+    rm requirements.txt
 
-# # install dev requirements
-# COPY requirements-dev.txt .
-# RUN pip install -r requirements-dev.txt && \
-#     rm requirements-dev.txt
+# install dev requirements
+COPY requirements-dev.txt .
+RUN pip install -r requirements-dev.txt && \
+    rm requirements-dev.txt
 
-# # install notebook requirements
-# COPY requirements-notebook.txt .
-# RUN pip install -r requirements-notebook.txt && \
-#     rm requirements-notebook.txt
+# install notebook requirements
+COPY requirements-notebook.txt .
+RUN pip install -r requirements-notebook.txt && \
+    rm requirements-notebook.txt
 
 # add user and his password
 ENV USER=docker_opr
@@ -26,63 +26,56 @@ ARG GID=1000
 # default password
 ARG PW=user
 
-# RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-# RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | sudo apt-key add -
-# RUN apt-get update
-# RUN apt-get install ros-noetic-desktop-full -y
-# RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.key | sudo apt-key add -
+RUN apt-get update
+RUN apt-get install ros-noetic-desktop-full -y
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
 
-# RUN apt-get install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential -y
-# RUN apt-get install python3-empy -y
-# RUN pip install empy catkin_pkg
-# RUN pip install rosdep
-# RUN apt-get update
-# RUN rosdep init
-# RUN rosdep update
+RUN apt-get install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential -y
+RUN apt-get install python3-empy -y
+RUN pip install empy catkin_pkg
+RUN pip install rosdep
+RUN apt-get update
+RUN rosdep init
+RUN rosdep update
 
-# ARG MAX_JOBS=4
+ARG MAX_JOBS=4
 
-# RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-#     curl \
-#     git \
-#     wget \
-#     vim \
-#     sudo \
-#     tar \
-#     unzip \
-#     openssh-server \
-#     python3-pip \
-#     build-essential \
-#     ninja-build \
-#     cmake \
-#     swig \
-#     libopenblas-dev \
-#     ffmpeg \
-#     libsm6 \
-#     libxext6 \
-#     libssl-dev \
-#     zlib1g-dev \
-#     libbz2-dev \
-#     libreadline-dev \
-#     libsqlite3-dev\
-#     libncursesw5-dev \
-#     xz-utils \
-#     tk-dev \
-#     libxml2-dev \
-#     libxmlsec1-dev \
-#     libffi-dev \
-#     liblzma-dev \
-#     locales \
-#     language-pack-en \
-#     language-pack-ru \
-#     && rm -rf /var/lib/apt/lists/*
-
-# RUN mkdir -p /catkin_ws/src
-
-# RUN cd /catkin_ws/src && \
-#     git clone https://github.com/KirillMouraviev/toposlam_msgs && \
-#     git clone --branch main https://github.com/KirillMouraviev/PRISM-TopoMap.git && \
-#     pip install protobuf==3.20.0
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    curl \
+    git \
+    wget \
+    vim \
+    sudo \
+    tar \
+    unzip \
+    openssh-server \
+    python3-pip \
+    build-essential \
+    ninja-build \
+    cmake \
+    swig \
+    libopenblas-dev \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    libssl-dev \
+    zlib1g-dev \
+    libbz2-dev \
+    libreadline-dev \
+    libsqlite3-dev\
+    libncursesw5-dev \
+    xz-utils \
+    tk-dev \
+    libxml2-dev \
+    libxmlsec1-dev \
+    libffi-dev \
+    liblzma-dev \
+    locales \
+    language-pack-en \
+    language-pack-ru \
+    && rm -rf /var/lib/apt/lists/*
 
 # Переходим в корневую папку рабочего пространства и собираем все пакеты с помощью catkin_make
 # RUN /bin/bash -c "source /opt/ros/noetic/setup.bash" && \
@@ -90,6 +83,13 @@ ARG PW=user
 
 RUN useradd -m ${USER} --uid=${UID} && echo "${USER}:${PW}" | chpasswd && adduser ${USER} sudo
 WORKDIR /home/${USER}
+
+RUN mkdir -p catkin_ws/src
+
+RUN cd catkin_ws/src && \
+    git clone https://github.com/KirillMouraviev/toposlam_msgs && \
+    git clone --branch main https://github.com/KirillMouraviev/PRISM-TopoMap.git && \
+    pip install protobuf==3.20.0
 
 # create some directories for mounting volumes
 RUN mkdir OpenPlaceRecognition && chown -R ${UID}:${GID} /home/${USER}

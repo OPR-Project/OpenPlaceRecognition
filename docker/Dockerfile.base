@@ -78,9 +78,8 @@ ENV CUDA_HOME=/usr/local/cuda-12.1
 RUN git clone --recursive "https://github.com/alexmelekhin/MinkowskiEngine.git" && \
     cd MinkowskiEngine && \
     git checkout 6532dc3 && \
-    python3 setup.py install --force_cuda --blas=openblas && \
-    cd .. && \
-    rm -rf MinkowskiEngine
+    python3 setup.py install --force_cuda --blas=openblas --install-lib /usr/local/lib/python3.8/dist-packages && \
+    cd ..
 
 # faiss installation
 RUN git clone https://github.com/facebookresearch/faiss.git && \
@@ -123,25 +122,3 @@ RUN cd build && make install-pip-package -j${MAX_JOBS}
 
 # install pytorch3d
 RUN FORCE_CUDA=1 pip install "git+https://github.com/facebookresearch/pytorch3d.git@stable"
-
-# install PointMamba requirements
-WORKDIR /
-ARG CAUSALCONV1D_VERSION=1.4.0
-ARG MAMBA_VERSION=1.2.2
-RUN git clone https://github.com/alexmelekhin/PointMamba.git && \
-    cd PointMamba && \
-    pip install -r requirements.txt && \
-    cd pointmamba/extensions/chamfer_dist && \
-    python setup.py install && \
-    cd ../emd && \
-    python setup.py install && \
-    pip install "git+https://github.com/alexmelekhin/Pointnet2_PyTorch.git#egg=pointnet2_ops&subdirectory=pointnet2_ops_lib" && \
-    pip install causal-conv1d==${CAUSALCONV1D_VERSION} && \
-    pip install mamba-ssm==${MAMBA_VERSION} && \
-    cd / && \
-    rm -rf PointMamba
-
-# install PaddlePaddle and PaddleOCR for OCR tasks
-RUN pip install paddlepaddle-gpu==2.6.1.post120 -f https://www.paddlepaddle.org.cn/whl/linux/mkl/avx/stable.html
-ARG PADDLEOCR_VERSION=2.10.0
-RUN pip install paddleocr==${PADDLEOCR_VERSION}
