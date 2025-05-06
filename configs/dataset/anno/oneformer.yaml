@@ -1,4 +1,4 @@
-stuff_classes:
+staff_classes:
   - "Unknown" # Custom class
   - "Dynamic-by-Motion" # Custom class
   - "Bird"

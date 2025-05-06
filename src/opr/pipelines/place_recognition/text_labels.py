@@ -15,7 +15,8 @@ class TextLabelsPlaceRecognitionPipeline(PlaceRecognitionPipeline):
 
         with open(db_labels_path, "rb") as f:
             db_labels = json.load(f)
-            # db_labels = json.loads(db_labels)
+            if isinstance(db_labels, str):
+                db_labels = json.loads(db_labels)
 
         self.db_labels = db_labels
 
