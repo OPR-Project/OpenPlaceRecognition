@@ -33,6 +33,7 @@ class ModelTester:
         at_n: int = 25,
         device: str | int | torch.device = "cuda",
         verbose: bool = True,
+        batch_size: int = None,  # New parameter for memory-efficient distance calculation
     ) -> None:
         """Initialize ModelTester.
 
@@ -43,6 +44,8 @@ class ModelTester:
             at_n (int): Positive integer for top-N metric. Defaults to 25.
             device (str | int | torch.device): Device specification (e.g., "cuda"). Defaults to "cuda".
             verbose (bool): Whether to show progress bars. Defaults to True.
+            batch_size (int): If specified, compute the distance matrix in batches
+                to reduce peak memory usage. Useful for large datasets. Defaults to None.
 
         Raises:
             ValueError: If `dist_thresh` is not a positive float.
@@ -76,6 +79,8 @@ class ModelTester:
 
         self.model.to(self.device)
         self.model.eval()
+
+        self.batch_size = batch_size
 
         self._coords_columns_names = self._get_coords_columns_names()
 
@@ -112,8 +117,10 @@ class ModelTester:
 
         if self.verbose:
             print(f"Computing geographic distance matrix for {len(coords)} coordinates...")
+            if self.batch_size:
+                print(f"Using batch size {self.batch_size} to reduce memory usage")
 
-        geo_dist = self._compute_geo_dist(coords)
+        geo_dist = self._compute_geo_dist(coords, self.batch_size)
 
         if self.verbose:
             unique_track_pairs = len(list(itertools.permutations(range(len(queries)), 2)))
@@ -212,16 +219,36 @@ class ModelTester:
                 queries.append(db_indices)
         return queries, databases
 
-    def _compute_geo_dist(self, coords: np.ndarray) -> np.ndarray:
+    def _compute_geo_dist(self, coords: np.ndarray, batch_size: int = None) -> np.ndarray:
         """Compute pairwise L2 distances over coordinates.
 
         Args:
             coords (np.ndarray): Coordinate array of shape (N_samples, coord_dim).
+            batch_size (int): If specified, compute the distance matrix in batches
+                to reduce peak memory usage. Defaults to None.
 
         Returns:
             np.ndarray: Distance matrix of shape (N_samples, N_samples).
         """
-        return np.linalg.norm(coords[:, np.newaxis] - coords[np.newaxis, :], axis=2)
+        if batch_size is None:
+            # Original implementation - all at once (higher memory usage)
+            return np.linalg.norm(coords[:, np.newaxis] - coords[np.newaxis, :], axis=2)
+        else:
+            # Batched implementation to reduce peak memory usage
+            n = coords.shape[0]
+            dist_matrix = np.zeros((n, n), dtype=np.float32)
+
+            # Process in batches to reduce memory usage
+            for i in tqdm(
+                range(0, n, batch_size), desc="Computing geographic distances", disable=not self.verbose
+            ):
+                end_idx = min(i + batch_size, n)
+                batch = coords[i:end_idx]
+                # Calculate distances for this batch to all points
+                dist_matrix[i:end_idx] = np.sqrt(
+                    ((batch[:, np.newaxis, :] - coords[np.newaxis, :, :]) ** 2).sum(axis=2)
+                )
+            return dist_matrix
 
     def _eval_pairs(
         self,

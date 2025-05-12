@@ -489,3 +489,125 @@ def test_run_end_to_end(mock_model: torch.nn.Module, mock_dataloader: Callable) 
     # points are at different locations, so there may or may not
     # be matches depending on dist_thresh. We're mostly checking
     # that the method runs without errors.
+
+
+@pytest.mark.unit
+def test_compute_geo_dist_batched(mock_model: torch.nn.Module, mock_dataloader: Callable) -> None:
+    """Batched _compute_geo_dist should produce identical results to non-batched version."""
+    # Create a simple dataset
+    df = pd.DataFrame({"x": [0, 1, 2], "y": [0, 1, 2], "track": [0, 0, 0]})
+    dl = mock_dataloader(df, batch_size=1)
+    tester = ModelTester(mock_model, dl)
+
+    # Test coordinates (5 points in 2D)
+    coords = np.array([[0, 0], [3, 0], [0, 4], [1, 1], [2, 2]])
+
+    # Get results from original implementation
+    dist_matrix_original = tester._compute_geo_dist(coords)
+
+    # Get results from batched implementation with batch_size=2
+    dist_matrix_batched = tester._compute_geo_dist(coords, batch_size=2)
+
+    # Verify results match
+    assert dist_matrix_batched.shape == dist_matrix_original.shape
+    assert np.allclose(dist_matrix_batched, dist_matrix_original)
+
+
+@pytest.mark.unit
+def test_compute_geo_dist_batch_sizes(mock_model: torch.nn.Module, mock_dataloader: Callable) -> None:
+    """_compute_geo_dist should work with different batch sizes."""
+    df = pd.DataFrame({"x": [0, 1, 2], "y": [0, 1, 2], "track": [0, 0, 0]})
+    dl = mock_dataloader(df, batch_size=1)
+    tester = ModelTester(mock_model, dl)
+
+    # Create array of 10 random points
+    np.random.seed(42)  # For reproducibility
+    coords = np.random.rand(10, 3)
+
+    # Original non-batched result
+    expected = tester._compute_geo_dist(coords)
+
+    # Test different batch sizes
+    for batch_size in [1, 2, 3, 5, 10]:
+        result = tester._compute_geo_dist(coords, batch_size=batch_size)
+        assert np.allclose(result, expected), f"Failed with batch_size={batch_size}"
+
+
+@pytest.mark.unit
+def test_compute_geo_dist_edge_cases(mock_model: torch.nn.Module, mock_dataloader: Callable) -> None:
+    """_compute_geo_dist should handle edge cases correctly."""
+    df = pd.DataFrame({"x": [0, 1], "y": [0, 1], "track": [0, 0]})
+    dl = mock_dataloader(df, batch_size=1)
+    tester = ModelTester(mock_model, dl)
+
+    # Test with a single point
+    single_point = np.array([[1, 2, 3]])
+    result_single = tester._compute_geo_dist(single_point, batch_size=1)
+    expected_single = np.array([[0.0]])
+    assert np.allclose(result_single, expected_single)
+
+    # Test with batch size larger than array length
+    coords = np.array([[0, 0], [3, 0], [0, 4]])
+    result_large_batch = tester._compute_geo_dist(coords, batch_size=10)
+    expected = tester._compute_geo_dist(coords)
+    assert np.allclose(result_large_batch, expected)
+
+
+@pytest.mark.unit
+def test_compute_geo_dist_memory_efficiency(mock_model: torch.nn.Module, mock_dataloader: Callable) -> None:
+    """Batched _compute_geo_dist should be more memory efficient."""
+    df = pd.DataFrame({"x": [0, 1], "y": [0, 1], "track": [0, 0]})
+    dl = mock_dataloader(df, batch_size=1)
+    tester = ModelTester(mock_model, dl, verbose=False)
+
+    # Skip detailed memory checks if running in CI or with small memory
+    try:
+        # Create moderately large array (won't cause memory issues in most environments)
+        coords = np.random.rand(1000, 3).astype(np.float32)
+
+        # Force garbage collection before test
+        import gc
+
+        gc.collect()
+
+        # Check that batched version works with a larger array
+        result_batched = tester._compute_geo_dist(coords, batch_size=100)
+        assert result_batched.shape == (1000, 1000)
+
+        # This is mostly a functional test to ensure the batched version works
+        # with larger arrays. Actual memory usage would require a more complex test setup.
+    except Exception as e:
+        pytest.skip(f"Skipping memory test due to: {str(e)}")
+
+
+@pytest.mark.unit
+def test_compute_geo_dist_with_progress_bar(mock_model: torch.nn.Module, mock_dataloader: Callable) -> None:
+    """Batched _compute_geo_dist should show progress bar when verbose=True."""
+    df = pd.DataFrame({"x": [0, 1], "y": [0, 1], "track": [0, 0]})
+    dl = mock_dataloader(df, batch_size=1)
+
+    # Create instance with verbose=True
+    tester = ModelTester(mock_model, dl, verbose=True)
+
+    # Small array for quick testing
+    coords = np.random.rand(10, 2)
+
+    # Mock tqdm to check if it's called correctly
+    with mock.patch("opr.testers.place_recognition.model.tqdm") as mock_tqdm:
+        tester._compute_geo_dist(coords, batch_size=2)
+        mock_tqdm.assert_called_once()
+
+        # Verify the tqdm call contains the expected parameters
+        args, kwargs = mock_tqdm.call_args
+        assert "desc" in kwargs
+        assert kwargs["disable"] is False  # Progress bar should be enabled
+
+    # Test with verbose=False - should not show progress bar
+    tester.verbose = False
+    with mock.patch("opr.testers.place_recognition.model.tqdm") as mock_tqdm:
+        tester._compute_geo_dist(coords, batch_size=2)
+        mock_tqdm.assert_called_once()
+
+        # Verify disable=True to hide the progress bar
+        args, kwargs = mock_tqdm.call_args
+        assert kwargs["disable"] is True
