@@ -1,6 +1,9 @@
 """Place Recognition Model Tester."""
 
 import itertools
+import json
+from dataclasses import asdict, dataclass, field
+from typing import Any, Iterable
 
 import numpy as np
 import torch
@@ -16,6 +19,254 @@ except ImportError:
     faiss_available = False
 
 from opr.utils import parse_device
+
+
+@dataclass
+class RetrievalResults:
+    """Detailed results of place recognition retrieval for a single query-database track pair.
+
+    This dataclass stores comprehensive information about the retrieval process between
+    one query track and one database track. It captures both per-query sample details
+    and aggregated metrics for the entire track pair.
+
+    Each query track contains multiple individual samples, and this class stores
+    the retrieval results for each of those samples against the database track.
+    The arrays are structured such that the first dimension represents individual
+    query samples, while the second dimension (where applicable) represents the
+    top-k retrievals for each query.
+
+    Example:
+        For a query track with 50 samples, retrieving top-10 matches from a database track
+        with 200 samples:
+        - retrieved_indices would have shape (50, 10)
+        - each row contains indices of the 10 closest database samples for one query
+    """
+
+    # Original indices
+    query_indices: np.ndarray  # Original indices of query samples
+    database_indices: np.ndarray  # Original indices of database samples
+
+    # Per-query retrieval details
+    retrieved_indices: np.ndarray  # Shape: (num_queries, k) - Indices of retrieved neighbors
+    embedding_distances: np.ndarray  # Shape: (num_queries, k) - L2 distances in embedding space
+    geographic_distances: np.ndarray  # Shape: (num_queries, k) - Geographic distances
+    is_match: np.ndarray  # Shape: (num_queries, k) - Boolean mask of correct matches
+
+    # Aggregated metrics
+    recall_at_n: np.ndarray  # Recall@N values
+    recall_at_one_percent: float  # Recall@1% value
+    top1_distance: float | None  # Mean top-1 distance (can be None)
+
+    # Additional metadata
+    num_queries: int  # Total number of individual samples in the query track
+    num_database: int  # Total number of individual samples in the database track
+    distance_threshold: float  # Geographic distance threshold used
+    queries_with_matches: int  # Number of query samples that have at least one match
+
+    # Track information
+    query_track_id: int = None  # Track ID for the query
+    database_track_id: int = None  # Track ID for the database
+
+
+@dataclass
+class RetrievalResultsCollection:
+    """Collection of retrieval results from multiple query-database track pairs.
+
+    This class stores and manages multiple RetrievalResults objects, providing
+    methods for aggregation, filtering, and analysis. It can be used to accumulate
+    results across all evaluated track pairs for more comprehensive analysis.
+
+    The collection maintains all detailed retrieval information, allowing for
+    post-processing, visualization, and deeper analysis than the standard
+    aggregate metrics alone.
+    """
+
+    results: list[RetrievalResults] = field(default_factory=list)
+
+    def __len__(self) -> int:
+        """Get the number of results in the collection.
+
+        Returns:
+            int: The number of results in the collection.
+        """
+        return len(self.results)
+
+    def append(self, result: RetrievalResults) -> None:
+        """Add a RetrievalResults object to the collection.
+
+        Args:
+            result (RetrievalResults): The retrieval results to add.
+        """
+        self.results.append(result)
+
+    def extend(self, results: Iterable[RetrievalResults]) -> None:
+        """Add multiple RetrievalResults objects to the collection.
+
+        Args:
+            results (Iterable[RetrievalResults]): The retrieval results to add.
+        """
+        self.results.extend(results)
+
+    @property
+    def num_pairs(self) -> int:
+        """Get the number of query-database track pairs in the collection.
+
+        Returns:
+            int: The number of track pairs.
+        """
+        return len(self.results)
+
+    @property
+    def num_queries(self) -> int:
+        """Get the total number of query samples across all track pairs.
+
+        Returns:
+            int: The total number of query samples.
+        """
+        return sum(res.num_queries for res in self.results)
+
+    @property
+    def num_tracks(self) -> tuple[int, int]:
+        """Get the number of unique query and database tracks in the collection.
+
+        Returns:
+            tuple[int, int]: A tuple containing (unique_query_tracks, unique_database_tracks)
+        """
+        query_tracks = set(res.query_track_id for res in self.results if res.query_track_id is not None)
+        db_tracks = set(res.database_track_id for res in self.results if res.database_track_id is not None)
+        return len(query_tracks), len(db_tracks)
+
+    def aggregate_metrics(self) -> dict[str, Any]:
+        """Calculate aggregate metrics across all results in the collection.
+
+        Returns:
+            dict[str, Any]: Dictionary containing the following aggregate metrics:
+                - 'recall_at_n': Mean Recall@N values
+                - 'recall_at_one_percent': Mean Recall@1% value
+                - 'top1_distance': Mean top-1 distance value
+                - 'overall_accuracy': Percentage of queries with correct top-1 match
+                - 'queries_with_matches': Total number of queries with matches
+                - 'total_queries': Total number of queries
+        """
+        # Calculate recall metrics
+        recalls_at_n = []
+        recalls_at_one_percent = []
+        top1_distances = []
+        correct_top1_matches = 0
+        total_with_matches = 0
+
+        for res in self.results:
+            if res.queries_with_matches > 0:
+                recalls_at_n.append(res.recall_at_n)
+                recalls_at_one_percent.append(res.recall_at_one_percent)
+                if res.top1_distance is not None:
+                    top1_distances.append(res.top1_distance)
+
+                # Count correct top-1 matches
+                correct_top1_matches += np.sum(res.is_match[:, 0])
+                total_with_matches += res.queries_with_matches
+
+        # Compute means
+        mean_recall_at_n = np.mean(recalls_at_n, axis=0) if recalls_at_n else np.array([])
+        mean_recall_at_one_percent = np.mean(recalls_at_one_percent) if recalls_at_one_percent else 0.0
+        mean_top1_distance = np.mean(top1_distances) if top1_distances else None
+        overall_accuracy = correct_top1_matches / total_with_matches if total_with_matches > 0 else 0.0
+
+        return {
+            "recall_at_n": mean_recall_at_n,
+            "recall_at_one_percent": mean_recall_at_one_percent,
+            "top1_distance": mean_top1_distance,
+            "overall_accuracy": overall_accuracy,
+            "queries_with_matches": total_with_matches,
+            "total_queries": self.num_queries,
+        }
+
+    def filter_by_track(
+        self, query_track_id: int | None = None, database_track_id: int | None = None
+    ) -> "RetrievalResultsCollection":
+        """Filter results by query and/or database track IDs.
+
+        Args:
+            query_track_id (Optional[int]): If provided, only keep results with this query track ID.
+            database_track_id (Optional[int]): If provided, only keep results with this database track ID.
+
+        Returns:
+            RetrievalResultsCollection: A new collection containing only the filtered results.
+        """
+        filtered_results = []
+
+        for res in self.results:
+            if (query_track_id is None or res.query_track_id == query_track_id) and (
+                database_track_id is None or res.database_track_id == database_track_id
+            ):
+                filtered_results.append(res)
+
+        collection = RetrievalResultsCollection()
+        collection.extend(filtered_results)
+        return collection
+
+    def get_difficult_queries(self, top_k: int = 10) -> list[tuple[int, int]]:
+        """Identify query samples that consistently fail to retrieve correct matches."""
+        raise NotImplementedError(
+            "This method is not implemented. Please implement it in a subclass or provide a custom implementation."
+        )
+
+    def save(self, path: str) -> None:
+        """Save the collection to disk in JSON format for later analysis.
+
+        Args:
+            path (str): Path to save the collection.
+        """
+
+        def convert(obj: Any) -> Any:
+            """Convert numpy types to native Python types for JSON serialization."""
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+            if isinstance(obj, (np.integer, np.int64, np.int32)):
+                return int(obj)
+            if isinstance(obj, (np.floating, np.float32, np.float64)):
+                return float(obj)
+            return obj
+
+        data = [{k: convert(v) for k, v in asdict(result).items()} for result in self.results]
+
+        with open(path, "w") as f:
+            json.dump(data, f)
+
+    @classmethod
+    def load(cls: type["RetrievalResultsCollection"], path: str) -> "RetrievalResultsCollection":
+        """Load a previously saved collection in JSON format.
+
+        Args:
+            path (str): Path to the saved collection.
+
+        Returns:
+            RetrievalResultsCollection: The loaded collection.
+        """
+        with open(path, "r") as f:
+            data = json.load(f)
+
+        collection = RetrievalResultsCollection()
+
+        # Convert loaded data back to proper types and create RetrievalResults objects
+        for item in data:
+            # Convert lists back to numpy arrays
+            for key in [
+                "query_indices",
+                "database_indices",
+                "retrieved_indices",
+                "embedding_distances",
+                "geographic_distances",
+                "is_match",
+                "recall_at_n",
+            ]:
+                if key in item:
+                    item[key] = np.array(item[key])
+
+            # Create RetrievalResults object using unpacked dictionary
+            collection.results.append(RetrievalResults(**item))
+
+        return collection
 
 
 class ModelTester:
@@ -84,7 +335,7 @@ class ModelTester:
 
         self._coords_columns_names = self._get_coords_columns_names()
 
-    def run(self) -> tuple[np.ndarray, float, float]:
+    def run(self) -> RetrievalResultsCollection:
         """Run the full model test.
 
         This method performs the following steps:
@@ -92,13 +343,11 @@ class ModelTester:
             2. Group samples by track to form query and database groups.
             3. Compute the geographic distance matrix.
             4. Evaluate track pairs.
-            5. Aggregate and return the final metrics.
+            5. Return a collection of detailed retrieval results.
 
         Returns:
-            tuple[np.ndarray, float, float]: A tuple containing:
-                - Average Recall@N (np.ndarray): Array of recall values for each N up to at_n.
-                - Average Recall@1% (float): Average recall at 1% of the database size.
-                - Average top-1 distance (float): Average distance to the closest correct match.
+            RetrievalResultsCollection: Collection of detailed retrieval results for all track pairs.
+                Contains all metrics, per-query details and can be used for further analysis.
         """
         if self.verbose:
             print("Starting place recognition evaluation...")
@@ -126,21 +375,14 @@ class ModelTester:
             unique_track_pairs = len(list(itertools.permutations(range(len(queries)), 2)))
             print(f"Evaluating {unique_track_pairs} track pairs...")
 
-        recalls_at_n, recalls_at_one_percent, top1_distances = self._eval_pairs(
-            embs, queries, databases, geo_dist
-        )
+        # Get the results collection
+        results_collection = self._eval_pairs(embs, queries, databases, geo_dist)
 
         if self.verbose:
-            print("Aggregating metrics...")
-
-        recalls_at_n, recalls_at_one_percent, top1_distances = self._aggregate(
-            recalls_at_n, recalls_at_one_percent, top1_distances
-        )
-
-        if self.verbose:
+            print(f"Collected {len(results_collection)} track pair results")
             print("Evaluation complete.")
 
-        return recalls_at_n, recalls_at_one_percent, top1_distances
+        return results_collection
 
     def _get_coords_columns_names(self) -> list[str]:
         """Retrieve the coordinate columns from the dataset.
@@ -256,13 +498,13 @@ class ModelTester:
         queries: list[list[int]],
         databases: list[list[int]],
         geo_dist: np.ndarray,
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> RetrievalResultsCollection:
         """Evaluate track pairs and compute recall metrics.
 
         For each ordered pair of tracks (i != j):
           - Extract query/database embeddings and geo-distances
-          - Call get_recalls(...) to compute metrics
-          - Store per-pair Recall@N, Recall@1%, top1 distance values
+          - Call eval_retrieval_pair(...) to compute metrics and retrieval details
+          - Store results in a collection
 
         Args:
             embs (np.ndarray): Embeddings array for all samples.
@@ -271,18 +513,10 @@ class ModelTester:
             geo_dist (np.ndarray): Geographic distance matrix.
 
         Returns:
-            tuple[np.ndarray, np.ndarray, np.ndarray]:
-                - recalls_at_n: (T x T x at_n) array of Recall@N values for each track pair
-                - recalls_at_one_percent: (T x T) array of Recall@1% values for each track pair
-                - top1_distances: (T x T) array of top-1 distances for each track pair
+            RetrievalResultsCollection: Collection of detailed retrieval results for all track pairs.
         """
-        recalls_at_n = np.zeros((len(queries), len(databases), self.at_n))
-        recalls_at_one_percent = np.zeros((len(queries), len(databases)))
-        top1_distances = np.zeros((len(queries), len(databases)))
-
-        recalls_at_n.fill(np.nan)
-        recalls_at_one_percent.fill(np.nan)
-        top1_distances.fill(np.nan)
+        # Create a collection to store detailed results
+        results_collection = RetrievalResultsCollection()
 
         ij_permutations = list(itertools.permutations(range(len(queries)), 2))
 
@@ -315,17 +549,23 @@ class ModelTester:
 
             distances = geo_dist[query][:, database]
 
-            recalls, one_percent_recall, top1_distance = self.get_recalls(
-                query_embs, database_embs, distances, at_n=self.at_n, dist_thresh=self.dist_thresh
+            # Call the renamed method which returns a RetrievalResults object
+            results = self.eval_retrieval_pair(
+                query_embs,
+                database_embs,
+                distances,
+                at_n=self.at_n,
+                dist_thresh=self.dist_thresh,
+                query_indices=np.array(query),
+                database_indices=np.array(database),
+                query_track_id=i,
+                database_track_id=j,
             )
 
-            recalls_at_n[i, j] = recalls
-            recalls_at_one_percent[i, j] = one_percent_recall
+            # Store the results in our collection
+            results_collection.append(results)
 
-            if top1_distance is not None:
-                top1_distances[i, j] = top1_distance
-
-        return recalls_at_n, recalls_at_one_percent, top1_distances
+        return results_collection
 
     def _aggregate(self, Rn: np.ndarray, R1p: np.ndarray, T1: np.ndarray) -> tuple[np.ndarray, float, float]:
         """Aggregate per-pair metrics into final averages.
@@ -348,71 +588,113 @@ class ModelTester:
         return mean_Rn, mean_R1p, mean_T1
 
     @staticmethod
-    def get_recalls(
+    def eval_retrieval_pair(
         query_embs: np.ndarray,
         db_embs: np.ndarray,
-        dist_matrix: np.ndarray,
+        geo_distances: np.ndarray,
         dist_thresh: float = 25.0,
         at_n: int = 25,
-    ) -> tuple[np.ndarray, float, float | None]:
-        """Calculate Recall@N, Recall@1% and mean top-1 distance for the given query and db embeddings.
+        query_indices: np.ndarray = None,
+        database_indices: np.ndarray = None,
+        query_track_id: int = None,
+        database_track_id: int = None,
+    ) -> RetrievalResults:
+        """Evaluate retrieval performance for a query-database track pair.
+
+        Performs nearest neighbor search in embedding space and evaluates results
+        against geographic ground truth. Returns comprehensive retrieval details
+        and performance metrics.
 
         Args:
             query_embs (np.ndarray): Query embeddings array.
             db_embs (np.ndarray): Database embeddings array.
-            dist_matrix (np.ndarray): Geographic distance matrix of shape (query_len, db_len).
+            geo_distances (np.ndarray): Geographic distance matrix of shape (query_len, db_len).
             dist_thresh (float): Geographic distance threshold for positive match. Defaults to 25.0.
             at_n (int): The maximum N value for the Recall@N metric. Defaults to 25.
+            query_indices (np.ndarray): Original indices of query samples. Defaults to None.
+            database_indices (np.ndarray): Original indices of database samples. Defaults to None.
+            query_track_id (int): ID of the query track. Defaults to None.
+            database_track_id (int): ID of the database track. Defaults to None.
 
         Returns:
-            tuple[np.ndarray, float, float | None]:
-                - Recall@N: Array of recall values for each N up to at_n
-                - Recall@1%: Recall at 1% of the database size
-                - Mean top-1 distance: Average distance to closest match, or None if no matches found
+            RetrievalResults: Detailed retrieval results including metrics and per-query details.
         """
         db_len = db_embs.shape[0]
+        query_len = query_embs.shape[0]
         orig_at_n = at_n
         one_percent_threshold = max(1, int(np.ceil(db_len * 0.01)))
         at_n = max(at_n, one_percent_threshold)
 
-        # Geographic distance binary mask - indicates true positives
-        positives_mask = dist_matrix < dist_thresh
-        queries_with_matches = np.sum(np.any(positives_mask, axis=1))
+        # Use default indices if not provided
+        if query_indices is None:
+            query_indices = np.arange(query_len)
+        if database_indices is None:
+            database_indices = np.arange(db_len)
 
-        if queries_with_matches == 0:
-            # No matches found - early return
-            return np.zeros(orig_at_n), 0.0, None
+        # Geographic distance binary mask - indicates true positives
+        positives_mask = geo_distances < dist_thresh
+        queries_with_matches = np.sum(np.any(positives_mask, axis=1))
 
         # Get nearest neighbors using embedding distances (not geographic)
         if faiss_available:
             # Use FAISS for faster nearest neighbor search
             index = faiss.IndexFlatL2(db_embs.shape[1])
             index.add(db_embs)
-            distances, indices = index.search(query_embs, at_n)
+            emb_distances, retrieved_indices = index.search(query_embs, at_n)
         else:
             # Fall back to KDTree
             tree = KDTree(db_embs)
-            distances, indices = tree.query(query_embs, k=at_n)
+            emb_distances, retrieved_indices = tree.query(query_embs, k=at_n)
 
-        # Initialize recall array
+        # Initialize arrays for retrieval data
+        is_match = np.zeros((query_len, at_n), dtype=bool)
+        retrieved_geo_distances = np.zeros((query_len, at_n), dtype=np.float32)
+
+        # Initialize recall array and top1 distances list
         recall_at_n = np.zeros(at_n, dtype=float)
         top1_distances = []
 
         # For each query, check if the retrieved neighbors are geographic matches
-        for query_i, closest_inds in enumerate(indices):
-            # Check which retrieved neighbors are geographic matches
+        for query_i, closest_inds in enumerate(retrieved_indices):
+            # Get geographic match status for retrieved neighbors
             query_gt_matches_mask = positives_mask[query_i][closest_inds]
+            is_match[query_i] = query_gt_matches_mask
 
-            # Store top-1 distance if it's a match
+            # Get geographic distances to retrieved neighbors
+            retrieved_geo_distances[query_i] = geo_distances[query_i][closest_inds]
+
+            # Store top-1 distance if it's a match (for traditional metric)
             if query_gt_matches_mask[0]:
-                top1_distances.append(distances[query_i][0])
+                top1_distances.append(emb_distances[query_i][0])
 
-            # Update recall counts
+            # Update recall counts (for traditional metric)
             recall_at_n += np.cumsum(query_gt_matches_mask, axis=0, dtype=bool)
 
         # Normalize and finalize metrics
-        recall_at_n = recall_at_n / queries_with_matches
-        one_percent_recall = recall_at_n[one_percent_threshold - 1]
-        mean_top1_distance = np.mean(top1_distances) if len(top1_distances) > 0 else None
+        if queries_with_matches > 0:
+            recall_at_n = recall_at_n / queries_with_matches
+            one_percent_recall = recall_at_n[one_percent_threshold - 1]
+            mean_top1_distance = np.mean(top1_distances) if len(top1_distances) > 0 else None
+        else:
+            recall_at_n = np.zeros(at_n)
+            one_percent_recall = 0.0
+            mean_top1_distance = None
 
-        return recall_at_n[:orig_at_n], one_percent_recall, mean_top1_distance
+        # Create and return the comprehensive results object
+        return RetrievalResults(
+            query_indices=query_indices,
+            database_indices=database_indices,
+            retrieved_indices=retrieved_indices,
+            embedding_distances=emb_distances,
+            geographic_distances=retrieved_geo_distances,
+            is_match=is_match,
+            recall_at_n=recall_at_n[:orig_at_n],
+            recall_at_one_percent=one_percent_recall,
+            top1_distance=mean_top1_distance,
+            num_queries=query_len,
+            num_database=db_len,
+            distance_threshold=dist_thresh,
+            queries_with_matches=queries_with_matches,
+            query_track_id=query_track_id,
+            database_track_id=database_track_id,
+        )

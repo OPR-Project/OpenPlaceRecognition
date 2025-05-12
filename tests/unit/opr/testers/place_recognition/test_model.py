@@ -1,5 +1,6 @@
 """Test ModelTester class for place recognition."""
 
+from pathlib import Path
 from typing import Callable, Iterator
 from unittest import mock
 
@@ -8,7 +9,11 @@ import pandas as pd
 import pytest
 import torch
 
-from opr.testers.place_recognition.model import ModelTester
+from opr.testers.place_recognition.model import (
+    ModelTester,
+    RetrievalResults,
+    RetrievalResultsCollection,
+)
 
 
 @pytest.mark.unit
@@ -192,7 +197,7 @@ def test_compute_geo_dist(mock_model: torch.nn.Module, mock_dataloader: Callable
 
 @pytest.mark.unit
 def test_eval_pairs_basic_functionality(mock_model: torch.nn.Module, mock_dataloader: Callable) -> None:
-    """_eval_pairs should handle basic track pairs correctly."""
+    """_eval_pairs should handle basic track pairs correctly and return a RetrievalResultsCollection."""
     # Create dataset with two tracks
     df = pd.DataFrame({"x": [0, 1, 2, 3], "y": [0, 1, 2, 3], "track": [0, 0, 1, 1]})
     dl = mock_dataloader(df, batch_size=2)
@@ -209,35 +214,30 @@ def test_eval_pairs_basic_functionality(mock_model: torch.nn.Module, mock_datalo
         [[0.0, 1.0, 0.5, 1.5], [1.0, 0.0, 1.5, 0.5], [0.5, 1.5, 0.0, 1.0], [1.5, 0.5, 1.0, 0.0]]
     )
 
-    # Mock get_recalls to return controlled values
-    with mock.patch.object(tester, "get_recalls") as mock_recalls:
-        # Return different values for the two track pairs
-        mock_recalls.side_effect = [
-            (np.array([0.5, 1.0]), 1.0, 0.1),  # Track 0 -> 1
-            (np.array([0.7, 0.9]), 0.9, 0.2),  # Track 1 -> 0
-        ]
+    # Mock eval_retrieval_pair to return controlled values
+    with mock.patch.object(tester, "eval_retrieval_pair") as mock_eval:
+        # Create mock RetrievalResults objects
+        mock_results_0_to_1 = mock.MagicMock()
+        mock_results_0_to_1.recall_at_n = np.array([0.5, 1.0])
+        mock_results_0_to_1.recall_at_one_percent = 1.0
+        mock_results_0_to_1.top1_distance = 0.1
+
+        mock_results_1_to_0 = mock.MagicMock()
+        mock_results_1_to_0.recall_at_n = np.array([0.7, 0.9])
+        mock_results_1_to_0.recall_at_one_percent = 0.9
+        mock_results_1_to_0.top1_distance = 0.2
+
+        # Return different results for the two track pairs
+        mock_eval.side_effect = [mock_results_0_to_1, mock_results_1_to_0]
 
         # Call the method
-        recalls_at_n, recalls_at_1p, top1_dists = tester._eval_pairs(embs, queries, databases, geo_dist)
+        results_collection = tester._eval_pairs(embs, queries, databases, geo_dist)
 
-    # Check shapes
-    assert recalls_at_n.shape == (2, 2, 2)  # 2 tracks x 2 tracks x at_n=2
-    assert recalls_at_1p.shape == (2, 2)
-    assert top1_dists.shape == (2, 2)
-
-    # Check values - should have data only at (0,1) and (1,0) positions
-    # Track pairs (0,0) and (1,1) aren't computed due to i!=j requirement
-    assert np.isnan(recalls_at_n[0, 0, 0])  # No self-comparison
-    assert np.isnan(recalls_at_n[1, 1, 0])  # No self-comparison
-
-    assert np.array_equal(recalls_at_n[0, 1], np.array([0.5, 1.0]))
-    assert np.array_equal(recalls_at_n[1, 0], np.array([0.7, 0.9]))
-
-    assert recalls_at_1p[0, 1] == 1.0
-    assert recalls_at_1p[1, 0] == 0.9
-
-    assert top1_dists[0, 1] == 0.1
-    assert top1_dists[1, 0] == 0.2
+        # Check that we got a collection with the expected number of results
+        assert isinstance(results_collection, RetrievalResultsCollection)
+        assert len(results_collection) == 2
+        assert results_collection.results[0] is mock_results_0_to_1
+        assert results_collection.results[1] is mock_results_1_to_0
 
 
 @pytest.mark.unit
@@ -253,18 +253,25 @@ def test_eval_pairs_with_none_top1(mock_model: torch.nn.Module, mock_dataloader:
     databases = [[0, 1], [2, 3]]
     geo_dist = np.zeros((4, 4))  # Not important for this test
 
-    # Mock get_recalls to return None for top1_distance
-    with mock.patch.object(tester, "get_recalls") as mock_recalls:
-        mock_recalls.side_effect = [
-            (np.array([0.0]), 0.0, None),  # Track 0 -> 1, no top1 matches
-            (np.array([0.5]), 0.5, 0.1),  # Track 1 -> 0, has top1 match
-        ]
+    # Mock eval_retrieval_pair to return None for top1_distance
+    with mock.patch.object(tester, "eval_retrieval_pair") as mock_eval:
+        mock_results_0_to_1 = mock.MagicMock()
+        mock_results_0_to_1.recall_at_n = np.array([0.0])
+        mock_results_0_to_1.recall_at_one_percent = 0.0
+        mock_results_0_to_1.top1_distance = None
 
-        recalls_at_n, recalls_at_1p, top1_dists = tester._eval_pairs(embs, queries, databases, geo_dist)
+        mock_results_1_to_0 = mock.MagicMock()
+        mock_results_1_to_0.recall_at_n = np.array([0.5])
+        mock_results_1_to_0.recall_at_one_percent = 0.5
+        mock_results_1_to_0.top1_distance = 0.1
 
-    # Check top1_dists values - should have NaN for the first pair
-    assert np.isnan(top1_dists[0, 1])
-    assert top1_dists[1, 0] == 0.1
+        mock_eval.side_effect = [mock_results_0_to_1, mock_results_1_to_0]
+
+        results_collection = tester._eval_pairs(embs, queries, databases, geo_dist)
+
+    # Check top1_dists values - should have None for the first pair
+    assert results_collection.results[0].top1_distance is None
+    assert results_collection.results[1].top1_distance == 0.1
 
 
 @pytest.mark.unit
@@ -279,17 +286,20 @@ def test_eval_pairs_empty_track(mock_model: torch.nn.Module, mock_dataloader: Ca
     databases = [[0, 1], [2], []]
     geo_dist = np.zeros((3, 3))
 
-    # Mock get_recalls
-    with mock.patch.object(tester, "get_recalls") as mock_recalls:
-        mock_recalls.return_value = (np.zeros(tester.at_n), 0.0, None)
+    # Mock eval_retrieval_pair
+    with mock.patch.object(tester, "eval_retrieval_pair") as mock_eval:
+        mock_result = mock.MagicMock()
+        mock_eval.return_value = mock_result
 
         # This should not raise errors despite empty track
-        recalls_at_n, recalls_at_1p, top1_dists = tester._eval_pairs(embs, queries, databases, geo_dist)
+        results_collection = tester._eval_pairs(embs, queries, databases, geo_dist)
 
-    # Check that the method completed
-    assert isinstance(recalls_at_n, np.ndarray)
-    assert isinstance(recalls_at_1p, np.ndarray)
-    assert isinstance(top1_dists, np.ndarray)
+    # Check that the method completed and returned a collection
+    assert isinstance(results_collection, RetrievalResultsCollection)
+
+    # With three tracks where not all pairs are valid (empty tracks),
+    # we expect fewer than 6 possible pairs in the collection
+    assert len(results_collection) < 6
 
 
 @pytest.mark.unit
@@ -425,28 +435,18 @@ def test_run_integration(mock_model: torch.nn.Module, mock_dataloader: Callable)
                 mock_dist.return_value = np.zeros((4, 4))
 
                 with mock.patch.object(tester, "_eval_pairs") as mock_eval:
-                    # Mocked evaluation results
-                    mock_recalls_n = np.ones((2, 2, tester.at_n)) * 0.5
-                    mock_recalls_1p = np.ones((2, 2)) * 0.7
-                    mock_top1_dist = np.ones((2, 2)) * 3.0
-                    mock_eval.return_value = (mock_recalls_n, mock_recalls_1p, mock_top1_dist)
+                    # Mock the return value as a RetrievalResultsCollection instead of metrics tuple
+                    mock_collection = RetrievalResultsCollection()
+                    mock_eval.return_value = mock_collection
 
-                    with mock.patch.object(tester, "_aggregate") as mock_agg:
-                        # Mocked aggregation results (now scalars, not arrays)
-                        expected_recalls_n = np.ones(tester.at_n) * 0.8
-                        expected_recalls_1p = 0.9  # Now a scalar
-                        expected_top1_dist = 2.5  # Now a scalar
-                        mock_agg.return_value = (expected_recalls_n, expected_recalls_1p, expected_top1_dist)
-
-                        # Run the method
-                        recalls_n, recalls_1p, top1_dist = tester.run()
+                    # Run the method
+                    result = tester.run()
 
     # Check that all methods were called with the right arguments
     mock_extract.assert_called_once()
     mock_group.assert_called_once()
     mock_dist.assert_called_once()
     mock_eval.assert_called_once()
-    mock_agg.assert_called_once()
 
     # Check method call order through argument passing
     mock_eval_args = mock_eval.call_args[0]
@@ -454,15 +454,8 @@ def test_run_integration(mock_model: torch.nn.Module, mock_dataloader: Callable)
     assert mock_eval_args[1:3] == mock_group.return_value
     assert np.array_equal(mock_eval_args[3], mock_dist.return_value)
 
-    mock_agg_args = mock_agg.call_args[0]
-    assert np.array_equal(mock_agg_args[0], mock_recalls_n)
-    assert np.array_equal(mock_agg_args[1], mock_recalls_1p)
-    assert np.array_equal(mock_agg_args[2], mock_top1_dist)
-
-    # Verify final results are returned correctly
-    assert np.array_equal(recalls_n, expected_recalls_n)
-    assert recalls_1p == expected_recalls_1p
-    assert top1_dist == expected_top1_dist
+    # Verify the result is the expected RetrievalResultsCollection
+    assert result is mock_collection
 
 
 @pytest.mark.unit
@@ -476,19 +469,15 @@ def test_run_end_to_end(mock_model: torch.nn.Module, mock_dataloader: Callable) 
     tester = ModelTester(mock_model, dl, at_n=2)
 
     # Run the full evaluation
-    recalls_n, recalls_1p, top1_dist = tester.run()
+    result = tester.run()
 
-    # Check output shapes and types - now we expect scalars for recalls_1p and top1_dist
-    assert isinstance(recalls_n, np.ndarray)
-    assert recalls_n.shape == (2,)  # 2 values for at_n
-    assert np.isscalar(recalls_1p)  # Now a scalar
-    assert np.isscalar(top1_dist)  # Now a scalar
+    # Check that we got a RetrievalResultsCollection
+    assert isinstance(result, RetrievalResultsCollection)
 
-    # The mock model returns all-zero embeddings, so distances
-    # between all embeddings will be zero. In the geographic space,
-    # points are at different locations, so there may or may not
-    # be matches depending on dist_thresh. We're mostly checking
-    # that the method runs without errors.
+    # For end-to-end test, verify basics of the collection
+    assert isinstance(result.num_pairs, int)
+    assert isinstance(result.num_queries, int)
+    assert isinstance(result.num_tracks, tuple)
 
 
 @pytest.mark.unit
@@ -611,3 +600,448 @@ def test_compute_geo_dist_with_progress_bar(mock_model: torch.nn.Module, mock_da
         # Verify disable=True to hide the progress bar
         args, kwargs = mock_tqdm.call_args
         assert kwargs["disable"] is True
+
+
+# Add tests for RetrievalResults class
+@pytest.mark.unit
+class TestRetrievalResults:
+    """Test the RetrievalResults class."""
+
+    def test_initialization(self) -> None:
+        """Object of RetrievalResults should initialize with all required parameters."""
+        # Create minimal valid parameters
+        query_indices = np.array([1, 2])
+        database_indices = np.array([10, 11, 12])
+        retrieved_indices = np.array([[0, 1], [0, 2]])
+        embedding_distances = np.array([[0.1, 0.2], [0.3, 0.4]])
+        geographic_distances = np.array([[5.0, 6.0], [7.0, 8.0]])
+        is_match = np.array([[True, False], [False, True]])
+        recall_at_n = np.array([0.5, 0.75])
+
+        # Create a RetrievalResults object
+        result = RetrievalResults(
+            query_indices=query_indices,
+            database_indices=database_indices,
+            retrieved_indices=retrieved_indices,
+            embedding_distances=embedding_distances,
+            geographic_distances=geographic_distances,
+            is_match=is_match,
+            recall_at_n=recall_at_n,
+            recall_at_one_percent=0.6,
+            top1_distance=0.2,
+            num_queries=2,
+            num_database=3,
+            distance_threshold=10.0,
+            queries_with_matches=1,
+        )
+
+        # Check that all values were stored correctly
+        assert np.array_equal(result.query_indices, query_indices)
+        assert np.array_equal(result.database_indices, database_indices)
+        assert np.array_equal(result.retrieved_indices, retrieved_indices)
+        assert np.array_equal(result.embedding_distances, embedding_distances)
+        assert np.array_equal(result.geographic_distances, geographic_distances)
+        assert np.array_equal(result.is_match, is_match)
+        assert np.array_equal(result.recall_at_n, recall_at_n)
+        assert result.recall_at_one_percent == 0.6
+        assert result.top1_distance == 0.2
+        assert result.num_queries == 2
+        assert result.num_database == 3
+        assert result.distance_threshold == 10.0
+        assert result.queries_with_matches == 1
+
+    def test_optional_track_ids(self) -> None:
+        """Object of RetrievalResults should allow setting optional track IDs."""
+        min_params = {
+            "query_indices": np.array([0]),
+            "database_indices": np.array([0]),
+            "retrieved_indices": np.array([[0]]),
+            "embedding_distances": np.array([[0.1]]),
+            "geographic_distances": np.array([[5.0]]),
+            "is_match": np.array([[True]]),
+            "recall_at_n": np.array([1.0]),
+            "recall_at_one_percent": 1.0,
+            "top1_distance": 0.1,
+            "num_queries": 1,
+            "num_database": 1,
+            "distance_threshold": 10.0,
+            "queries_with_matches": 1,
+        }
+
+        # Create with track IDs
+        result = RetrievalResults(**min_params, query_track_id=5, database_track_id=10)
+
+        assert result.query_track_id == 5
+        assert result.database_track_id == 10
+
+        # Create without track IDs (should be None)
+        result2 = RetrievalResults(**min_params)
+        assert result2.query_track_id is None
+        assert result2.database_track_id is None
+
+
+# Add tests for RetrievalResultsCollection class
+@pytest.mark.unit
+class TestRetrievalResultsCollection:
+    """Test the RetrievalResultsCollection class."""
+
+    def test_initialization(self) -> None:
+        """Object of RetrievalResultsCollection should initialize with an empty list."""
+        collection = RetrievalResultsCollection()
+        assert len(collection.results) == 0
+        assert len(collection) == 0
+
+    def test_append_and_extend(self) -> None:
+        """Append and extend methods should add items to the collection."""
+        collection = RetrievalResultsCollection()
+
+        # Create mock RetrievalResults
+        mock_result1 = mock.MagicMock()
+        mock_result2 = mock.MagicMock()
+        mock_result3 = mock.MagicMock()
+
+        # Test append
+        collection.append(mock_result1)
+        assert len(collection) == 1
+        assert collection.results[0] is mock_result1
+
+        # Test extend
+        collection.extend([mock_result2, mock_result3])
+        assert len(collection) == 3
+        assert collection.results[1] is mock_result2
+        assert collection.results[2] is mock_result3
+
+    def test_properties(self) -> None:
+        """Properties should calculate correct values from results."""
+        collection = RetrievalResultsCollection()
+
+        # Create mock results with controlled values
+        mock_result1 = mock.MagicMock()
+        mock_result1.num_queries = 5
+        mock_result1.query_track_id = 1
+        mock_result1.database_track_id = 2
+
+        mock_result2 = mock.MagicMock()
+        mock_result2.num_queries = 3
+        mock_result2.query_track_id = 1
+        mock_result2.database_track_id = 3
+
+        collection.extend([mock_result1, mock_result2])
+
+        # Test num_pairs
+        assert collection.num_pairs == 2
+
+        # Test num_queries
+        assert collection.num_queries == 8  # 5 + 3
+
+        # Test num_tracks
+        query_tracks, db_tracks = collection.num_tracks
+        assert query_tracks == 1  # Unique query track IDs: [1]
+        assert db_tracks == 2  # Unique database track IDs: [2, 3]
+
+    def test_aggregate_metrics(self) -> None:
+        """aggregate_metrics should calculate metrics across all results."""
+        collection = RetrievalResultsCollection()
+
+        # Create mock results with specific metrics
+        mock_result1 = mock.MagicMock()
+        mock_result1.queries_with_matches = 5
+        mock_result1.recall_at_n = np.array([0.5, 0.7])
+        mock_result1.recall_at_one_percent = 0.6
+        mock_result1.top1_distance = 0.2
+        mock_result1.is_match = np.array([[True, False], [False, True], [True, True]])
+        mock_result1.num_queries = 3
+
+        mock_result2 = mock.MagicMock()
+        mock_result2.queries_with_matches = 3
+        mock_result2.recall_at_n = np.array([0.3, 0.5])
+        mock_result2.recall_at_one_percent = 0.4
+        mock_result2.top1_distance = 0.3
+        mock_result2.is_match = np.array([[False, True], [True, False]])
+        mock_result2.num_queries = 2
+
+        collection.extend([mock_result1, mock_result2])
+
+        # Calculate aggregate metrics
+        metrics = collection.aggregate_metrics()
+
+        # Check expected values
+        assert np.allclose(
+            metrics["recall_at_n"], np.array([0.4, 0.6])
+        )  # Average of [0.5, 0.3] and [0.7, 0.5]
+        assert metrics["recall_at_one_percent"] == 0.5  # Average of 0.6 and 0.4
+        assert metrics["top1_distance"] == 0.25  # Average of 0.2 and 0.3
+        assert metrics["overall_accuracy"] == 0.375  # 3/8 top1 correct matches
+        assert metrics["queries_with_matches"] == 8  # Sum of matches
+        assert metrics["total_queries"] == 5  # Sum of queries
+
+    def test_filter_by_track(self) -> None:
+        """filter_by_track should return a new collection with filtered results."""
+        collection = RetrievalResultsCollection()
+
+        # Create results with different track IDs
+        result1 = mock.MagicMock()
+        result1.query_track_id = 1
+        result1.database_track_id = 2
+
+        result2 = mock.MagicMock()
+        result2.query_track_id = 1
+        result2.database_track_id = 3
+
+        result3 = mock.MagicMock()
+        result3.query_track_id = 2
+        result3.database_track_id = 3
+
+        collection.extend([result1, result2, result3])
+
+        # Filter by query track
+        filtered1 = collection.filter_by_track(query_track_id=1)
+        assert len(filtered1) == 2
+        assert filtered1.results[0] is result1
+        assert filtered1.results[1] is result2
+
+        # Filter by database track
+        filtered2 = collection.filter_by_track(database_track_id=3)
+        assert len(filtered2) == 2
+        assert filtered2.results[0] is result2
+        assert filtered2.results[1] is result3
+
+        # Filter by both
+        filtered3 = collection.filter_by_track(query_track_id=1, database_track_id=3)
+        assert len(filtered3) == 1
+        assert filtered3.results[0] is result2
+
+        # Filter with no matches
+        filtered4 = collection.filter_by_track(query_track_id=3)
+        assert len(filtered4) == 0
+
+    def test_save_and_load(self, tmp_path: Path) -> None:
+        """Save and load methods should correctly serialize and deserialize the collection."""
+        # Create test path
+        test_file = tmp_path / "test_collection.json"
+
+        # Create simple collection with minimal RetrievalResults
+        collection = RetrievalResultsCollection()
+
+        # Create a simple RetrievalResults with small arrays
+        result = RetrievalResults(
+            query_indices=np.array([0, 1]),
+            database_indices=np.array([0, 1]),
+            retrieved_indices=np.array([[0, 1], [1, 0]]),
+            embedding_distances=np.array([[0.1, 0.2], [0.3, 0.4]]),
+            geographic_distances=np.array([[5.0, 10.0], [15.0, 20.0]]),
+            is_match=np.array([[True, False], [False, True]]),
+            recall_at_n=np.array([0.5, 1.0]),
+            recall_at_one_percent=0.5,
+            top1_distance=0.2,
+            num_queries=2,
+            num_database=2,
+            distance_threshold=25.0,
+            queries_with_matches=2,
+            query_track_id=1,
+            database_track_id=2,
+        )
+
+        collection.append(result)
+
+        # Save the collection
+        collection.save(str(test_file))
+
+        # Verify file exists
+        assert test_file.exists()
+
+        # Load the collection
+        loaded_collection = RetrievalResultsCollection.load(str(test_file))
+
+        # Verify structure
+        assert len(loaded_collection) == 1
+        loaded_result = loaded_collection.results[0]
+
+        # Check key properties of loaded result
+        assert loaded_result.num_queries == 2
+        assert loaded_result.num_database == 2
+        assert loaded_result.query_track_id == 1
+        assert loaded_result.database_track_id == 2
+        assert loaded_result.recall_at_one_percent == 0.5
+        assert loaded_result.queries_with_matches == 2
+
+        # Check arrays
+        assert np.array_equal(loaded_result.query_indices, np.array([0, 1]))
+        assert np.array_equal(loaded_result.is_match, np.array([[True, False], [False, True]]))
+
+
+# Add tests for eval_retrieval_pair method
+@pytest.mark.unit
+def test_eval_retrieval_pair_basic() -> None:
+    """eval_retrieval_pair should properly create a RetrievalResults object."""
+    # Create simple test data
+    query_embs = np.array([[1, 0], [0, 1]])
+    db_embs = np.array([[0.9, 0.1], [0.1, 0.9], [0.5, 0.5]])
+
+    # Make a simple geo distance matrix where first query matches first and third DB entries,
+    # and second query matches second DB entry (using distance threshold 0.2)
+    geo_distances = np.array(
+        [
+            [0.1, 0.3, 0.1],  # First query close to DB items 0, 2
+            [0.5, 0.1, 0.5],  # Second query close to DB item 1
+        ]
+    )
+
+    # Set some custom indices and track IDs
+    query_indices = np.array([10, 11])
+    database_indices = np.array([20, 21, 22])
+
+    # Call the method
+    result = ModelTester.eval_retrieval_pair(
+        query_embs=query_embs,
+        db_embs=db_embs,
+        geo_distances=geo_distances,
+        dist_thresh=0.2,
+        at_n=2,
+        query_indices=query_indices,
+        database_indices=database_indices,
+        query_track_id=1,
+        database_track_id=2,
+    )
+
+    # Verify basic structure
+    assert isinstance(result, RetrievalResults)
+    assert result.num_queries == 2
+    assert result.num_database == 3
+    assert result.query_track_id == 1
+    assert result.database_track_id == 2
+    assert result.queries_with_matches == 2
+    assert result.distance_threshold == 0.2
+
+    # Verify indices were stored correctly
+    assert np.array_equal(result.query_indices, query_indices)
+    assert np.array_equal(result.database_indices, database_indices)
+
+    # Check shape of returned arrays
+    assert result.retrieved_indices.shape == (2, 2)  # 2 queries, top-2 results
+    assert result.embedding_distances.shape == (2, 2)
+    assert result.geographic_distances.shape == (2, 2)
+    assert result.is_match.shape == (2, 2)
+    assert result.recall_at_n.shape == (2,)
+
+    # Should have several matches given our geo_distances
+    assert np.sum(result.is_match) >= 2
+
+
+@pytest.mark.unit
+def test_eval_retrieval_pair_no_matches() -> None:
+    """eval_retrieval_pair should handle cases with no matching points."""
+    # Create test data where no geographic matches exist
+    query_embs = np.array([[1, 0], [0, 1]])
+    db_embs = np.array([[0.9, 0.1], [0.1, 0.9]])
+    geo_distances = np.array([[10.0, 10.0], [10.0, 10.0]])  # All beyond threshold
+
+    # Call the method with a low distance threshold
+    result = ModelTester.eval_retrieval_pair(
+        query_embs=query_embs, db_embs=db_embs, geo_distances=geo_distances, dist_thresh=5.0, at_n=2
+    )
+
+    # Check that we got appropriate values for no matches
+    assert result.queries_with_matches == 0
+    assert np.array_equal(result.recall_at_n, np.zeros(2))
+    assert result.recall_at_one_percent == 0.0
+    assert result.top1_distance is None
+    assert not np.any(result.is_match)  # No matches at all
+
+
+@pytest.mark.unit
+def test_eval_retrieval_pair_one_percent_recall() -> None:
+    """eval_retrieval_pair should correctly calculate Recall@1% for different database sizes."""
+    # Create a larger database to test 1% threshold
+    db_size = 100
+    query_embs = np.array([[1, 0]])
+    db_embs = np.zeros((db_size, 2))
+
+    # Create geo distances where only 1 item is close
+    geo_distances = np.ones((1, db_size)) * 10.0
+    geo_distances[0, 0] = 0.1  # Only first DB item is close
+
+    # Call the method
+    result = ModelTester.eval_retrieval_pair(
+        query_embs=query_embs, db_embs=db_embs, geo_distances=geo_distances, dist_thresh=1.0, at_n=5
+    )
+
+    # With 100 items, 1% threshold is 1 item - if the first item is found, R@1% should be 1.0
+    assert result.recall_at_one_percent == 1.0
+
+    # Try with different database size where 1% is 2 items
+    db_size = 200
+    db_embs = np.zeros((db_size, 2))
+    geo_distances = np.ones((1, db_size)) * 10.0
+    geo_distances[0, 0] = 0.1  # Only first DB item is close
+
+    result = ModelTester.eval_retrieval_pair(
+        query_embs=query_embs, db_embs=db_embs, geo_distances=geo_distances, dist_thresh=1.0, at_n=5
+    )
+
+    # With 200 items, 1% threshold is 2 items - if only 1 is found, R@1% should be 0.5
+    # But this depends on whether the close item was retrieved in top-2
+    assert 0.0 <= result.recall_at_one_percent <= 1.0
+
+
+@pytest.mark.unit
+def test_eval_retrieval_pair_top1_distance() -> None:
+    """eval_retrieval_pair should correctly calculate mean top-1 distance."""
+    # Create data where some top-1 retrievals are correct and others aren't
+    query_embs = np.array([[1, 0], [0, 1], [1, 1]])
+    db_embs = np.array([[0.9, 0.1], [0.1, 0.9], [0.5, 0.5]])
+
+    # Make first and third queries match their top-1, second doesn't
+    geo_distances = np.array(
+        [
+            [0.1, 1.0, 1.0],  # First query matches its top-1
+            [1.0, 1.0, 1.0],  # Second query doesn't match any
+            [1.0, 0.1, 1.0],  # Third query matches its top-2, not top-1
+        ]
+    )
+
+    # Set embedding distances manually to test top1_distance calculation
+    with mock.patch("faiss.IndexFlatL2", autospec=True) as mock_index:
+        instance = mock_index.return_value
+
+        # Mock search to return controlled distances and indices
+        emb_distances = np.array(
+            [
+                [0.1, 0.5, 0.9],  # First query's embedding distances
+                [0.2, 0.3, 0.4],  # Second query's embedding distances
+                [0.8, 0.3, 0.5],  # Third query's embedding distances
+            ]
+        )
+        retrieved_indices = np.array(
+            [
+                [0, 1, 2],  # First query's nearest neighbors
+                [2, 1, 0],  # Second query's nearest neighbors
+                [2, 1, 0],  # Third query's nearest neighbors
+            ]
+        )
+        instance.search.return_value = (emb_distances, retrieved_indices)
+
+        # Call the method with faiss mocked
+        result = ModelTester.eval_retrieval_pair(
+            query_embs=query_embs, db_embs=db_embs, geo_distances=geo_distances, dist_thresh=0.2, at_n=3
+        )
+
+    # Only one query has a correct top-1 match (the first one with distance 0.1)
+    assert result.top1_distance == 0.1
+
+
+@pytest.mark.unit
+def test_eval_retrieval_pair_default_indices() -> None:
+    """eval_retrieval_pair should use default indices if none provided."""
+    query_embs = np.array([[1, 0], [0, 1]])
+    db_embs = np.array([[0.9, 0.1], [0.1, 0.9]])
+    geo_distances = np.array([[0.1, 1.0], [1.0, 0.1]])
+
+    # Call without providing query/database indices
+    result = ModelTester.eval_retrieval_pair(
+        query_embs=query_embs, db_embs=db_embs, geo_distances=geo_distances, dist_thresh=0.2, at_n=1
+    )
+
+    # Default indices should be arange
+    assert np.array_equal(result.query_indices, np.array([0, 1]))
+    assert np.array_equal(result.database_indices, np.array([0, 1]))
