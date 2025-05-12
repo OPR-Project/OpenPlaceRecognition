@@ -51,6 +51,17 @@ class ModelTester:
         self.model = model
         self.dataloader = dataloader
         self.dataset_df = self.dataloader.dataset.dataset_df
+
+        # temporary workaround for working with datasets with frame sequences
+        # TODO: get rid of 'hasattr', check and use a more elegant solution
+        if (
+            hasattr(self.dataloader.dataset, "_sequence_indices")
+            and self.dataloader.dataset._sequence_indices is not None
+        ):
+            sequence_indices = [seq[0] for seq in self.dataloader.dataset._sequence_indices]
+            self.dataset_df = self.dataset_df.iloc[sequence_indices]
+            self.dataset_df = self.dataset_df.reset_index(drop=True)
+
         self.verbose = verbose
 
         self.dist_thresh = dist_thresh
