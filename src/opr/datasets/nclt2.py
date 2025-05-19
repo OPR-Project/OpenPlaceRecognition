@@ -212,10 +212,12 @@ class NCLTDatasetV2(Dataset):
         """
         seq_indices = self._sequence_indices[idx]
         frames = [self._get_single_frame(i) for i in seq_indices]
-        data = {}
+        data = {"idx": torch.tensor(idx, dtype=torch.int)}
         for key in frames[0]:
             if key == "utm":
                 data[key] = frames[-1]["utm"]
+            elif key == "idx":
+                continue
             else:
                 data[key] = torch.stack([frame[key] for frame in frames])
         return data
