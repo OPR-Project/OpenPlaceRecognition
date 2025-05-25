@@ -622,7 +622,9 @@ class ModelTester:
         db_len = db_embs.shape[0]
         query_len = query_embs.shape[0]
         orig_at_n = at_n
-        one_percent_threshold = max(1, int(np.ceil(db_len * 0.01)))
+        # Use original calculation method for backward compatibility
+        # TODO: think which way is more correct - rounding or truncating
+        one_percent_threshold = max(int(round(db_len / 100.0)), 1)
         at_n = max(at_n, one_percent_threshold)
 
         # Use default indices if not provided
@@ -632,7 +634,7 @@ class ModelTester:
             database_indices = np.arange(db_len)
 
         # Geographic distance binary mask - indicates true positives
-        positives_mask = geo_distances < dist_thresh
+        positives_mask = geo_distances <= dist_thresh
         queries_with_matches = np.sum(np.any(positives_mask, axis=1))
 
         # Get nearest neighbors using embedding distances (not geographic)
