@@ -28,7 +28,7 @@ def get_recalls(
     at_n: int = 25,
     aggregation: str = "max",
 ) -> Tuple[np.ndarray, float, Optional[float]]:
-    """Calculate Recall@N, Recall@1% distance for the given query and db embeddings.
+    """Calculate Recall@N, Recall@1% for the given query and db embeddings.
 
     Args:
         query_indices (List[int]): List of query indices.
@@ -48,9 +48,7 @@ def get_recalls(
         ValueError: If the top-k format is invalid.
 
     Returns:
-        Tuple[np.ndarray, float:
-            - Array of Recall@N values for N from 1 to `at_n`.
-            - Recall@1% value.
+        Tuple[np.ndarray, float]: (Recall@N, Recall@1%).
     """
     positives_mask = dist_matrix <= dist_thresh
     query_matches = positives_mask.sum(axis=1) > 0
@@ -272,8 +270,6 @@ def test(
             at_n=at_n,
             dist_thresh=distance_threshold,
             aggregation=aggregation,
-            query_timestamps=query_timestamps,
-            db_timestamps=db_timestamps,
         )
         
         end = time.perf_counter()

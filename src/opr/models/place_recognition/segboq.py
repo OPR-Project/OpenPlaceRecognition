@@ -1,5 +1,8 @@
 import torch
 from torch import nn
+import numpy as np
+import os
+import cv2
 from opr.modules.feature_extractors.dinov2 import ViTBaseFeatureExtractor
 from opr.modules.feature_extractors.dinov2 import DINO_V2_MODELS, DINO_FACETS, BOQ_MODELS
 from typing import Union, Dict, List
@@ -86,16 +89,10 @@ class SegBoQ(nn.Module):
 
                 selected_vertices = self._greedy_sparse_subgraph(objects_graph, self.segments_limit)
 
-                # Compute the power of the graph to find connected components
-                n = bounding_boxes.shape[0]
-                graph_power = torch.eye(n, n, device=self.device, dtype=torch.float32)
-                graph = torch.eye(n, n, device=self.device, dtype=torch.float32)
-                for i in range(self.segments_radius):
-                    graph_power = torch.matmul(graph_power, objects_graph)
-                    graph += graph_power
-                graph = (graph > 0).int()
+                graph = self._create_segments_graph(objects_graph)
                 
                 segments_bounding_boxes = self._calculate_segment_bounding_boxes(graph, bounding_boxes, selected_vertices)
+
                 segment_images = []
                 image = batch[f"images_{key[15:]}"]
                 if self.use_whole_image:
@@ -169,6 +166,28 @@ class SegBoQ(nn.Module):
                     graph[simplex[j], simplex[i]] = 1
         
         return graph
+
+    
+    def _create_segments_graph(self, objects_graph: Tensor) -> Tensor:
+        """
+        Create a graph of the segments.
+
+        Args:
+            objects_graph (Tensor): Adjacency matrix representing the graph of objects.
+
+        Returns:
+            Tensor: Adjacency matrix representing the graph of segments.
+        """
+        # Compute the power of the graph to find connected components
+        n = objects_graph.shape[0]
+        graph_power = torch.eye(n, n, device=self.device, dtype=torch.float32)
+        graph = torch.eye(n, n, device=self.device, dtype=torch.float32)
+        for i in range(self.segments_radius):
+            graph_power = torch.matmul(graph_power, objects_graph)
+            graph += graph_power
+        graph = (graph > 0).int()
+
+        return graph
     
 
     def _calculate_segment_bounding_boxes(self, graph: Tensor, bounding_boxes: Tensor, selected_vertices: List[int]) -> List[Tensor]:
@@ -205,7 +224,7 @@ class SegBoQ(nn.Module):
         such that the induced subgraph is as sparse as possible.
         
         Parameters:
-            adj_matrix (np.ndarray): n x n adjacency matrix (0-1, symmetric).
+            adj_matrix (Tensor): n x n adjacency matrix (0-1, symmetric).
             k (int): number of vertices to select.
         
         Returns:
@@ -234,3 +253,49 @@ class SegBoQ(nn.Module):
             remaining[best_vertex] = False
 
         return selected
+
+
+    def _visualize_objects_graph(self, save_dir: str, data: Dict[str, Union[Tensor, List[Tensor]]]):
+        """
+        Forward pass of the SegBoQ model.
+
+        Args:
+            save_dir (str): Path to the directory for saving.
+            data (Dict[str, Union[Tensor, List[Tensor]]]): Data.
+        """
+    
+        segments_features: List[List[Tensor]] = []
+        for key in data.keys():
+            if not key.startswith("bounding_box_"):
+                continue
+            bounding_boxes = data[key].to(self.device)
+
+            image = data[f"image_{key[13:]}"]
+
+            centroids = self._compute_centroids(bounding_boxes)
+
+            objects_graph = self._create_objects_graph(bounding_boxes)
+
+            graph = self._create_segments_graph(objects_graph)
+
+            image_with_boxes = image.numpy().astype(np.uint8)
+            for box in bounding_boxes:
+                x_min, y_min, x_max, y_max = map(int, box)
+                cv2.rectangle(image_with_boxes, (x_min, y_min), (x_max, y_max), color=(0, 255, 0), thickness=2)
+
+            # Draw centroids
+            for (x, y) in centroids:
+                cv2.circle(image_with_boxes, (int(x), int(y)), radius=4, color=(255, 0, 0), thickness=-1)
+
+            # Draw edges from adjacency matrix
+            num_nodes = len(centroids)
+            for i in range(num_nodes):
+                for j in range(i + 1, num_nodes):
+                    if graph[i, j]:
+                        pt1 = tuple(map(int, centroids[i]))
+                        pt2 = tuple(map(int, centroids[j]))
+                        cv2.line(image_with_boxes, pt1, pt2, color=(255, 255, 255), thickness=2)
+
+            save_path = os.path.join(save_dir, f"image_with_boxes_graph_{data['timestamp']}.png")
+            print(save_path)
+            cv2.imwrite(save_path, cv2.cvtColor(image_with_boxes, cv2.COLOR_RGB2BGR))
