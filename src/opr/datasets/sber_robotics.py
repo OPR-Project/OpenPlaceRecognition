@@ -150,11 +150,14 @@ class SberRobotics(Dataset):
                     - "pose": 6DOF pose tensor
                     - "idx": Index of the item
                     - "depth_image_front_cam": Depth image tensor (if load_depth_images is True)
+                    - "bounding_box_front_cam{id}": Bounding boxes tensor (if load_bboxes is True)
         """
 
         data: Dict[str, Union[int, Tensor]] = {"idx": torch.tensor(idx)}
 
         data["pose"] = self._pose_to_6dof(idx)
+
+        data["timestamp"] = torch.tensor(self.timestamps[idx])
 
         data[f"image_front_cam{self.cam_id}"] = self._load_image(idx, self.cam_id, transform=(self.image_transform is not None))
 
@@ -283,5 +286,7 @@ class SberRobotics(Dataset):
                 batch["depth_images_front_cam"] = torch.stack([data[key] for data in data_list], dim=0)
             elif key.startswith("bounding_box"):
                 batch[f"bounding_boxes{key[12:]}"] = [data[key] for data in data_list]
+            elif key == "timestamp":
+                batch["timestamps"] = torch.stack([data[key] for data in data_list])
 
         return batch

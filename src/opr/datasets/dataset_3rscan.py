@@ -42,7 +42,8 @@ class Dataset3RScan(Dataset):
         min_scans_cnt: int = 2,
         picture_limit_per_scan: int = 50,
         load_depth_images: bool = False,
-        depth_images_resize: Tuple[int, int] = (322, 322)
+        depth_images_resize: Tuple[int, int] = (322, 322),
+        load_bounding_boxes: bool = False
     ) -> None:
         """3RScan dataset implementation.
         
@@ -54,6 +55,7 @@ class Dataset3RScan(Dataset):
             picture_limit_per_scan (int): Number of pictures to load from each scan. Defaults to 50.
             load_depth_images (bool): Whether to load depth images. Depth in mm. Defaults to False.
             depth_images_resize (Tuple[int, int]): Resize dimensions for depth images. Defaults to (322, 322).
+            load_bounding_boxes (bool): Whether to load bounding boxes. Defaults to False.
 
         Raises:
             FileNotFoundError: If dataset_root doesn't exist.
@@ -68,6 +70,7 @@ class Dataset3RScan(Dataset):
 
         self.load_depth_images = load_depth_images
         self.depth_images_resize = depth_images_resize
+        self.load_bounding_boxes = load_bounding_boxes
 
         scene_folder = dataset_root / "data/3RScan"
 
@@ -118,9 +121,9 @@ class Dataset3RScan(Dataset):
             if not scene_id in scene_ids:
                 continue
 
-            files_cnt = len(list(scene_path.glob("sequence/*.jpg")))
-            for i in range(0, files_cnt, max((files_cnt + picture_limit_per_scan - 1) // picture_limit_per_scan, 1)):
-                self.frame_ids.append((scene_id, i))
+            jpg_files = sorted(list(path.name for path in scene_path.glob("sequence/*.jpg")))
+            for jpg_file in jpg_files:
+                self.frame_ids.append((scene_id, int(jpg_file[6:12])))
 
         self.image_transform = image_transform
 
@@ -146,7 +149,10 @@ class Dataset3RScan(Dataset):
 
         data["pose"] = self._pose_to_6dof(idx)
 
-        data["image_front_cam"] = self._load_image(idx, transform=True)
+        data["image_front_cam"] = self._load_image(idx)
+
+        if self.load_bounding_boxes:
+            data["bounding_box_front_cam"] = self._load_bbox(idx)
 
         if self.load_depth_images:
             data["depth_image_front_cam"] = self._load_depth_image(idx)
@@ -226,13 +232,43 @@ class Dataset3RScan(Dataset):
         scene_id, frame_id = self.frame_ids[idx]
         scene_path = self.scenes_folder / scene_id
         return scene_path / f"sequence/frame-{frame_id:06d}.depth.pgm"
+    
+
+    def _get_frame_bbox_path(self, idx: int) -> Path:
+        """ Gets the path to the frame image.
+
+            Args:
+                idx (int): Frame index.
+            
+            Returns:
+                Path: Path to the frame bounding box.
+        """
+
+        scene_id, frame_id = self.frame_ids[idx]
+        scene_path = self.scenes_folder / scene_id
+        return scene_path / f"sequence/frame-{frame_id:06d}.bboxes.txt"
 
 
-    def _load_image(self, idx: int, transform: bool = True) -> Tensor:
+    def _load_bbox(self, idx: int) -> Tensor:
         """Load an image from the dataset.
         Args:
             idx (int): Frame index.
-            transform (bool): Whether to apply the image transform. Defaults to True.
+
+        Returns:
+            Tensor: Loaded image tensor.
+        """
+
+        with open(self._get_frame_bbox_path(idx), "r") as f:
+            bboxes = [Tensor([float(coord) for coord in bbox.strip().split()]) for bbox in f.readlines()]
+            bboxes = torch.stack(bboxes)
+
+        return bboxes
+
+
+    def _load_image(self, idx: int) -> Tensor:
+        """Load an image from the dataset.
+        Args:
+            idx (int): Frame index.
 
         Returns:
             Tensor: Loaded image tensor.
@@ -240,8 +276,10 @@ class Dataset3RScan(Dataset):
 
         im = cv2.imread(str(self._get_frame_image_path(idx)), cv2.IMREAD_UNCHANGED)
         im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
-        if transform:
+        if self.image_transform is not None:
             im = self.image_transform(im)
+        else:
+            im = torch.from_numpy(im).float()
         return im
 
 
@@ -330,6 +368,8 @@ class Dataset3RScan(Dataset):
                 batch["images_front_cam"] = torch.stack([data[key] for data in data_list], dim=0)
             elif key == "depth_image_front_cam":
                 batch["depth_images_front_cam"] = torch.stack([data[key] for data in data_list], dim=0)
+            elif key == "bounding_box_front_cam":
+                batch["bounding_boxes_front_cam"] = [data[key] for data in data_list]
 
         return batch
 

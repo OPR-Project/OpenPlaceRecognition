@@ -71,6 +71,8 @@ class NCLTDatasetV2(Dataset):
             raise FileNotFoundError(f"CSV file {csv_filepath} does not exist.")
 
         self._dataset_df = self._read_dataset_df(csv_filepath)
+        if self._subset == "test":
+            self._dataset_df["in_query"] = True
 
         self._data_to_load = (data_to_load,) if isinstance(data_to_load, str) else data_to_load
         if not set(self._data_to_load).issubset(self._valid_data):
@@ -191,6 +193,25 @@ class NCLTDatasetV2(Dataset):
                 image_ts = int(row["frame_timestamp"])
                 im_filepath = track_dir / self._images_dirname / f"{cam_name}" / f"{image_ts}.png"
                 data[data_source] = self._load_image(im_filepath)
+
+
+            if data_source.startswith("bounding_box_"):
+                cam_name = data_source[13:]  # Remove "bounding_box_" prefix.
+                bbox_ts = int(row["frame_timestamp"])
+                bbox_filepath = track_dir / "bboxes" / f"{cam_name}" / f"{bbox_ts}.bboxes.txt"
+                if not bbox_filepath.exists():
+                    data[f"bounding_box_{cam_name}"] = torch.empty((0, 4), dtype=torch.float32)
+                    continue
+                with open(bbox_filepath, "r") as f:
+                    bboxes = [Tensor([float(coord) for coord in bbox.strip().split()]) for bbox in f.readlines()]
+                    for bbox in bboxes:
+                        bbox[0], bbox[1], bbox[2], bbox[3] = min(bbox[0], bbox[2]), min(bbox[1], bbox[3]), max(bbox[0], bbox[2]), max(bbox[1], bbox[3])
+                    if len(bboxes) != 0:
+                        bboxes = torch.stack(bboxes)
+                    else:
+                        bboxes = torch.empty((0, 4), dtype=torch.float32)
+                data[f"bounding_box_{cam_name}"] = bboxes
+
             elif data_source == "pointcloud_lidar":
                 pc_filepath = track_dir / self._pointclouds_dirname / f"{row['frame_timestamp']}.bin"
                 pointcloud = self._load_pc(pc_filepath)
@@ -263,8 +284,8 @@ class NCLTDatasetV2(Dataset):
         if img is None:
             raise FileNotFoundError(f"Image file {filepath} could not be loaded.")
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        transformed = self._image_transform(image=img)
-        return transformed["image"]
+        transformed = self._image_transform(img)
+        return transformed
 
     def _collate_pc_minkowski(self, data_list: list[dict[str, Tensor]]) -> tuple[Tensor, Tensor]:
         raise NotImplementedError("MinkowskiEngine collate is not implemented yet.")
@@ -284,6 +305,8 @@ class NCLTDatasetV2(Dataset):
                 result["utms"] = torch.stack([e["utm"] for e in data_list], dim=0)
             elif data_key.startswith("image_"):
                 result[f"images_{data_key[6:]}"] = torch.stack([e[data_key] for e in data_list])
+            elif data_key.startswith("bounding_box_"):
+                result[f"bounding_boxes{data_key[12:]}"] = [data[data_key] for data in data_list]
             elif data_key == "pointcloud_lidar_coords":
                 if self._use_minkowski:
                     (

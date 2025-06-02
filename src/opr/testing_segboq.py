@@ -28,18 +28,29 @@ def get_recalls(
     at_n: int = 25,
     aggregation: str = "max",
 ) -> Tuple[np.ndarray, float, Optional[float]]:
-    """Calculate Recall@N, Recall@1% and mean top-1 distance for the given query and db embeddings.
+    """Calculate Recall@N, Recall@1% distance for the given query and db embeddings.
 
     Args:
+        query_indices (List[int]): List of query indices.
         query_embs (np.ndarray): Query embeddings array.
+        query_segment_to_index (List[int]): Mapping from query segment indices to image indices.
+        db_indices (List[int]): List of database indices.
         db_embs (np.ndarray): Database embeddings array.
+        db_segment_to_index (List[int]): Mapping from database segment indices to image indices.
         dist_matrix (np.ndarray): Distance matrix of shape (query_len, db_len).
         dist_thresh (float): Distance threshold for positive match. Defaults to 25.0.
         at_n (int): The maximum N value for the Recall@N metric. Defaults to 25.
+        aggregation (str): Aggregation method for segment similarities. Options: "max", "sum", "mean", "topk", "softmax". Defaults to "max".
+
+    Raises:
+        ValueError: If `at_n` is not greater than the one percent threshold.
+        ValueError: If the aggregation method is not recognized.
+        ValueError: If the top-k format is invalid.
 
     Returns:
-        Tuple[np.ndarray, float, Optional[float]]: (Recall@N, Recall@1%, mean top-1 distance).
-            The 'mean top-1 distance' metric may be `None` if Recall@1 = 0.
+        Tuple[np.ndarray, float:
+            - Array of Recall@N values for N from 1 to `at_n`.
+            - Recall@1% value.
     """
     positives_mask = dist_matrix <= dist_thresh
     query_matches = positives_mask.sum(axis=1) > 0
@@ -48,7 +59,7 @@ def get_recalls(
 
     recall_at_n = np.zeros((at_n,), dtype=float)
 
-    top1_distances, errors_query, errors_db, gt_db, errors_dists = [], [], [], [], []
+    errors_query, errors_db, gt_db = [], [], []
 
     one_percent_threshold = max(int(round(len(db_indices) / 100.0)), 1)
     if one_percent_threshold >= at_n:
@@ -118,12 +129,7 @@ def get_recalls(
 
     for q_i, top_dbs in enumerate(top_n_sorted):
         match_mask = positives_mask[q_i][top_dbs]
-        if match_mask[0]:
-            #top1_distances.append(distances[query_i][0])
-            top1_distances.append(0)
-        elif query_matches[q_i]:
-            #errors_dists.append(distances[query_i][0])
-            errors_dists.append(0)
+        if not match_mask[0] and query_matches[q_i]:
             errors_query.append(q_i)
             errors_db.append(top_dbs[0])
             gt_db.append(dist_matrix[q_i].argmin())
@@ -131,12 +137,10 @@ def get_recalls(
 
     recall_at_n = recall_at_n / queries_with_matches
     one_percent_recall = recall_at_n[one_percent_threshold - 1]
-    if len(top1_distances) > 0:
-        mean_top1_distance = np.mean(top1_distances)
-    else:
-        mean_top1_distance = None
 
-    return recall_at_n, one_percent_recall, mean_top1_distance
+    return recall_at_n, one_percent_recall
+
+
 
 
 def test(
@@ -146,18 +150,19 @@ def test(
     device: Union[str, int, torch.device] = "cuda",
     aggregation: str = "max",
     at_n: int = 10,
-) -> Tuple[np.ndarray, float, float]:
-    """Evaluates the model on the test set.
+) -> Tuple[np.ndarray, float]:
+    """Evaluates the SegBoq model on the test set.
 
     Args:
         model (nn.Module): The model to test.
         dataloader (DataLoader): The data loader for the test set.
         distance_threshold (float): The distance threshold for a correct match. Defaults to 25.0.
         device (Union[str, int, torch.device]): Device ("cpu" or "cuda"). Defaults to "cuda".
+        aggregation (str): Aggregation method for segment similarities. Options: "max", "sum", "mean", "topk", "softmax". Defaults to "max".
+        at_n (int): The maximum N value for the Recall@N metric. Defaults to 10.
 
     Returns:
-        Tuple[np.ndarray, float, float]: Array of AverageRecall@N (N from 1 to 25), AverageRecall@1%
-            and mean top-1 distance.
+        Tuple[np.ndarray, float, float]: Array of AverageRecall@N (N from 1 to 25), AverageRecall@1%.
 
     Raises:
         ValueError: If the required coordinate columns are not found in the dataset.
@@ -215,11 +220,13 @@ def test(
         coords_columns = ["northing", "easting"]
     elif "x" in test_df.columns and "y" in test_df.columns:
         coords_columns = ["x", "y"]
+    elif "tx" in test_df.columns and "ty" in test_df.columns and "tz" in test_df.columns:
+        coords_columns = ["tx", "ty", "tz"]
     elif "tx" in test_df.columns and "ty" in test_df.columns:
         coords_columns = ["tx", "ty"]
     else:
         raise ValueError(
-            "Required coordinate columns ('northing'/'easting', 'x'/'y', or 'tx'/'ty') not found in the dataset"
+            "Required coordinate columns ('northing'/'easting', 'x'/'y', 'tx'/'ty' or 'tx'/'ty'/'tz') not found in the dataset"
         )
 
     utms = torch.tensor(test_df[coords_columns].to_numpy())
@@ -247,26 +254,33 @@ def test(
         database_embs = test_embeddings[database_segment_indices]
 
         start = time.perf_counter()
+        query_timestamps = test_df["timestamp"].to_dict()
+        db_timestamps = query_timestamps  # Same DataFrame
 
         distances = dist_utms[query][:, database]
         (
             recalls_at_n[i, j],
-            recalls_at_one_percent[i, j],
-            top1_distance,
-        ) = get_recalls(query, query_embs, query_segment_to_image, database, database_embs, database_segment_to_image,
-                        distances, at_n=at_n, dist_thresh=distance_threshold, aggregation=aggregation)
+            recalls_at_one_percent[i, j]
+        ) = get_recalls(
+            query,
+            query_embs,
+            query_segment_to_image,
+            database,
+            database_embs,
+            database_segment_to_image,
+            distances,
+            at_n=at_n,
+            dist_thresh=distance_threshold,
+            aggregation=aggregation,
+            query_timestamps=query_timestamps,
+            db_timestamps=db_timestamps,
+        )
         
         end = time.perf_counter()
-
         recalls_time += end - start
 
-        if top1_distance:
-            count_r_at_1 += 1
-            top1_distances[i, j] = top1_distance
-
-    print(f"Elapsed time for recalls: {recalls_time / 2:.4f} seconds")
+    print(f"Elapsed time for recalls per track: {recalls_time / len(ij_permutations):.4f} seconds")
     mean_recall_at_n = recalls_at_n.sum(axis=(0, 1)) / len(ij_permutations)
     mean_recall_at_one_percent = recalls_at_one_percent.sum(axis=(0, 1)).squeeze() / len(ij_permutations)
-    mean_top1_distance = top1_distances.sum(axis=(0, 1)).squeeze() / len(ij_permutations)
 
-    return mean_recall_at_n, mean_recall_at_one_percent, mean_top1_distance
+    return mean_recall_at_n, mean_recall_at_one_percent

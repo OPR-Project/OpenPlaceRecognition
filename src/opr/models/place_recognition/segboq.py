@@ -8,6 +8,7 @@ from scipy.spatial import Delaunay
 from opr.datasets.augmentations import DefaultImageTransform
 from opr.utils import parse_device
 
+
 class SegBoQ(nn.Module):
 
     feature_extractor: ViTBaseFeatureExtractor
@@ -25,20 +26,20 @@ class SegBoQ(nn.Module):
             feature_extractor_use_cls=False,
             feature_extractor_norm_descs=True,
             device: str = "cpu",
-            segments_radius: int = 2,
+            segments_radius: int = 1,
             segments_limit: int = 10,
             segments_image_transform = DefaultImageTransform(resize=(322, 322), train=False),
             use_whole_image: bool = False
         ) -> None:
         """
-        Initialize the image segment feature extraction module.
+        Initialize the SegBoQ model.
 
         Args:
-            feature_extractor_model (str): Name of the vision transformer model to use.
-            feature_extractor_layer (int): Layer index from which to extract features.
-            feature_extractor_facet (DINO_FACETS, optional): Feature facet to extract (e.g., 'token' or 'block'). Defaults to "token".
-            feature_extractor_use_cls (bool, optional): Whether to use the [CLS] token as a feature. Defaults to False.
-            feature_extractor_norm_descs (bool, optional): Whether to normalize feature descriptors. Defaults to True.
+            feature_extractor_model (str): Name of the vision transformer model to use for feature extractor.
+            feature_extractor_layer (int): Layer index from which to extract features for feature extractor.
+            feature_extractor_facet (DINO_FACETS, optional): Feature facet to extract (e.g., 'token' or 'block') for feature extractor. Defaults to "token".
+            feature_extractor_use_cls (bool, optional): Whether to use the [CLS] token as a feature for feature extractor. Defaults to False.
+            feature_extractor_norm_descs (bool, optional): Whether to normalize feature descriptors for feature extractor. Defaults to True.
             device (str, optional): Device to run computations on (e.g., "cpu" or "cuda"). Defaults to "cpu".
             segments_radius (int, optional): Radius used to define the image segments. Defaults to 2.
             segments_limit (int, optional): Maximum number of segments to extract. Defaults to 10.
@@ -65,7 +66,17 @@ class SegBoQ(nn.Module):
         self.use_whole_image = use_whole_image
 
 
-    def forward(self, batch: Dict[str, Union[Tensor, List[Tensor]]]) -> Dict[str, List[Tensor]]:  # TODO make normal batch processing
+    def forward(self, batch: Dict[str, Union[Tensor, List[Tensor]]]) -> Dict[str, List[Tensor]]: # TODO make normal batch processing
+        """
+        Forward pass of the SegBoQ model.
+
+        Args:
+            batch (Dict[str, Union[Tensor, List[Tensor]]]): Input batch.
+
+        Returns:
+            Dict[str, List[Tensor]]: Dictionary containing the final descriptor for each segment.
+        """
+
         segments_features: List[List[Tensor]] = []
         for key in batch.keys():
             if not key.startswith("bounding_boxes_"):
@@ -101,6 +112,7 @@ class SegBoQ(nn.Module):
                 segment_features = self.feature_extractor(torch.stack(segment_images))
                 segments_features.append(segment_features)
 
+
         out_dict: Dict[str, List[List[Tensor]]] = {"final_descriptor": segments_features}
         return out_dict
 
@@ -117,6 +129,7 @@ class SegBoQ(nn.Module):
         Returns:
             Tensor: Tensor of shape (N, 2) where each row represents the centroid [x, y].
         """
+
         # Split the tensor into min and max coordinates
         min_coords = bounding_boxes[:, :2]  # (N, 2) -> [x_min, y_min]
         max_coords = bounding_boxes[:, 2:]  # (N, 2) -> [x_max, y_max]
@@ -138,14 +151,15 @@ class SegBoQ(nn.Module):
         Returns:
             Tensor: Adjacency matrix representing the graph.
         """
+
         n = bounding_boxes.shape[0]
         centroids = self._compute_centroids(bounding_boxes)
-        if n < 4:
-            return torch.ones(n, n, device=self.device, dtype=torch.float32)
 
-        if torch.all(centroids[:, 0] == centroids[0, 0]) or torch.all(centroids[:, 1] == centroids[0, 1]):
-            return torch.ones(n, n, device=self.device, dtype=torch.float32)
-        tri = Delaunay(centroids.cpu().numpy())
+        try:
+            tri = Delaunay(centroids.cpu().numpy())
+        except Exception as e:
+            return torch.eye(n, n, device=self.device, dtype=torch.float32)
+
         # Create a graph adjacency matrix
         graph = torch.eye(n, n, device=self.device, dtype=torch.float32)
         for simplex in tri.simplices:

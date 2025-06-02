@@ -3,15 +3,16 @@ import itertools
 from typing import Optional, Tuple, Union
 
 import numpy as np
+import faiss
 import torch
 from pytorch_metric_learning.distances import LpDistance
-from sklearn.neighbors import KDTree
 from torch import nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from opr.utils import parse_device
 
+import time
 
 def get_recalls(
     query_embs: np.ndarray,
@@ -33,7 +34,6 @@ def get_recalls(
         Tuple[np.ndarray, float, Optional[float]]: (Recall@N, Recall@1%, mean top-1 distance).
             The 'mean top-1 distance' metric may be `None` if Recall@1 = 0.
     """
-    database_tree = KDTree(db_embs)
 
     positives_mask = dist_matrix <= dist_thresh
     queries_with_matches = int((positives_mask.sum(axis=1) > 0).sum())
@@ -51,7 +51,9 @@ def get_recalls(
     if one_percent_threshold >= at_n:
         raise ValueError(f"at_n is required to be greater than one percent threshold: {one_percent_threshold}")
 
-    distances, indices = database_tree.query(query_embs, k=at_n)
+    index = faiss.IndexFlatL2(db_embs.shape[1])
+    index.add(db_embs)
+    distances, indices = index.search(query_embs, k=at_n)
 
     for query_i, closest_inds in enumerate(indices):
         query_gt_matches_mask = positives_mask[query_i][closest_inds]
@@ -96,6 +98,7 @@ def test(
         ValueError: If the required coordinate columns are not found in the dataset.
     """
     device = parse_device(device)
+    start = time.perf_counter()
     with torch.no_grad():
         embeddings_list = []
         for batch in tqdm(dataloader, desc="Calculating test set descriptors", leave=False):
@@ -105,6 +108,10 @@ def test(
             embeddings_list.append(embeddings.cpu().numpy())
             torch.cuda.empty_cache()
         test_embeddings = np.vstack(embeddings_list)
+
+    end = time.perf_counter()
+
+    print(f"Elapsed time for embeddings: {end - start:.4f} seconds")
 
     test_df = dataloader.dataset.dataset_df
 
@@ -120,11 +127,13 @@ def test(
         coords_columns = ["northing", "easting"]
     elif "x" in test_df.columns and "y" in test_df.columns:
         coords_columns = ["x", "y"]
+    elif "tx" in test_df.columns and "ty" in test_df.columns and "tz" in test_df.columns:
+        coords_columns = ["tx", "ty", "tz"]
     elif "tx" in test_df.columns and "ty" in test_df.columns:
         coords_columns = ["tx", "ty"]
     else:
         raise ValueError(
-            "Required coordinate columns ('northing'/'easting', 'x'/'y', or 'tx'/'ty') not found in the dataset"
+            "Required coordinate columns ('northing'/'easting', 'x'/'y', 'tx'/'ty' or 'tx'/'ty'/'tz') not found in the dataset"
         )
 
     utms = torch.tensor(test_df[coords_columns].to_numpy())
@@ -138,11 +147,15 @@ def test(
     ij_permutations = list(itertools.permutations(range(len(queries)), 2))
     count_r_at_1 = 0
 
+    recalls_time = 0.0
+
     for i, j in tqdm(ij_permutations, desc="Calculating metrics", leave=False):
         query = queries[i]
         database = databases[j]
         query_embs = test_embeddings[query]
         database_embs = test_embeddings[database]
+
+        start = time.perf_counter()
 
         distances = dist_utms[query][:, database]
         (
@@ -151,9 +164,15 @@ def test(
             top1_distance,
         ) = get_recalls(query_embs, database_embs, distances, at_n=n, dist_thresh=distance_threshold)
 
+        end = time.perf_counter()
+
+        recalls_time += end - start
+
         if top1_distance:
             count_r_at_1 += 1
             top1_distances[i, j] = top1_distance
+
+    print(f"Elapsed time for recalls: {recalls_time / 2:.4f} seconds")
     mean_recall_at_n = recalls_at_n.sum(axis=(0, 1)) / len(ij_permutations)
     mean_recall_at_one_percent = recalls_at_one_percent.sum(axis=(0, 1)).squeeze() / len(ij_permutations)
     mean_top1_distance = top1_distances.sum(axis=(0, 1)).squeeze() / len(ij_permutations)
