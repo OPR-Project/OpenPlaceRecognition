@@ -163,7 +163,7 @@ class Feature2DGlobalRegistrationPipeline:
         print('Reg score from fitness:', good_match / (good_match + bad_match) * iou ** 0.25)
         return good_match / (good_match + bad_match) * iou ** 0.25#, ref_wall_mask, ref_floor_mask, cand_wall_mask, cand_floor_mask
 
-    def infer(self, ref_grid: Tensor, cand_grid: Tensor, save_dir: Union[str, None] = None) -> Tuple[Union[np.ndarray, None], Union[float, None]]:
+    def infer(self, ref_grid: Tensor, cand_grid: Tensor, save_dir: Union[str, None] = None, verbose: bool = False) -> Tuple[Union[np.ndarray, None], Union[float, None]]:
         # Convert clouds from tensors to numpy arrays
         ref_grid_numpy = ref_grid.cpu().numpy()
         cand_grid_numpy = cand_grid.cpu().numpy()
@@ -203,7 +203,8 @@ class Feature2DGlobalRegistrationPipeline:
             # Add geometry constraints
             distance_coef = 1.0
             if len(kp_ref) == 0 or len(kp_cand) == 0:
-                #print('                No kp!')
+                if verbose:
+                    print('                No kp!')
                 self.cnt += 1
                 return None, 0
             xy_ref = np.array([kp.pt for kp in kp_ref]) * distance_coef
@@ -219,7 +220,8 @@ class Feature2DGlobalRegistrationPipeline:
             index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
             flann = cv2.FlannBasedMatcher(index_params)
             if des_ref is None or des_cand is None or len(des_ref) < 2 or len(des_cand) < 2:
-                #print('Too few keypoints! Unable to match')
+                if verbose:
+                    print('Too few keypoints! Unable to match')
                 self.cnt += 1
                 return None, 0
             matches = flann.knnMatch(des_ref, des_cand, k=2)
@@ -233,7 +235,8 @@ class Feature2DGlobalRegistrationPipeline:
             search_params = dict(checks=50)   # or pass empty dictionary
             flann = cv2.FlannBasedMatcher(index_params,search_params)
             if des_ref is None or des_cand is None or len(des_ref) < 2 or len(des_cand) < 2:
-                #print('Too few keypoints! Unable to match')
+                if verbose:
+                    print('Too few keypoints! Unable to match')
                 self.cnt += 1
                 return None, 0
             matches = flann.knnMatch(des_ref, des_cand, k=2)
@@ -251,7 +254,7 @@ class Feature2DGlobalRegistrationPipeline:
         else:
             print('Incorrect detector type')
             return None, None
-        if self.save_dir is not None and 'inline' in self.save_dir:
+        if verbose:
             print('Found {} matches'.format(len(matches)))
         
         # Get 2d point sets from matched features
@@ -263,7 +266,7 @@ class Feature2DGlobalRegistrationPipeline:
         for i,(m,n) in enumerate(matches):
             if m.distance < matching_threshold * n.distance:
                 good.append(m)
-        if self.save_dir is not None and 'inline' in self.save_dir:
+        if verbose:
             print('{} of them are good'.format(len(good)))
         src_pts = np.float32([ kp_ref[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
         dst_pts = np.float32([ kp_cand[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
@@ -271,7 +274,7 @@ class Feature2DGlobalRegistrationPipeline:
         # Remove outliers
         for i in range(len(self.outlier_thresholds)):
             if len(src_pts) < self.min_matches:
-                if self.save_dir is not None and 'inline' in self.save_dir:
+                if verbose:
                     print('Unable to find transform: too few matches!')
                 self.cnt += 1
                 return None, 0
@@ -285,7 +288,7 @@ class Feature2DGlobalRegistrationPipeline:
             #     print('Matching error:', matching_error)
             if matching_error.max() < self.outlier_thresholds[-1]:
                 break
-            if self.save_dir is not None and 'inline' in self.save_dir:
+            if verbose:
                 print('Number of outliers:', (matching_error > self.outlier_thresholds[i]).sum())
             src_pts = src_pts[matching_error < self.outlier_thresholds[i]]
             dst_pts = dst_pts[matching_error < self.outlier_thresholds[i]]
