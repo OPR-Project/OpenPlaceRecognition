@@ -10,12 +10,9 @@ flake8-bugbear==23.6.5
 flake8-docstrings==1.7.0
 flake8-isort==6.0.0
 isort==5.12.0
-mypy==1.4.1
 nox==2023.4.22
-pandas-stubs==2.0.2.230605
 pep8-naming==0.13.3
 pre-commit==3.3.3
 pygls==1.0.2
 pytest==7.4.0
 pytest-cov==4.1.0
-types-tqdm==4.65.0.1

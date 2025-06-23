@@ -47,11 +47,8 @@ dev = [
     "flake8-bandit",
     "darglint",
     "isort",
-    "mypy",
     "pytest",
     "pre-commit",
-    "pandas-stubs",
-    "types-tqdm",
     "pygls",
     "bandit",
 ]
