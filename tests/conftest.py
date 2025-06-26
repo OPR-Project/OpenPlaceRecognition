@@ -1,4 +1,5 @@
 """Package-wide test fixtures."""
+
 from _pytest.config import Config
 
 
