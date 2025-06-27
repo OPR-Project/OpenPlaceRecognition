@@ -126,20 +126,6 @@ class TestOptionalDependencyManager:
 
         assert result is False
 
-    @patch("importlib.util.find_spec")
-    @patch("importlib.import_module")
-    def test_is_importable_success(self, mock_import: Mock, mock_find_spec: Mock) -> None:
-        """Test is_importable when package can be imported successfully."""
-        from opr.optional_deps import OptionalDependencyManager
-
-        mock_find_spec.return_value = Mock()
-        mock_import.return_value = Mock()
-
-        result = OptionalDependencyManager.is_importable("test_package")
-
-        assert result is True
-        mock_import.assert_called_once_with("test_package")
-
     @patch.dict(os.environ, {}, clear=True)
     @patch("opr.optional_deps.logger")
     def test_warn_once_normal_behavior(self, mock_logger: Mock) -> None:
@@ -185,79 +171,6 @@ class TestOptionalDependencyManager:
 
         # Should only see one warning despite 20 concurrent attempts
         assert warning_count == 1
-
-
-class TestMissingDepStub:
-    """Test the _MissingDepStub helper class."""
-
-    def test_stub_getattr_raises_runtime_error(self) -> None:
-        """Test that accessing attributes on stub raises RuntimeError with helpful message."""
-        from opr.optional_deps import get_minkowski_stub
-
-        stub = get_minkowski_stub("test feature")
-
-        with pytest.raises(RuntimeError) as exc_info:
-            _ = stub.some_attribute
-
-        assert "MinkowskiEngine is required for test feature" in str(exc_info.value)
-        assert "documentation" in str(exc_info.value)
-
-    def test_stub_call_raises_runtime_error(self) -> None:
-        """Test that calling stub raises RuntimeError with helpful message."""
-        from opr.optional_deps import get_minkowski_stub
-
-        stub = get_minkowski_stub("test feature")
-
-        with pytest.raises(RuntimeError) as exc_info:
-            stub()
-
-        assert "MinkowskiEngine is required for test feature" in str(exc_info.value)
-        assert "documentation" in str(exc_info.value)
-
-
-class TestConvenienceFunctions:
-    """Test the convenience functions for specific packages."""
-
-    @patch("opr.optional_deps.OptionalDependencyManager.is_available")
-    def test_has_minkowski_no_version(self, mock_available: Mock) -> None:
-        """Test has_minkowski without version constraint."""
-        from opr.optional_deps import has_minkowski
-
-        mock_available.return_value = True
-
-        result = has_minkowski()
-
-        assert result is True
-        mock_available.assert_called_once_with("MinkowskiEngine", None)
-
-    @patch("opr.optional_deps.OptionalDependencyManager.is_available")
-    def test_has_minkowski_with_version(self, mock_available: Mock) -> None:
-        """Test has_minkowski with version constraint."""
-        from opr.optional_deps import has_minkowski
-
-        mock_available.return_value = True
-
-        result = has_minkowski(min_version="0.5.0")
-
-        assert result is True
-        mock_available.assert_called_once_with("MinkowskiEngine", "0.5.0")
-
-    @patch("opr.optional_deps.OptionalDependencyManager.require_or_warn")
-    def test_require_minkowski(self, mock_require: Mock) -> None:
-        """Test require_minkowski calls OptionalDependencyManager correctly."""
-        from opr.optional_deps import require_minkowski
-
-        mock_require.return_value = True
-
-        result = require_minkowski("test feature", min_version="0.5.0")
-
-        assert result is True
-        mock_require.assert_called_once_with(
-            "MinkowskiEngine",
-            "test feature",
-            "See the documentation for installation instructions",
-            "0.5.0",
-        )
 
 
 @pytest.mark.parametrize(

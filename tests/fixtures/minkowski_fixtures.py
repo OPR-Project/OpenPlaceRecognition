@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from opr.optional_deps import has_minkowski
+from opr.optional_deps import lazy
 
 
 @pytest.fixture
@@ -17,7 +17,8 @@ def skip_if_no_minkowski() -> None:
 
     Use this fixture for tests that require actual MinkowskiEngine functionality.
     """
-    if not has_minkowski():
+    ME = lazy("MinkowskiEngine")
+    if ME is None:
         pytest.skip("MinkowskiEngine not available")
 
 
@@ -28,7 +29,8 @@ def minkowski_available() -> bool:
     Returns:
         True if MinkowskiEngine is available and importable.
     """
-    return has_minkowski()
+    ME = lazy("MinkowskiEngine")
+    return ME is not None
 
 
 @pytest.fixture
@@ -38,10 +40,10 @@ def sample_sparse_tensor() -> Any:
     Returns:
         MinkowskiEngine SparseTensor if available, otherwise skips test.
     """
-    if not has_minkowski():
+    ME = lazy("MinkowskiEngine")
+    if ME is None:
         pytest.skip("MinkowskiEngine not available")
 
-    import MinkowskiEngine as ME
     import torch
 
     # Create simple sparse tensor
