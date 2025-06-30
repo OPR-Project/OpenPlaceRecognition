@@ -1,15 +1,14 @@
 """NCLT dataset implementation."""
+
 from pathlib import Path
-from time import time
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import cv2
 import numpy as np
 import open3d as o3d
 import torch
-from loguru import logger
-from torch import Tensor
 from omegaconf import OmegaConf
+from torch import Tensor
 
 from opr.datasets.base import BasePlaceRecognitionDataset
 from opr.datasets.projection import NCLTProjector
@@ -19,15 +18,11 @@ from opr.datasets.soc_utils import (
     pack_objects,
     semantic_mask_to_instances,
 )
+from opr.optional_deps import lazy
 from opr.utils import cartesian_to_spherical
 
-try:
-    import MinkowskiEngine as ME  # type: ignore
-
-    minkowski_available = True
-except ImportError:
-    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
-    minkowski_available = False
+# Lazy-load MinkowskiEngine - will return real module or helpful stub
+ME = lazy("MinkowskiEngine", feature="sparse convolutions")
 
 
 class NCLTDataset(BasePlaceRecognitionDataset):
@@ -295,8 +290,14 @@ class NCLTDataset(BasePlaceRecognitionDataset):
         return im
 
     def _collate_pc_minkowski(self, data_list: List[Dict[str, Tensor]]) -> tuple[Tensor, Tensor]:
-        if not minkowski_available:
-            raise RuntimeError("MinkowskiEngine is not installed. Cannot process point clouds.")
+        """Collate pointcloud data using MinkowskiEngine for sparse quantization.
+
+        Args:
+            data_list: List of data dictionaries containing pointcloud coordinates and features.
+
+        Returns:
+            Tuple of (batched_coordinates, concatenated_features) from MinkowskiEngine.
+        """
         coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
         feats_list = [e["pointcloud_lidar_feats"] for e in data_list]
         n_points = [int(e.shape[0]) for e in coords_list]
@@ -488,11 +489,13 @@ class NCLTDataset(BasePlaceRecognitionDataset):
     def augment_coords_with_rotation(
         self, coords: np.ndarray, angle_range: Tuple = (-np.pi, np.pi)
     ) -> np.ndarray:
-        """Augment the coordinates with a random rotation - all objects are rotated by the same, random uniformly distributed angle.
+        """Augment the coordinates with a random rotation.
+
+        All objects are rotated by the same, random uniformly distributed angle.
 
         Args:
             coords (np.ndarray): The coordinates to be augmented.
-            angle_range (Tuple, optional): The range of the random rotation angle. Defaults to (-np.pi, np.pi).
+            angle_range (Tuple): The range of the random rotation angle. Defaults to (-np.pi, np.pi).
 
         Returns:
             np.ndarray: The augmented coordinates.
@@ -518,8 +521,10 @@ class NCLTDataset(BasePlaceRecognitionDataset):
 
         Args:
             coords (np.ndarray): The coordinates to be augmented.
-            mean (Tuple[float, float, float], optional): The mean of the normal distribution. Defaults to (0.0, 0.0, 0.0).
-            std (Tuple[float, float, float], optional): The standard deviation of the normal distribution. Defaults to (1.0, 1.0, 1.0).
+            mean (Tuple[float, float, float]): The mean of the normal distribution.
+                Defaults to (0.0, 0.0, 0.0).
+            std (Tuple[float, float, float]): The standard deviation of the normal distribution.
+                Defaults to (1.0, 1.0, 1.0).
 
         Returns:
             np.ndarray: The augmented coordinates.
