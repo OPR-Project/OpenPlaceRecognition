@@ -7,20 +7,17 @@ machine intelligence 41.7 (2018): 1655-1668.
 Paper: https://arxiv.org/abs/1711.02512
 Code adopted from the repository: https://github.com/jac99/MinkLocMultimodal, MIT License
 """
+
 from __future__ import annotations
 
 import torch
 import torch.nn.functional as F  # noqa: N812
-from loguru import logger
 from torch import Tensor, nn
 
-try:
-    import MinkowskiEngine as ME  # type: ignore
+from opr.optional_deps import lazy
 
-    minkowski_available = True
-except ImportError:
-    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
-    minkowski_available = False
+# Lazy-load MinkowskiEngine - will return real module or helpful stub
+ME = lazy("MinkowskiEngine", feature="sparse convolutions")
 
 
 class MinkGeM(nn.Module):
@@ -36,18 +33,13 @@ class MinkGeM(nn.Module):
         Args:
             p (int): Initial value of learnable parameter 'p', see paper for more details. Defaults to 3.
             eps (float): Negative values will be clamped to `eps` (ReLU). Defaults to 1e-6.
-
-        Raises:
-            RuntimeError: If MinkowskiEngine is not installed.
         """
-        if not minkowski_available:
-            raise RuntimeError("MinkowskiEngine is not installed. MinkGeM requires MinkowskiEngine.")
         super().__init__()
         self.p = nn.Parameter(torch.ones(1) * p)
         self.eps = eps
         self.f = ME.MinkowskiGlobalAvgPooling()
 
-    def forward(self, x: ME.SparseTensor) -> Tensor:  # noqa: D102
+    def forward(self, x: object) -> Tensor:  # noqa: D102
         # This implicitly applies ReLU on x (clamps negative values)
         temp = ME.SparseTensor(x.F.clamp(min=self.eps).pow(self.p), coordinates=x.C)
         temp = self.f(temp)  # Apply ME.MinkowskiGlobalAvgPooling
