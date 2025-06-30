@@ -27,13 +27,10 @@ from opr.datasets.soc_utils import (
     pack_objects,
     semantic_mask_to_instances,
 )
+from opr.optional_deps import lazy
 
-try:
-    import MinkowskiEngine as ME  # type: ignore
-    minkowski_available = True
-except ImportError:
-    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
-    minkowski_available = False
+# Lazy-load MinkowskiEngine - will return real module or helpful stub
+ME = lazy("MinkowskiEngine", feature="sparse convolutions")
 
 
 class ITLPCampus(Dataset):
@@ -633,8 +630,6 @@ class ITLPCampus(Dataset):
             elif data_key == "soc":
                 result["soc"] = torch.stack([e["soc"] for e in data_list], dim=0)
             elif data_key == "pointcloud_lidar_coords":
-                if not minkowski_available:
-                    raise RuntimeError("MinkowskiEngine is not installed. Cannot process point clouds.")
                 coords_list = [e["pointcloud_lidar_coords"] for e in data_list]
                 feats_list = [e["pointcloud_lidar_feats"] for e in data_list]
                 n_points = [int(e.shape[0]) for e in coords_list]
