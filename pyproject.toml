@@ -47,11 +47,8 @@ dev = [
     "flake8-bandit",
     "darglint",
     "isort",
-    "mypy",
     "pytest",
     "pre-commit",
-    "pandas-stubs",
-    "types-tqdm",
     "pygls",
     "bandit",
 ]
@@ -77,3 +74,19 @@ profile = "black"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 norecursedirs = ["third_party", ".git", "venv"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short -m 'not slow and not gpu'"
+markers = [
+    "unit: Fast isolated component tests (< 1 second)",
+    "integration: Cross-component interaction tests (1-10 seconds)",
+    "e2e: End-to-end system tests (> 10 seconds)",
+    "performance: Performance benchmarking tests",
+    "gpu: Tests requiring GPU resources",
+    "slow: Tests taking significant time (> 10 seconds)",
+    "minkowski: Tests requiring MinkowskiEngine",
+    "model: Tests for model implementations",
+    "dataset: Tests for dataset loading and preprocessing",
+    "metrics: Tests for evaluation metrics",
+]

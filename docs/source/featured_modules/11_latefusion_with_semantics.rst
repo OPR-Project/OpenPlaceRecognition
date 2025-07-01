@@ -54,5 +54,5 @@ The ``pr_model`` will return the ``output`` dictionary with the following keys:
 
 More usage examples of ``LateFusionModel`` can be found in the following notebooks as a part of ``pr_model``:
 
-* `notebooks/test_itlp/11_LateFusionModel_with_semantics.ipynb <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/11_LateFusionModel_with_semantics.ipynb>`_
-* `notebooks/test_cross_season/11_LateFusionModel_with_semantics.ipynb <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/11_LateFusionModel_with_semantics.ipynb>`_
+* `notebooks/test_itlp/09_LateFusionModel_with_semantics.ipynb <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/notebooks/test_itlp/09_LateFusionModel_with_semantics.ipynb>`_
+* `notebooks/test_cross_season/09_LateFusionModel_with_semantics.ipynb <https://github.com/OPR-Project/OpenPlaceRecognition/blob/main/notebooks/test_cross_season/09_LateFusionModel_with_semantics.ipynb>`_

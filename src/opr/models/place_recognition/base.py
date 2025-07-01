@@ -6,22 +6,15 @@ import torch
 from loguru import logger
 from torch import Tensor, nn
 import numpy as np
-import onnxruntime
-import torch_tensorrt
-from polygraphy.backend.trt import (
-    engine_from_bytes,
-    TrtRunner)
 
 from opr.modules import Concat
 from opr.modules.temporal import TemporalAveragePooling
+from opr.optional_deps import lazy
 
-try:
-    import MinkowskiEngine as ME  # type: ignore
-
-    minkowski_available = True
-except ImportError:
-    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
-    minkowski_available = False
+ME = lazy("MinkowskiEngine", feature="sparse convolutions")
+polygraphy = lazy("polygraphy", feature="TensorRT")
+torch_tensorrt = lazy("torch_tensorrt", feature="TensorRT")
+onnxruntime = lazy("onnxruntime", feature="ONNX")
 
 
 class ImageModel(nn.Module):
@@ -72,8 +65,8 @@ class ImageModel(nn.Module):
         elif forward_type.startswith("trt_int8"):
             print(f"WARNING - {forward_type} mode is only for inference on cuda!")
             with open(engine_path, "rb") as bf:
-                self.engine = engine_from_bytes(bf.read())
-            self.runner = TrtRunner(self.engine)
+                self.engine = polygraphy.backend.trt.engine_from_bytes(bf.read())
+            self.runner = polygraphy.backend.trt.TrtRunner(self.engine)
             self.runner.__enter__()
 
     def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:  # noqa: D102
@@ -276,8 +269,6 @@ class CloudModel(nn.Module):
         Raises:
             RuntimeError: MinkowskiEngine is not installed. CloudModel requires MinkowskiEngine.
         """
-        if not minkowski_available:
-            raise RuntimeError("MinkowskiEngine is not installed. CloudModel requires MinkowskiEngine.")
         super().__init__()
         self.backbone = backbone
         self.head = head

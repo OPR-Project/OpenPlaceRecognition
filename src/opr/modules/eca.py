@@ -6,22 +6,34 @@ Proceedings of the IEEE/CVF conference on computer vision and pattern recognitio
 Paper: https://arxiv.org/abs/1910.03151
 Code for Mink version adopted from the repository: https://github.com/jac99/MinkLoc3Dv2, MIT License
 """
+
 from __future__ import annotations
+
 from typing import Optional
 
 import numpy as np
-from loguru import logger
 from torch import nn
 
-try:
-    import MinkowskiEngine as ME  # type: ignore
-    from MinkowskiEngine.modules.resnet_block import BasicBlock
+from opr.optional_deps import lazy
 
-    minkowski_available = True
-except ImportError:
-    logger.warning("MinkowskiEngine is not installed. Some features may not be available.")
-    BasicBlock = nn.Module
-    minkowski_available = False
+# Lazy-load MinkowskiEngine - will return real module or helpful stub
+ME = lazy("MinkowskiEngine", feature="sparse convolutions")
+
+# For inheritance, we need the actual class - this will fail gracefully if ME is a stub
+try:
+    BasicBlock = ME.modules.resnet_block.BasicBlock
+except AttributeError:
+    # When ME is a stub, accessing .modules.resnet_block.BasicBlock fails
+    # So we create a minimal fallback
+    class BasicBlock:  # type: ignore[misc]
+        """Fallback BasicBlock that gives helpful error when MinkowskiEngine missing."""
+
+        def __init__(self, *args: object, **kwargs: object) -> None:
+            """Raise helpful error about missing MinkowskiEngine."""
+            raise RuntimeError(
+                "MinkowskiEngine required for sparse convolutions.\n"
+                "See the documentation for installation instructions"
+            )
 
 
 class MinkECALayer(nn.Module):
@@ -36,12 +48,7 @@ class MinkECALayer(nn.Module):
             channels (int): Number of channels in input.
             gamma (int): Gamma parameter, see paper for more details. Defaults to 2.
             b (int): b parameter, see paper for more details. Defaults to 1.
-
-        Raises:
-            RuntimeError: If MinkowskiEngine is not installed.
         """
-        if not minkowski_available:
-            raise RuntimeError("MinkowskiEngine is not installed. MinkECALayer requires MinkowskiEngine.")
         super().__init__()
         t = int(abs((np.log2(channels) + b) / gamma))
         k_size = t if t % 2 else t + 1
@@ -50,7 +57,15 @@ class MinkECALayer(nn.Module):
         self.sigmoid = nn.Sigmoid()
         self.broadcast_mul = ME.MinkowskiBroadcastMultiplication()
 
-    def forward(self, x: ME.SparseTensor) -> ME.SparseTensor:  # noqa: D102
+    def forward(self, x: object) -> object:  # type: ignore[misc]
+        """Forward pass of ECA layer.
+
+        Args:
+            x: Input sparse tensor from MinkowskiEngine.
+
+        Returns:
+            Output sparse tensor with attention applied.
+        """
         # feature descriptor on the global spatial information
         y_sparse = self.avg_pool(x)
         # Apply 1D convolution along the channel dimension
@@ -86,20 +101,21 @@ class MinkECABasicBlock(BasicBlock):
             dilation (int): Convolution dilation size. Defaults to 1.
             downsample (nn.Module, optional): Downsample layer, if needed. Defaults to None.
             dimension (int): Number of dimensions. Defaults to 3.
-
-        Raises:
-            RuntimeError: If MinkowskiEngine is not installed.
         """
-        if not minkowski_available:
-            raise RuntimeError(
-                "MinkowskiEngine is not installed. MinkECABasicBlock requires MinkowskiEngine."
-            )
         super().__init__(
             inplanes, planes, stride=stride, dilation=dilation, downsample=downsample, dimension=dimension
         )
         self.eca = MinkECALayer(planes, gamma=2, b=1)
 
-    def forward(self, x: ME.SparseTensor) -> ME.SparseTensor:  # noqa: D102
+    def forward(self, x: object) -> object:  # type: ignore[misc]
+        """Forward pass of ECA BasicBlock.
+
+        Args:
+            x: Input sparse tensor from MinkowskiEngine.
+
+        Returns:
+            Output sparse tensor with ECA attention applied.
+        """
         residual = x
 
         out = self.conv1(x)
