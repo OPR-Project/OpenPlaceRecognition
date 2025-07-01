@@ -4,7 +4,7 @@ defaults:
  - anno: oneformer
 
 dataset_root: ???
-data_to_load: [pointcloud_lidar,]
+data_to_load: [image_Cam5,]
 positive_threshold: 10.0
 negative_threshold: 50.0
 images_dirname: images_small
