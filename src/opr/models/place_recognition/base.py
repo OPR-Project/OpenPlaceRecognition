@@ -8,6 +8,7 @@ from torch import Tensor, nn
 import numpy as np
 
 from opr.modules import Concat
+from opr.modules.temporal import TemporalAveragePooling
 from opr.optional_deps import lazy
 
 ME = lazy("MinkowskiEngine", feature="sparse convolutions")
@@ -332,3 +333,66 @@ class LateFusionModel(nn.Module):
         out_dict["final_descriptor"] = self.fusion_module(out_dict)
 
         return out_dict
+
+class SequenceLateFusionModel(nn.Module):
+    """Meta-model for sequence-based multimodal Place Recognition with late fusion."""
+
+    def __init__(
+        self,
+        late_fusion_model: LateFusionModel,
+        temporal_fusion_module: nn.Module | None = None,
+    ) -> None:
+        """Meta-model for sequence-based multimodal Place Recognition with late fusion.
+
+        Args:
+            late_fusion_model (LateFusionModel): Base model for processing individual frames.
+            temporal_fusion_module (nn.Module, optional): Module to fuse features across time.
+                If None, defaults to a module that takes the average across the sequence.
+        """
+        super().__init__()
+        self.late_fusion_model = late_fusion_model
+        self.temporal_fusion_module = temporal_fusion_module or TemporalAveragePooling()
+
+    def forward(self, batch: Dict[str, Tensor]) -> Dict[str, Tensor]:
+        """Process a sequence of frames efficiently by reshaping to batch processing.
+
+        Args:
+            batch: Dictionary containing sequence data with shape [B, S, ...]
+                  where B is batch size and S is sequence length
+
+        Returns:
+            Dictionary with the final descriptor after temporal fusion
+        """
+        batch_size, seq_len = self._get_batch_and_seq_dims(batch)
+        flat_batch = self._reshape_batch_for_processing(batch, batch_size, seq_len)
+        flat_output = self.late_fusion_model(flat_batch)
+        descriptors = flat_output["final_descriptor"].view(batch_size, seq_len, -1)
+        final_descriptor = self.temporal_fusion_module(descriptors)
+        return {"final_descriptor": final_descriptor}
+
+    def _get_batch_and_seq_dims(self, batch: Dict[str, Tensor]) -> tuple[int, int]:
+        """Extract batch size and sequence length from batch data."""
+        for key, value in batch.items():
+            if key.startswith("images_"):
+                return value.shape[0], value.shape[1]  # B, S from [B, S, C, H, W]
+            elif key == "pointclouds_lidar_coords":
+                return value.shape[0], value.shape[1]  # B, S from [B, S, N, 3]
+
+        raise ValueError("Could not determine batch size and sequence length from batch")
+
+    def _reshape_batch_for_processing(self, batch: Dict[str, Tensor], batch_size: int, seq_len: int) -> Dict[str, Tensor]:
+        """Reshape batch from [B, S, ...] to [B*S, ...] for efficient processing."""
+        flat_batch = {}
+
+        for key, value in batch.items():
+            if key.startswith("images_"):
+                # Reshape image data: [B, S, C, H, W] -> [B*S, C, H, W]
+                flat_batch[key] = value.reshape(batch_size * seq_len, *value.shape[2:])
+            elif key == "pointclouds_lidar_coords":
+                # Reshape point coordinates: [B, S, N, 3] -> [B*S, N, 3]
+                flat_batch[key] = value.reshape(batch_size * seq_len, *value.shape[2:])
+            elif key == "pointclouds_lidar_feats":
+                # Reshape point features: [B, S, N, 1] -> [B*S, N, 1]
+                flat_batch[key] = value.reshape(batch_size * seq_len, *value.shape[2:])
+
+        return flat_batch

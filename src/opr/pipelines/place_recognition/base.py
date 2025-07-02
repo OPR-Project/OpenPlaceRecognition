@@ -116,7 +116,7 @@ class PlaceRecognitionPipeline:
             descriptor = self.model(input_data)["final_descriptor"].cpu().numpy().reshape(1, -1)
         _, pred_i = self.database_index.search(descriptor, 1)
         pred_i = pred_i[0][0]
-        pred_pose = self.database_df.iloc[pred_i][["tx", "ty", "tz", "qx", "qy", "qz", "qw"]].to_numpy(
+        pred_pose = self.database_df.iloc[pred_i][['northing', 'easting', 'down']].to_numpy(
             dtype=float
         )
         output["idx"] = pred_i

@@ -108,6 +108,19 @@ RUN pip install onnxruntime-gpu==1.18 --extra-index-url \
     pip install colored polygraphy --extra-index-url https://pypi.ngc.nvidia.com && \
     pip install onnx
 
+# we need node.js for jupyter support in Open3D
+RUN curl -fsSL https://deb.nodesource.com/setup_23.x -o nodesource_setup.sh \
+    && bash nodesource_setup.sh \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+RUN npm install -g yarn
+RUN pip install \
+    packaging \
+    jupyter-packaging \
+    ipykernel \
+    ipywidgets \
+    jupyter
+
 # Install Open3D library with GPU support
 RUN git clone https://github.com/isl-org/Open3D.git && cd Open3D && git checkout c8856fc
 WORKDIR /Open3D
@@ -121,6 +134,7 @@ RUN mkdir build && cd build && \
         -DBUILD_CUDA_MODULE=ON \
         -DBUILD_PYTORCH_OPS=ON \
         -DBUILD_TENSORFLOW_OPS=OFF \
+        -DBUILD_JUPYTER_EXTENSION=ON \
         -DPYTHON_EXECUTABLE=$(which python) \
         -DCMAKE_INSTALL_PREFIX=/usr/local \
         .. && \
@@ -156,7 +170,7 @@ ARG PADDLEOCR_VERSION=2.10.0
 RUN pip install paddleocr==${PADDLEOCR_VERSION}
 
 # install Pointcept
-ARG POINTCEPT_VERSION_COMMIT_HASH=363bd2b
+ARG POINTCEPT_VERSION_TAG=v1.6.0
 ARG SHAREDARRAY_VERSION=3.2.4
 ARG ADDICT_VERSION=2.4.0
 ARG PLYFILE_VERSION=1.1
@@ -170,7 +184,7 @@ ARG SPCONV_VERSION=2.3.8
 ARG FTFY_VERSION=6.3.1
 RUN git clone https://github.com/Pointcept/Pointcept.git && \
     cd Pointcept && \
-    git checkout ${POINTCEPT_VERSION_COMMIT_HASH} && \
+    git checkout ${POINTCEPT_VERSION_TAG} && \
     pip install \
         SharedArray==${SHAREDARRAY_VERSION} \
         addict==${ADDICT_VERSION} \

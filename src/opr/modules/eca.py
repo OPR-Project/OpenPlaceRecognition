@@ -22,7 +22,7 @@ ME = lazy("MinkowskiEngine", feature="sparse convolutions")
 # For inheritance, we need the actual class - this will fail gracefully if ME is a stub
 try:
     BasicBlock = ME.modules.resnet_block.BasicBlock
-except AttributeError:
+except RuntimeError:
     # When ME is a stub, accessing .modules.resnet_block.BasicBlock fails
     # So we create a minimal fallback
     class BasicBlock:  # type: ignore[misc]

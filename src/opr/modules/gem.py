@@ -74,3 +74,36 @@ class SeqGeM(GeM):
 
     def _gem(self, x: Tensor, p: nn.Parameter, eps: float) -> Tensor:
         return F.avg_pool1d(x.clamp(min=eps).pow(p), x.size(-1)).pow(1.0 / p).squeeze()
+
+
+class GlobalAvgPooling(nn.Module):
+    """Global average pooling fusion module."""
+
+    def __init__(self) -> None:
+        """Global average pooling fusion module."""
+        super().__init__()
+
+    def forward(self, x: Tensor) -> Tensor:  # noqa: D102
+        # Handle both [N,L,C] and [N,H,W,C] cases
+        if len(x.shape) == 3:  # [N,L,C] case after stacking
+            out = x.mean(dim=1)  # Pool over L dimension
+        elif len(x.shape) == 4:  # [N,H,W,C] case after stacking
+            out = x.mean(dim=(1,2))  # Pool over H,W dimensions
+        return out
+
+
+class GlobalMaxPooling(nn.Module):
+    """Global max pooling fusion module."""
+
+    def __init__(self) -> None:
+        """Global max pooling fusion module."""
+        super().__init__()
+
+    def forward(self, x: Tensor) -> Tensor:  # noqa: D102
+       # Handle both [N,L,C] and [N,H,W,C] cases
+        if len(x.shape) == 3:  # [N,L,C] case after stacking
+            out = x.max(dim=0)[0]  # Pool over L dimension
+        elif len(x.shape) == 4:  # [N,H,W,C] case after stacking
+            out = x.max(dim=1)[0]  # Pool over H dimension
+            out = out.max(dim=2)[0]  # Pool over W dimension
+        return out

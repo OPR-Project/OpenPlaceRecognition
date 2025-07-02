@@ -94,6 +94,9 @@ def test(
         ValueError: If the required coordinate columns are not found in the dataset.
     """
     device = parse_device(device)
+
+    model = model.to(device)
+
     with torch.no_grad():
         embeddings_list = []
         for batch in tqdm(dataloader, desc="Calculating test set descriptors", leave=False):
@@ -105,13 +108,23 @@ def test(
 
     test_df = dataloader.dataset.dataset_df
 
+    # temporary workaround for working with datasets with frame sequences
+    if hasattr(dataloader.dataset, "_sequence_indices") and dataloader.dataset._sequence_indices is not None:
+        sequence_indices = [seq[0] for seq in dataloader.dataset._sequence_indices]
+        test_df = test_df.iloc[sequence_indices]
+        test_df = test_df.reset_index(drop=True)
+
     queries = []
     databases = []
 
     for _, group in test_df.groupby("track"):
         databases.append(group.index.to_list())
-        selected_queries = group[group["in_query"]]
-        queries.append(selected_queries.index.to_list())
+
+        if "in_query" in group.columns:
+            selected_queries = group[group["in_query"]]
+            queries.append(selected_queries.index.to_list())
+        else:
+            queries.append(group.index.to_list())
 
     if "northing" in test_df.columns and "easting" in test_df.columns:
         coords_columns = ["northing", "easting"]
@@ -128,7 +141,7 @@ def test(
     dist_fn = LpDistance(normalize_embeddings=False)
     dist_utms = dist_fn(utms).numpy()
 
-    n = 25
+    n = 50
     recalls_at_n = np.zeros((len(queries), len(databases), n))
     recalls_at_one_percent = np.zeros((len(queries), len(databases), 1))
     top1_distances = np.zeros((len(queries), len(databases), 1))
