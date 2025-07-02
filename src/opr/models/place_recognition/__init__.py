@@ -10,4 +10,4 @@ from .pointmamba import PointMambaPR
 from .pointnetvlad import PointNetVLAD
 from .resnet import ResNet18, SemanticResNet18
 from .svtnet import SVTNet
-# git
+from .sequential import SequenceLateFusionModel
