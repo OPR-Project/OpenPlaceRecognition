@@ -9,6 +9,7 @@ Code for Mink version adopted from the repository: https://github.com/jac99/Mink
 
 from __future__ import annotations
 
+import importlib
 from typing import Optional
 
 import numpy as np
@@ -21,8 +22,7 @@ ME = lazy("MinkowskiEngine", feature="sparse convolutions")
 
 # For inheritance, we need the actual class - this will fail gracefully if ME is a stub
 try:
-    me_modules = ME.modules
-    from me_modules.resnet_block import BasicBlock  # type: ignore[import]
+    BasicBlock = importlib.import_module("MinkowskiEngine.modules.resnet_block").BasicBlock
 except RuntimeError:
     # When ME is a stub, accessing .modules.resnet_block.BasicBlock fails
     # So we create a minimal fallback
