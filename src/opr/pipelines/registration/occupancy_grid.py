@@ -6,6 +6,7 @@ from typing import List, Optional, Tuple, Union
 import cv2
 import numpy as np
 import torch
+import time
 from torch import Tensor, nn
 import faiss
 
@@ -17,7 +18,7 @@ class Feature2DGlobalRegistrationPipeline:
                  n_keypoints: int = 400,
                  outlier_thresholds: List[float] = [5.0],
                  min_matches: int = 5,
-                 save_dir: str = '~') -> None:
+                 save_dir: Union[str, None] = None) -> None:
         self.grid_size = voxel_downsample_size
         self.detector_type = detector_type
         if self.detector_type == 'ORB':
@@ -117,7 +118,7 @@ class Feature2DGlobalRegistrationPipeline:
         grid_transformed[ij_transformed[:, 0], ij_transformed[:, 1]] = 2
         return grid_transformed
 
-    def get_fitness(self, ref_grid: np.ndarray, cand_grid: np.ndarray, transform: np.ndarray, save_dir: Union[str, None] = None) -> float:
+    def get_fitness(self, ref_grid: np.ndarray, cand_grid: np.ndarray, transform: np.ndarray) -> float:
         kernel = np.ones((7, 7), dtype=np.uint8)
         #print(ref_grid.shape, ref_grid.dtype)
         #print(ref_wall_mask.shape, ref_wall_mask.dtype)
@@ -158,13 +159,15 @@ class Feature2DGlobalRegistrationPipeline:
             imsave(os.path.join(save_dir, 'grid_aligned.png'), (grid_aligned * 255).astype(np.uint8))
             np.savetxt(os.path.join(save_dir, 'results.txt'), 
                     [good_match, bad_match, iou, good_match / (good_match + bad_match) * iou ** 0.25])
-            print('cnt:', self.cnt)
+            # print('cnt:', self.cnt)
         self.cnt += 1
-        print('Reg score from fitness:', good_match / (good_match + bad_match) * iou ** 0.25)
+        # print('Reg score from fitness:', good_match / (good_match + bad_match) * iou ** 0.25)
         return good_match / (good_match + bad_match) * iou ** 0.25#, ref_wall_mask, ref_floor_mask, cand_wall_mask, cand_floor_mask
 
-    def infer(self, ref_grid: Tensor, cand_grid: Tensor, save_dir: Union[str, None] = None, verbose: bool = False) -> Tuple[Union[np.ndarray, None], Union[float, None]]:
+    def infer(self, ref_grid: Tensor, cand_grid: Tensor, verbose: bool = False) -> Tuple[Union[np.ndarray, None], Union[float, None]]:
+    # def infer(self, img_ref, img_cand, verbose=True):
         # Convert clouds from tensors to numpy arrays
+        # t1 = time.time()
         ref_grid_numpy = ref_grid.cpu().numpy()
         cand_grid_numpy = cand_grid.cpu().numpy()
         img_ref = (ref_grid_numpy == 2)
@@ -178,6 +181,9 @@ class Feature2DGlobalRegistrationPipeline:
         img_cand = (img_cand * 255).astype(np.uint8)
         img_cand = cv2.dilate(img_cand, kernel)
         img_cand = cv2.GaussianBlur(img_cand, (3, 3), 0.5)
+        # if self.detector_type == 'HarrisWithDistance':
+        #     print('Ref grid:', img_ref.shape, img_ref.min(), img_ref.mean(), img_ref.max())
+        #     print('Cand grid:', img_cand.shape, img_cand.min(), img_cand.mean(), img_cand.max())
         #img_cand = cv2.resize(img_cand, None, fx=0.5, fy=0.5)
         #print('Img cand min and max:', img_cand.min(), img_cand.mean(), img_cand.max())
         if self.save_dir is not None:
@@ -186,6 +192,9 @@ class Feature2DGlobalRegistrationPipeline:
                 os.mkdir(save_dir)
             imsave(os.path.join(save_dir, 'ref_grid.png'), img_ref)
             imsave(os.path.join(save_dir, 'cand_grid.png'), img_cand)
+        # t2 = time.time()
+        # if self.detector_type == 'HarrisWithDistance':
+        #     print('Preprocessing time:', t2 - t1)
         
         # Extract features
         if self.detector_type == 'SIFT' or self.detector_type == 'ORB':
@@ -201,18 +210,22 @@ class Feature2DGlobalRegistrationPipeline:
             kp_cand = [cv2.KeyPoint(float(y), float(x), 1) for [x, y] in kp_cand]
             kp_cand, des_cand = self.detector.compute(img_cand, kp_cand)
             # Add geometry constraints
-            distance_coef = 1.0
+            distance_coef = 0.5
             if len(kp_ref) == 0 or len(kp_cand) == 0:
                 if verbose:
                     print('                No kp!')
                 self.cnt += 1
                 return None, 0
             xy_ref = np.array([kp.pt for kp in kp_ref]) * distance_coef
-            des_ref = np.concatenate([des_ref, xy_ref], axis=1)
+            des_ref = np.concatenate([des_ref, xy_ref], axis=1).astype(np.uint8)
             xy_cand = np.array([kp.pt for kp in kp_cand]) * distance_coef
-            des_cand = np.concatenate([des_cand, xy_cand], axis=1)
+            des_cand = np.concatenate([des_cand, xy_cand], axis=1).astype(np.uint8)
         #print(kp_ref, des_ref)
         #print(kp_cand, des_cand)
+        # t3 = time.time()
+        # if self.detector_type == 'HarrisWithDistance':
+        #     print('Found {} keypoints for ref and {} for cand'.format(len(kp_ref), len(kp_cand)))
+        #     print('Keypoints estimation time:', t3 - t2)
         
         # Match features using KNN
         if self.detector_type == 'SIFT':
@@ -226,7 +239,7 @@ class Feature2DGlobalRegistrationPipeline:
                 return None, 0
             matches = flann.knnMatch(des_ref, des_cand, k=2)
             matches = [x for x in matches if len(x) == 2]
-        elif self.detector_type == 'ORB':
+        elif self.detector_type == 'ORB' or self.detector_type == 'HarrisWithDistance':
             FLANN_INDEX_LSH = 6
             index_params = dict(algorithm = FLANN_INDEX_LSH,
                             table_number = 6, # 12
@@ -241,21 +254,30 @@ class Feature2DGlobalRegistrationPipeline:
                 return None, 0
             matches = flann.knnMatch(des_ref, des_cand, k=2)
             matches = [x for x in matches if len(x) == 2]
-        elif self.detector_type == 'HarrisWithDistance':
-            des_index = faiss.IndexFlatL2(34)
-            for des in des_cand:
-                des_index.add(des[np.newaxis, :])
-            matches = []
-            for i, des in enumerate(des_ref):
-                dist, idx = des_index.search(des[np.newaxis, :], k=2)
-                m = cv2.DMatch(_imgIdx=0, _queryIdx=i, _trainIdx=idx[0][0], _distance=np.sqrt(dist[0][0]))
-                n = cv2.DMatch(_imgIdx=0, _queryIdx=i, _trainIdx=idx[0][1], _distance=np.sqrt(dist[0][1]))
-                matches.append((m, n))
+        # elif self.detector_type == 'HarrisWithDistance':
+            # nlist = 20
+            # k = 4
+            # d = 34
+            # quantizer = faiss.IndexFlatL2(d)  # the other index
+            # des_index = faiss.IndexIVFFlat(quantizer, d, nlist)
+            # des_index.train(des_cand)
+            # des_index = faiss.IndexFlatL2(34)
+            # for des in des_cand:
+            #     des_index.add(des[np.newaxis, :])
+            # matches = []
+            # for i, des in enumerate(des_ref):
+            #     dist, idx = des_index.search(des[np.newaxis, :], k=2)
+            #     m = cv2.DMatch(_imgIdx=0, _queryIdx=i, _trainIdx=idx[0][0], _distance=np.sqrt(dist[0][0]))
+            #     n = cv2.DMatch(_imgIdx=0, _queryIdx=i, _trainIdx=idx[0][1], _distance=np.sqrt(dist[0][1]))
+            #     matches.append((m, n))
         else:
             print('Incorrect detector type')
             return None, None
         if verbose:
             print('Found {} matches'.format(len(matches)))
+        # t4 = time.time()
+        # if self.detector_type == 'HarrisWithDistance':
+        #     print('Matches estimation time:', t4 - t3)
         
         # Get 2d point sets from matched features
         good = []
@@ -284,8 +306,6 @@ class Feature2DGlobalRegistrationPipeline:
             src_transformed[:, 0] = src_pts[:, 0, 0] * np.cos(-rot_angle) + src_pts[:, 0, 1] * np.sin(-rot_angle) + trans_j
             src_transformed[:, 1] = -src_pts[:, 0, 0] * np.sin(-rot_angle) + src_pts[:, 0, 1] * np.cos(-rot_angle) + trans_i
             matching_error = np.sqrt((src_transformed[:, 0] - dst_pts[:, 0, 0]) ** 2 + (src_transformed[:, 1] - dst_pts[:, 0, 1]) ** 2)
-            # if 'inline' in self.save_dir:
-            #     print('Matching error:', matching_error)
             if matching_error.max() < self.outlier_thresholds[-1]:
                 break
             if verbose:
@@ -297,4 +317,7 @@ class Feature2DGlobalRegistrationPipeline:
         rot_angle, trans_j, trans_i = self._point_based_matching(point_pairs)
         transform = [trans_i, trans_j, rot_angle]
         #print('Trans i, trans j, rot angle:', trans_i, trans_j, rot_angle)
-        return transform, self.get_fitness(ref_grid_numpy, cand_grid_numpy, transform, save_dir)
+        # t5 = time.time()
+        # if self.detector_type == 'HarrisWithDistance':
+        #     print('Outlier removing time:', t5 - t4)
+        return transform, self.get_fitness(ref_grid_numpy, cand_grid_numpy, transform)
