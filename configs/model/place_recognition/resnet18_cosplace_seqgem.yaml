@@ -1,0 +1,11 @@
+_target_: opr.models.place_recognition.base.ImageModel
+backbone:
+  _target_: opr.modules.feature_extractors.ResNet18FeatureExtractor
+  in_channels: 3
+  pretrained: True
+head:
+  _target_: opr.modules.CosPlace
+  in_dim: 512
+  out_dim: 256
+fusion:
+  _target_: opr.modules.GeMFusion
