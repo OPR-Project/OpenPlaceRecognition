@@ -1,0 +1,17 @@
+_target_: opr.models.place_recognition.base.ImageModel
+backbone:
+  _target_: opr.modules.feature_extractors.ResNet18FPNFeatureExtractor
+  in_channels: 3
+  lateral_dim: 256
+  fh_num_bottom_up: 4
+  fh_num_top_down: 0
+  pretrained: True
+head:
+  _target_: opr.modules.mamba_feature_mixer.MambaMixVPR
+  in_channels: 256
+  in_h: 20
+  in_w: 16
+  out_channels: 128
+  mix_depth: 4
+  out_rows: 2
+  rms_norm: False

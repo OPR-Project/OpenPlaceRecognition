@@ -1,0 +1,11 @@
+_target_: opr.models.place_recognition.SVTNet
+
+in_channels: 1
+out_channels: 256
+conv0_kernel_size: 5
+block: ECABasicBlock
+asvt: True
+csvt: False
+layers: [1, 1, 1]
+planes: [32, 64, 64]
+pooling: gem
