@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import numpy as np
+import numpy as np  # type: ignore
 
 try:
     import faiss  # type: ignore
@@ -37,6 +37,7 @@ class FaissFlatIndex(Index):
         descriptors: np.ndarray,
         db_idx: np.ndarray,
         db_pose: np.ndarray,
+        db_pointcloud_path: np.ndarray,
         schema: IndexSchema,
     ) -> None:
         """Initialize the index instance.
@@ -45,12 +46,16 @@ class FaissFlatIndex(Index):
             descriptors: Float32 array [N, D] of database descriptors.
             db_idx: Int64 array [N] of dataset item ids aligned with descriptors.
             db_pose: Float32 array [N, 7] of poses aligned with descriptors.
+            db_pointcloud_path: Object array [N] of relative point cloud paths
+                (e.g., "scans/000227.pcd" or "scans/000227.bin") or NaN values when absent.
             schema: Parsed `IndexSchema` with dim/metric.
         """
         self._schema = schema
         self._descriptors = np.ascontiguousarray(descriptors.astype(np.float32, copy=False))
         self._db_idx = db_idx.astype(np.int64, copy=False)
         self._db_pose = db_pose.astype(np.float32, copy=False)
+        # keep as object array to preserve NaN or str values
+        self._db_pointcloud_path = db_pointcloud_path.astype(object, copy=False)
 
         d = self._descriptors.shape[1]
         if self._schema.metric == IndexMetric.IP:
@@ -71,10 +76,16 @@ class FaissFlatIndex(Index):
         """
         desc_path, meta_path, schema_path = validate_files(directory)
         descriptors = load_descriptors(desc_path)
-        db_idx, db_pose, _ = load_meta(meta_path)
+        db_idx, db_pose, db_pc_path, _ = load_meta(meta_path)
         schema = load_schema(schema_path)
         validate_consistency(descriptors, db_idx, schema, Path(desc_path))
-        return cls(descriptors=descriptors, db_idx=db_idx, db_pose=db_pose, schema=schema)
+        return cls(
+            descriptors=descriptors,
+            db_idx=db_idx,
+            db_pose=db_pose,
+            db_pointcloud_path=db_pc_path,
+            schema=schema,
+        )
 
     def search(self, queries: np.ndarray, k: int) -> tuple[np.ndarray, np.ndarray]:
         """Search top-k nearest neighbors.
@@ -104,14 +115,14 @@ class FaissFlatIndex(Index):
         """Return metric used by the index (L2 or IP)."""
         return self._schema.metric
 
-    def get_meta(self, row_positions: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def get_meta(self, row_positions: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Map row positions to dataset indices and poses.
 
         Args:
             row_positions: Int64 array [M] of internal row positions (0..N-1).
 
         Returns:
-            tuple[np.ndarray, np.ndarray]: `(db_idx, db_pose)` aligned with input rows.
+            tuple[np.ndarray, np.ndarray, np.ndarray]: `(db_idx, db_pose, db_pointcloud_path)` aligned with input rows.
         """
         rows = row_positions.astype(np.int64, copy=False)
-        return self._db_idx[rows], self._db_pose[rows]
+        return self._db_idx[rows], self._db_pose[rows], self._db_pointcloud_path[rows]

@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
-import numpy as np
+import numpy as np  # type: ignore
 
 
 class IndexMetric(str, Enum):
@@ -66,15 +66,18 @@ class Index(ABC):
         """Metric used (L2 or IP)."""
 
     @abstractmethod
-    def get_meta(self, row_positions: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def get_meta(self, row_positions: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Fetch aligned metadata for given row positions.
 
         Args:
             row_positions: Array of internal row indices (0..N-1) to fetch metadata for.
 
         Returns:
-            tuple[np.ndarray, np.ndarray]: Tuple of `(db_idx, db_pose)` where:
+            tuple[np.ndarray, np.ndarray, np.ndarray]: Tuple of `(db_idx, db_pose, db_pointcloud_path)` where:
                 - `db_idx` is int64 array of shape [M] with dataset item ids.
                 - `db_pose` is float32 array of shape [M, 7] with poses
                   in order `tx, ty, tz, qx, qy, qz, qw`.
+                - `db_pointcloud_path` is object array of shape [M] with each element being
+                  a relative path string like "scans/000227.pcd" or "scans/000227.bin",
+                  or `numpy.nan` when not available.
         """

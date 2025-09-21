@@ -6,8 +6,8 @@ import hashlib
 import json
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
+import numpy as np  # type: ignore
+import pandas as pd  # type: ignore
 
 from .base import IndexMetric, IndexSchema
 
@@ -41,14 +41,14 @@ def load_descriptors(path: str | Path, mmap: bool = True) -> np.ndarray:
     return arr
 
 
-def load_meta(path: str | Path) -> tuple[np.ndarray, np.ndarray, pd.DataFrame]:
-    """Load meta.parquet and return (db_idx [N], db_pose [N,7], full_df).
+def load_meta(path: str | Path) -> tuple[np.ndarray, np.ndarray, np.ndarray, pd.DataFrame]:
+    """Load meta.parquet and return (db_idx [N], db_pose [N,7], pointcloud_path [N], full_df).
 
     Args:
         path: Path to `meta.parquet`.
 
     Returns:
-        tuple[np.ndarray, np.ndarray, pd.DataFrame]: `(db_idx, db_pose, df)`.
+        tuple[np.ndarray, np.ndarray, np.ndarray, pd.DataFrame]: `(db_idx, db_pose, db_pointcloud_path, df)`.
 
     Raises:
         ValueError: If required columns are missing or pose length is not 7.
@@ -64,7 +64,29 @@ def load_meta(path: str | Path) -> tuple[np.ndarray, np.ndarray, pd.DataFrame]:
     if pose_arr.shape[1] != 7:
         raise ValueError(f"pose must be length 7; got shape {pose_arr.shape}")
     idx_arr = df["idx"].to_numpy(dtype=np.int64)
-    return idx_arr, pose_arr, df
+
+    # Optional pointcloud_path column: relative path to pointcloud file (pcd/bin) or NaN
+    if "pointcloud_path" in df.columns:
+        paths_series = df["pointcloud_path"]
+
+        # Normalize: allow NaN/None; otherwise expect str ending with .pcd or .bin
+        def _validate_path(val: object) -> object:
+            if pd.isna(val):
+                return np.nan
+            if isinstance(val, str):
+                lower = val.lower()
+                if (lower.endswith(".pcd") or lower.endswith(".bin")) and not Path(val).is_absolute():
+                    return val
+            raise ValueError(
+                "meta.parquet 'pointcloud_path' must be a relative str ending with .pcd or .bin, or NaN"
+            )
+
+        db_pc_path = np.array([_validate_path(v) for v in paths_series.to_list()], dtype=object)
+    else:
+        # If missing, fill with NaN object array for compatibility
+        db_pc_path = np.array([np.nan] * idx_arr.shape[0], dtype=object)
+
+    return idx_arr, pose_arr, db_pc_path, df
 
 
 def load_schema(path: str | Path) -> IndexSchema:

@@ -91,7 +91,7 @@ class PlaceRecognitionPipeline:
         inds, dists = self.index.search(desc.reshape(1, -1), k)
         inds = inds[0]
         dists = dists[0]
-        db_idx, db_pose = self.index.get_meta(inds)
+        db_idx, db_pose, _db_pc = self.index.get_meta(inds)
 
         return PlaceRecognitionResult(
             descriptor=desc,

@@ -25,6 +25,7 @@ def test_faiss_flat_index_load_and_properties(tmp_path: Path) -> None:
         {
             "idx": np.arange(N, dtype=np.int64),
             "pose": poses,
+            "pointcloud_path": ["scans/%06d.pcd" % i for i in range(N)],
         }
     )
     (tmp_path / "descriptors.npy").write_bytes(b"")  # create file
@@ -46,13 +47,22 @@ def test_faiss_flat_index_load_and_properties(tmp_path: Path) -> None:
 
 @pytest.mark.unit
 def test_faiss_flat_index_search_and_meta(tmp_path: Path) -> None:
-    """Test search returns raw distances and row positions that map to idx/pose."""
+    """Test search returns raw distances and row positions that map to idx/pose/pointcloud_path."""
     # Arrange
     N, D = 6, 4
     rng = np.random.default_rng(42)
     descriptors = rng.normal(size=(N, D)).astype(np.float32)
     poses = [[0.0, 0.0, float(i), 0.0, 0.0, 0.0, 1.0] for i in range(N)]
-    meta = pd.DataFrame({"idx": np.arange(100, 100 + N, dtype=np.int64), "pose": poses})
+    pc_paths = ["scans/%06d.bin" % i for i in range(N)]
+    # Add one NaN to exercise optional behavior
+    pc_paths[2] = np.nan
+    meta = pd.DataFrame(
+        {
+            "idx": np.arange(100, 100 + N, dtype=np.int64),
+            "pose": poses,
+            "pointcloud_path": pc_paths,
+        }
+    )
     np.save(tmp_path / "descriptors.npy", descriptors)
     meta.to_parquet(tmp_path / "meta.parquet")
     schema = {"version": "1", "dim": D, "metric": "l2", "created_at": "", "opr_version": ""}
@@ -69,13 +79,17 @@ def test_faiss_flat_index_search_and_meta(tmp_path: Path) -> None:
 
     # Act
     inds, dists = index.search(queries, k)
-    db_idx, db_pose = index.get_meta(inds[0])  # map first query's top-k
+    db_idx, db_pose, db_pc = index.get_meta(inds[0])  # map first query's top-k
 
     # Assert shapes and types
     assert inds.shape == (Q, k)
     assert dists.shape == (Q, k)
     assert db_idx.shape == (k,)
     assert db_pose.shape == (k, 7)
+    assert db_pc.shape == (k,)
+
+    # Validate that pointcloud paths come back as object array
+    assert db_pc.dtype == object
 
     # Verify distance ordering corresponds to squared L2 distances (FAISS L2)
     def squared_l2(a: np.ndarray, b: np.ndarray) -> float:

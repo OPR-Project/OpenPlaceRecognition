@@ -8,8 +8,10 @@ Public APIs:
 - `FaissFlatIndex` (L2/IP)
 
 On-disk layout (required):
-- `descriptors.npy` (float32 [N,D]), `meta.parquet` (columns: idx:int, pose:[7]),
-  `schema.json` (versioned)
+- `descriptors.npy` (float32 [N,D])
+- `meta.parquet` (required columns: `idx:int`, `pose:[7]`; optional: `pointcloud_path:str|NaN` with
+  values like `scans/000227.pcd` or `scans/000227.bin` relative to the index root)
+- `schema.json` (versioned)
 """
 
 from .base import Index, IndexMetric
