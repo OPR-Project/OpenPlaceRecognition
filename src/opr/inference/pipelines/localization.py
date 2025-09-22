@@ -1,14 +1,20 @@
 """Localization pipeline built on top of Place Recognition and Registration.
 
-This pipeline:
-- runs top-k Place Recognition to retrieve database candidates
-- loads each candidate's point cloud by `pointcloud_path` from the index metadata
-- runs registration to estimate the rigid transform
-- composes an absolute 7-DoF pose estimate for each candidate and selects the best
+Overview:
+- Run top-k Place Recognition to retrieve database candidates
+- Load each candidate's database point cloud via the index `pointcloud_path`
+- Run registration to estimate a rigid transform between the query and database clouds
+- Compose a world pose for the query for each candidate and select the best
+
+Transform direction and composition (explicit):
+- Registration must return a transform that maps query→database, i.e. `T_db<-q`
+  (Open3D returns source→target; we pass source=query, target=database).
+- If the database world pose is `T_w<-db`, the query world pose is computed as
+  `T_w<-q = T_w<-db · T_db<-q` (homogeneous 4×4 with column vectors).
 
 Notes:
-- `registration_confidence` is a placeholder (1.0) for now. If your registration
-  method exposes a meaningful score, adapt the pipeline to return it.
+- `registration_confidence` is a placeholder (1.0). If your registration method
+  provides a score (e.g., inlier ratio), adapt the pipeline to return and use it.
 """
 
 from __future__ import annotations
@@ -75,7 +81,8 @@ class LocalizationPipeline:
     Args:
         index: Loaded index providing metadata (`db_idx`, `db_pose`, `db_pointcloud_path`).
         place_recognition: Place Recognition pipeline.
-        registration: Registration pipeline exposing `infer(query_pc, db_pc) -> np.ndarray(4,4)`.
+        registration: Registration pipeline exposing `infer(query_pc, db_pc) -> np.ndarray(4,4)` and
+            returning `T_db<-q` (query→database).
         index_root: Root directory to resolve relative database pointcloud paths.
         require_db_pointcloud: If True, raise when a candidate lacks a pointcloud path
             or file; otherwise skip such candidates.
@@ -161,11 +168,11 @@ class LocalizationPipeline:
                     raise FileNotFoundError("Database pointcloud file is missing or empty")
                 continue
 
-            # Run registration
-            T_q_to_db = self.reg.infer(query_pc=query_pc, db_pc=db_pc)
-            # Compose absolute pose: db_pose ∘ inv(T_q_to_db)
+            # Run registration: Open3D-style source→target, i.e. T_db<-q (query→database)
+            T_db_from_q = self.reg.infer(query_pc=query_pc, db_pc=db_pc)
+            # Compose world pose of query: T_w<-q = T_w<-db · T_db<-q
             T_db = _pose7_to_matrix(db_pose[i])
-            T_est = T_db @ np.linalg.inv(T_q_to_db)
+            T_est = T_db @ T_db_from_q
             est_pose = _matrix_to_pose7(T_est)
 
             candidate = LocalizedCandidate(
