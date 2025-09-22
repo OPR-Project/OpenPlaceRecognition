@@ -1,8 +1,18 @@
-"""Point cloud registration pipelines for inference.
+"""Registration pipelines for inference.
 
-This module provides a lightweight registration pipeline based on Open3D's
-RANSAC feature matching. Given two point clouds, it estimates a rigid 4x4
-transformation from the query to the database point cloud.
+This module defines interfaces and lightweight implementations for estimating
+rigid 4×4 transformations between two point clouds. It is backend-agnostic:
+methods can be geometric (e.g., feature matching) or learning-based. The module
+establishes clear transform-direction semantics for safe composition with world
+poses.
+
+Direction and composition:
+- Inputs: `query_pc` (source), `db_pc` (target)
+- Output: `T_db<-q` such that `x_db = T_db<-q * x_q` (homogeneous 4×4, column
+  vectors)
+
+Example: given a known database world pose `T_w<-db` and an estimated
+`T_db<-q`, the query world pose is `T_w<-q = T_w<-db * T_db<-q`.
 """
 
 from __future__ import annotations
@@ -21,6 +31,12 @@ class RansacPointCloudRegistrationPipeline:
       1) Voxel downsample both clouds and estimate normals
       2) Compute FPFH features
       3) Run RANSAC-based global registration
+
+    Returned transform semantics:
+    - We feed Open3D with `source=query`, `target=database`.
+    - Open3D returns a transform mapping `source→target`, i.e. `T_db<-q`.
+    This can be composed with a known database world pose `T_w<-db` to get
+    `T_w<-q = T_w<-db * T_db<-q`.
     """
 
     def __init__(self, voxel_downsample_size: float = 0.5) -> None:
@@ -82,14 +98,19 @@ class RansacPointCloudRegistrationPipeline:
         return result
 
     def infer(self, query_pc: Tensor, db_pc: Tensor) -> np.ndarray:
-        """Estimate rigid transform from query to database point cloud.
+        """Estimate rigid transform that maps query into the database frame.
 
         Args:
             query_pc: Tensor [N,3] float32 for the query cloud.
             db_pc: Tensor [M,3] float32 for the database cloud.
 
         Returns:
-            np.ndarray: 4x4 transformation matrix (float64) from query to database.
+            np.ndarray: 4×4 transformation matrix (float64) `T_db<-q` such that
+            `x_db = T_db<-q * x_q`.
+
+        Notes:
+            To obtain the world pose of the query from a known `T_w<-db`, use
+            `T_w<-q = T_w<-db * T_db<-q`.
         """
         source_down, source_fpfh = self._preprocess_point_cloud(query_pc)
         target_down, target_fpfh = self._preprocess_point_cloud(db_pc)
