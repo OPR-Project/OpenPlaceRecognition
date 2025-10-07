@@ -24,13 +24,20 @@ from opr.utils import init_model, parse_device
 
 @dataclass
 class PlaceRecognitionResult:
-    """Result of a top-k place recognition query."""
+    """Result of a top-k place recognition query.
+
+    Notes:
+        - ``indices`` are internal row ids in the index (shape [k]).
+        - ``db_idx`` and ``db_pose`` are optional to allow caching per-frame
+          results without performing metadata lookups for each frame. Sequence
+          pipelines may fill only for the fused final result.
+    """
 
     descriptor: np.ndarray  # [D]
     indices: np.ndarray  # [k] internal row positions
     distances: np.ndarray  # [k] raw distances
-    db_idx: np.ndarray  # [k] dataset ids
-    db_pose: np.ndarray  # [k,7] poses (tx,ty,tz,qx,qy,qz,qw)
+    db_idx: np.ndarray | None = None  # [k] dataset ids
+    db_pose: np.ndarray | None = None  # [k,7] poses (tx,ty,tz,qx,qy,qz,qw)
 
 
 class PlaceRecognitionPipeline:
