@@ -169,7 +169,8 @@ class LocalizationPipeline:
                 continue
 
             # Run registration: Open3D-style source→target, i.e. T_db<-q (query→database)
-            T_db_from_q = self.reg.infer(query_pc=query_pc, db_pc=db_pc)
+            reg_res = self.reg.infer(query_pc=query_pc, db_pc=db_pc)
+            T_db_from_q = reg_res.transformation if hasattr(reg_res, "transformation") else reg_res
             # Compose world pose of query: T_w<-q = T_w<-db · T_db<-q
             T_db = _pose7_to_matrix(db_pose[i])
             T_est = T_db @ T_db_from_q

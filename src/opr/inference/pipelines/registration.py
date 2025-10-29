@@ -17,11 +17,31 @@ Example: given a known database world pose `T_w<-db` and an estimated
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Tuple
 
 import numpy as np
 import open3d as o3d
 from torch import Tensor
+
+
+@dataclass
+class RegistrationResult:
+    """Result of point cloud registration mapping query→database.
+
+    Attributes:
+        transformation: 4×4 matrix `T_db<-q` such that `x_db = T_db<-q * x_q`.
+        success: Whether registration likely succeeded (heuristic).
+        fitness: Overlap ratio reported by Open3D (if available).
+        inlier_rmse: Inlier root mean square error (if available).
+        num_inliers: Number of inlier correspondences (if available).
+    """
+
+    transformation: np.ndarray
+    success: bool
+    fitness: float | None = None
+    inlier_rmse: float | None = None
+    num_inliers: int | None = None
 
 
 class RansacPointCloudRegistrationPipeline:
@@ -97,7 +117,7 @@ class RansacPointCloudRegistrationPipeline:
         )
         return result
 
-    def infer(self, query_pc: Tensor, db_pc: Tensor) -> np.ndarray:
+    def infer(self, query_pc: Tensor, db_pc: Tensor) -> RegistrationResult:
         """Estimate rigid transform that maps query into the database frame.
 
         Args:
@@ -105,8 +125,7 @@ class RansacPointCloudRegistrationPipeline:
             db_pc: Tensor [M,3] float32 for the database cloud.
 
         Returns:
-            np.ndarray: 4×4 transformation matrix (float64) `T_db<-q` such that
-            `x_db = T_db<-q * x_q`.
+            RegistrationResult: Result structure with transformation and metrics.
 
         Notes:
             To obtain the world pose of the query from a known `T_w<-db`, use
@@ -115,4 +134,31 @@ class RansacPointCloudRegistrationPipeline:
         source_down, source_fpfh = self._preprocess_point_cloud(query_pc)
         target_down, target_fpfh = self._preprocess_point_cloud(db_pc)
         result = self._execute_global_registration(source_down, target_down, source_fpfh, target_fpfh)
-        return result.transformation
+        # Extract metrics when available
+        fitness: float | None
+        inlier_rmse: float | None
+        try:
+            fitness = float(result.fitness)
+        except Exception:
+            fitness = None
+        try:
+            inlier_rmse = float(result.inlier_rmse)
+        except Exception:
+            inlier_rmse = None
+
+        num_inliers: int | None = None
+        if hasattr(result, "correspondence_set"):
+            try:
+                num_inliers = int(len(result.correspondence_set))
+            except Exception:
+                num_inliers = None
+
+        success = bool(fitness is not None and fitness > 0.0)
+
+        return RegistrationResult(
+            transformation=result.transformation,
+            success=success,
+            fitness=fitness,
+            inlier_rmse=inlier_rmse,
+            num_inliers=num_inliers,
+        )
