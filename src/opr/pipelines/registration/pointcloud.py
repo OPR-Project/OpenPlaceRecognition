@@ -8,6 +8,7 @@ import torch
 import cv2
 import os
 import faiss
+import open3d.pipelines.registration as registration
 from torch import Tensor, nn
 from skimage.io import imsave
 from scipy.spatial.transform import Rotation
@@ -213,4 +214,4 @@ class RansacGlobalRegistrationPipeline:
         source_down, source_fpfh = self._preprocess_point_cloud(query_pc)
         target_down, target_fpfh = self._preprocess_point_cloud(db_pc)
         ransac_result = self._execute_global_registration(source_down, target_down, source_fpfh, target_fpfh, max_iter)
-        return self.transform_icp(query_pcd, db_pcd, result.transformation)
+        return self.transform_icp(query_pc, db_pc, ransac_result.transformation)
